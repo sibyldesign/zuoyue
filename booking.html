@@ -157,11 +157,14 @@
                 <i class="fas fa-user-alt text-[#CBB39C]"></i> 家長聯絡資訊
             </h3>
             <div class="space-y-4">
-                <div class="relative w-full">
-                    <input type="tel" id="phone" placeholder="家長聯絡電話 (必填)" class="w-full pl-4 pr-[130px] py-3.5 bg-white border-1.5 border-[#EFE8DE] rounded-2xl focus:border-[#CBB39C] outline-none text-xs font-semibold">
-                    <button type="button" onclick="triggerHistorySearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#CBB39C] text-white px-3.5 py-2 rounded-xl text-[11px] font-bold active:scale-95 transition shadow-xs">
-                        查詢/自動帶入
-                    </button>
+                <div>
+                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">家長聯絡電話 *</label>
+                    <div class="relative w-full">
+                        <input type="tel" id="phone" placeholder="請輸入聯絡電話" class="text-input text-xs font-bold pl-4 pr-[130px]">
+                        <button type="button" onclick="triggerHistorySearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#CBB39C] text-white px-3.5 py-2 rounded-xl text-[11px] font-bold active:scale-95 transition shadow-xs">
+                            查詢/自動帶入
+                        </button>
+                    </div>
                 </div>
                 <div id="multiPetSelectBlock" class="hidden border border-dashed border-[#CBB39C] rounded-2xl p-3.5 bg-[#FAF7F2]">
                     <label class="text-[11px] font-black text-[#B2977D] block mb-1.5">💡 系統查到您有多位毛孩歷史紀錄：</label>
