@@ -65,12 +65,15 @@
         }
         .tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.3s; }
         .tab-btn.active { background-color: #CBB39C; color: white; border-radius: 18px; box-shadow: 0 3px 10px rgba(203, 179, 156, 0.35); }
+        
         .addon-card {
             background-color: #FFFFFF;
             border: 1.5px solid #EFE8DE;
             border-radius: 16px;
             padding: 12px 14px;
             transition: all 0.2s ease;
+            display: flex;
+            items-center: center;
         }
         .addon-card:hover:not(.disabled) {
             border-color: #CBB39C;
@@ -86,7 +89,7 @@
     </style>
 </head>
 <body class="w-full overflow-x-hidden" onload="initPage()">
-    <!-- 頂部 Logo Header -->
+    <!-- 頂部 Logo Header (圓形標誌圖) -->
     <div class="w-full bg-white flex flex-col items-center pt-7 pb-5 shadow-sm border-b border-[#EFE8DE]">
         <img src="https://i.postimg.cc/ZRZhHkJM/zuo-yue0713.png" alt="琢悅寵物SPA會館 Logo" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2">
         <h2 class="text-[20px] font-extrabold text-textBrown tracking-widest"> 琢悅寵物SPA會館 </h2>
@@ -197,15 +200,15 @@
             </div>
         </div>
 
-        <!-- 🌟 毛孩履歷卡片區塊 (舒緩間距質感極致化) -->
-        <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 shadow-sm space-y-5">
+        <!-- 🌟 毛孩履歷卡片區塊 (絕佳大氣空間感，對齊圖一美感) -->
+        <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
             <div class="text-[12px] font-bold text-[#B2977D] tracking-widest uppercase flex justify-between items-center border-b border-[#EFE8DE] pb-3">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-paw text-[#CBB39C]"></i> 毛孩詳細履歷 (可多寵)</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-paw text-[#CBB39C]"></i> PET PROFILE / 毛孩詳細履歷</span>
                 <span id="serviceModeBadge" class="bg-[#FAF7F2] text-[#B2977D] px-2.5 py-1 rounded-lg text-[10px] font-bold">美容模式</span>
             </div>
             <div id="dynamicPetContainer" class="space-y-6"></div>
-            <button type="button" id="addNewPetBtnEngine" onclick="appendNewPetFormCard()" class="w-full bg-white border-2 border-dashed border-[#CBB39C]/60 text-[#B2977D] py-3.5 rounded-2xl text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-[#FAF7F2] transition">
-                <i class="fa-solid fa-plus text-[10px]"></i> 新增下一隻毛孩資料與項目
+            <button type="button" id="addNewPetBtnEngine" onclick="appendNewPetFormCard()" class="w-full bg-white border-2 border-dashed border-[#CBB39C]/60 text-[#B2977D] py-4 rounded-2xl text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-[#FAF7F2] transition">
+                <i class="fa-solid fa-plus text-[10px]"></i> 新增下一隻毛孩資料與預約項目
             </button>
         </div>
 
@@ -412,7 +415,9 @@
         let currentCalDate = new Date(), calYear = currentCalDate.getFullYear(), calMonth = currentCalDate.getMonth();
         let mainRead = false, riskRead = false, currentTermType = 'main', isCheckedFinal = false, drawingState = false;
         let cachedContracts = { mainContract: "雲端服務契約加載中...", riskContract: "雲端高風險告知加載中..." };
-        let petCount = 0; let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
+        let petCount = 0; let globalPackedPetPhotos = {};
+        let cachedSlotsMatrixDictionary = {}; // 🌟 快取字典：消滅 3 秒 Lag 與二次點擊問題
+        let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
 
         function callGasGet(action, params = {}) {
@@ -569,7 +574,6 @@
             appendNewPetFormCard();
         }
 
-        // 🌟 防呆：選擇主服務項目後解鎖加購項目小卡
         function onMainServiceChange(cardId) {
             const cardEl = document.getElementById(`petCardRoot_${cardId}`);
             if (!cardEl) return;
@@ -587,11 +591,27 @@
             recalculatePrice();
         }
 
-        // 🌟 動態連動試算表加購資料 + 拓寬美化間距 (完美對齊圖二質感)
+        function previewAndPackIndividualPetImage(inputEl, id) {
+            if (inputEl.files && inputEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    globalPackedPetPhotos[id] = e.target.result;
+                    const container = document.getElementById(`photoPreviewContainer_${id}`);
+                    const img = document.getElementById(`photoPreviewImg_${id}`);
+                    if(img && container) {
+                        img.src = e.target.result;
+                        container.classList.remove('hidden');
+                    }
+                };
+                reader.readAsDataURL(inputEl.files[0]);
+            }
+        }
+
+        // 🌟 完美對齊圖一極致大氣質感 + 連動試算表加購與相片上傳
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
-            card.className = "bg-white border border-[#EFE8DE] rounded-3xl p-5.5 space-y-4.5 relative shadow-xs"; 
+            card.className = "bg-white border border-[#EFE8DE] rounded-[2.2rem] p-6 md:p-7 space-y-5 relative shadow-xs"; 
             card.id = `petCardRoot_${id}`;
             
             let filteredCat = activeServiceType === 'grooming' ? '美容' : '住宿';
@@ -605,7 +625,6 @@
                 serviceOptions += `</optgroup>`;
             });
 
-            // 🌟 連動試算表加購資料，並渲染為圖二精緻卡片
             let addonHtml = "";
             let addonItems = allServices.filter(s => s.category && s.category.includes('加購'));
             
@@ -635,29 +654,29 @@
             }
 
             let extraFieldsGrooming = `
-                <div class="grid grid-cols-2 gap-3.5">
+                <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">生日 (選填)</label><input type="date" class="text-input p-birthday text-xs font-bold"></div>
                 </div>`;
 
             let extraFieldsBoarding = `
-                <div class="grid grid-cols-2 gap-3.5">
+                <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性別 *</label><select class="text-input p-gender text-xs font-bold"><option value="公">公</option><option value="母">母</option></select></div>
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性格備註 *</label><input type="text" class="text-input p-personality text-xs font-bold" placeholder="親人親狗? 其他特質"></div>
                 </div>`;
 
             card.innerHTML = `
-            <div class="flex justify-between items-center border-b border-[#EFE8DE] pb-2.5 mb-1">
-                <span class="bg-[#CBB39C] text-white font-bold text-[11px] px-3 py-1 rounded-xl shadow-xs">施作毛孩 NO. ${id} (${filteredCat})</span>
+            <div class="flex justify-between items-center border-b border-[#EFE8DE] pb-3 mb-1">
+                <span class="bg-[#CBB39C] text-white font-bold text-[11px] px-3.5 py-1.5 rounded-xl shadow-xs">施作毛孩 NO. ${id} (${filteredCat})</span>
                 ${id > 1 ? `<button type="button" onclick="document.getElementById('petCardRoot_${id}').remove(); recalculatePrice();" class="text-xs font-bold text-rose-500 hover:underline">移除</button>` : ''}
             </div>
             
-            <div class="grid grid-cols-2 gap-3.5">
+            <div class="grid grid-cols-2 gap-4">
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩姓名 *</label><input type="text" class="text-input p-name text-xs font-bold" placeholder="名字"></div>
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">品種 *</label><input type="text" class="text-input p-breed text-xs font-bold" placeholder="例如: 柴犬"></div>
             </div>
             
-            <div class="grid grid-cols-2 gap-3.5">
+            <div class="grid grid-cols-2 gap-4">
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">體型(公斤) *</label><input type="text" class="text-input p-size text-xs font-bold" placeholder="如: 6kg"></div>
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">年齡/歲 *</label><input type="text" class="text-input p-age text-xs font-bold" placeholder="如: 3歲"></div>
             </div>
@@ -671,7 +690,16 @@
             
             <div class="pt-1">
                 <label class="text-[11px] font-bold text-textBrown mb-2 block">專屬加購護理 (可複選，需先選擇主項目)</label>
-                <div class="grid grid-cols-2 gap-2.5">${addonHtml}</div>
+                <div class="grid grid-cols-2 gap-3">${addonHtml}</div>
+            </div>
+
+            <!-- 補回：相片上傳區塊 -->
+            <div class="border border-gray-100 rounded-2xl p-3.5 bg-gray-50/50 space-y-2">
+                <label class="text-[10px] font-bold text-gray-400 block"><i class="fas fa-camera mr-1"></i> 上傳寵物真實相片 (選填)</label>
+                <input type="file" accept="image/*" onchange="previewAndPackIndividualPetImage(this, ${id})" class="text-xs text-gray-500 cursor-pointer">
+                <div id="photoPreviewContainer_${id}" class="hidden w-16 h-16 rounded-xl overflow-hidden border bg-white shadow-inner mt-2">
+                    <img id="photoPreviewImg_${id}" class="w-full h-full object-cover">
+                </div>
             </div>`;
 
             wrapper.appendChild(card);
@@ -706,11 +734,27 @@
 
         function changeFrontMonth(dir) { calMonth += dir; if(calMonth > 11) { calMonth = 0; calYear++; } if(calMonth < 0) { calMonth = 11; calYear--; } renderFrontCalendar(); }
 
+        // 🌟 解決 Lag 與二次點擊問題：引入快取 + 即時 Loading
         function selectDate(dateStr) {
-            selectedDateStr = dateStr; selectedTimeStr = ''; renderFrontCalendar();
-            callGasGet('getDailySlots', { dateStr: dateStr }).then(res => renderTimeSlots(res));
+            selectedDateStr = dateStr; 
+            selectedTimeStr = ''; 
+            renderFrontCalendar();
+            const container = document.getElementById('timeSlotContainer'); if(!container) return;
+
+            if (cachedSlotsMatrixDictionary[dateStr]) {
+                renderTimeSlots(cachedSlotsMatrixDictionary[dateStr]);
+            } else {
+                container.innerHTML = '<div class="text-xs text-gray-400 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1 text-[#CBB39C]"></i> 時段加載中...</div>';
+                callGasGet('getDailySlots', { dateStr: dateStr }).then(res => {
+                    cachedSlotsMatrixDictionary[dateStr] = res;
+                    renderTimeSlots(res);
+                }).catch(err => {
+                    container.innerHTML = '<div class="text-xs text-red-400 text-center py-4">時段讀取失敗，請點擊重試</div>';
+                });
+            }
         }
 
+        // 🌟 過期時段與禁約小時內時段「直接過濾消失」
         function renderTimeSlots(res) {
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
             if(res && res.isClosed) { container.innerHTML = `<div class="text-red-500 font-bold text-center py-3 text-xs">${res.message}</div>`; return; }
@@ -718,34 +762,43 @@
             let now = new Date();
             let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             
-            let baseSlots = [
+            let baseSlots = (res && res.availableSlots) ? res.availableSlots : [
                 "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
                 "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
                 "15:00", "15:30", "16:00", "16:30", "17:00"
             ];
 
             let html = '<div class="grid grid-cols-3 gap-2.5">';
+            let availableCount = 0;
+
             baseSlots.forEach(time => {
-                let isLocked = false;
+                let isPastOrLocked = false;
+                
+                // 🌟 當天過期與禁約鎖定小時內之時段直接過濾不顯示
                 if (selectedDateStr === todayStr) {
                     let parts = time.split(':');
                     let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
                     let bufferTimeThreshold = new Date(now.getTime() + (systemBufferHours * 60 * 60 * 1000));
-                    if (slotTime < bufferTimeThreshold) { isLocked = true; }
+                    if (slotTime < bufferTimeThreshold) { isPastOrLocked = true; }
                 }
 
-                if (isLocked) {
-                    html += `<button type="button" disabled class="py-2.5 border border-gray-100 rounded-2xl text-gray-300 text-xs font-bold bg-gray-50 cursor-not-allowed">${time}</button>`;
-                } else {
-                    html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-gray-50">${time}</button>`;
+                if (!isPastOrLocked) {
+                    availableCount++;
+                    html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
                 }
             });
-            container.innerHTML = html + '</div>';
+
+            if (availableCount === 0) {
+                html = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日時段已過期或已額滿，歡迎預約其他日期 🐾</div>`;
+            } else {
+                html += '</div>';
+            }
+            container.innerHTML = html;
         }
 
         function selectTime(timeStr, btnEl) {
             selectedTimeStr = timeStr;
-            document.querySelectorAll('.time-btn').forEach(btn => btn.className = "time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-gray-50");
+            document.querySelectorAll('.time-btn').forEach(btn => btn.className = "time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2]");
             if (btnEl) btnEl.className = "time-btn py-2.5 border border-[#CBB39C] bg-[#FAF7F2] text-[#B2977D] font-black text-xs shadow-sm rounded-2xl transform scale-102";
         }
 
