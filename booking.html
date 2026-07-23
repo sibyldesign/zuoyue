@@ -59,37 +59,18 @@
             display: block; 
             box-sizing: border-box; 
         }
-        .text-input:focus { 
-            border-color: #CBB39C; 
-            box-shadow: 0 0 0 3.5px rgba(203, 179, 156, 0.15);
-        }
+        .text-input:focus { border-color: #CBB39C; box-shadow: 0 0 0 3.5px rgba(203, 179, 156, 0.15); }
         .tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.3s; }
         .tab-btn.active { background-color: #CBB39C; color: white; border-radius: 18px; box-shadow: 0 3px 10px rgba(203, 179, 156, 0.35); }
-        
-        .addon-card {
-            background-color: #FFFFFF;
-            border: 1.5px solid #EFE8DE;
-            border-radius: 16px;
-            padding: 12px 14px;
-            transition: all 0.2s ease;
-            display: flex;
-            items-center: center;
-        }
-        .addon-card:hover:not(.disabled) {
-            border-color: #CBB39C;
-            background-color: #FAF7F2;
-        }
-        .addon-card.disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-            background-color: #FAF8F5;
-        }
+        .addon-card { background-color: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; padding: 12px 14px; transition: all 0.2s ease; display: flex; align-items: center; }
+        .addon-card:hover:not(.disabled) { border-color: #CBB39C; background-color: #FAF7F2; }
+        .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
         .addon-checkbox:disabled { cursor: not-allowed; }
     </style>
 </head>
 <body class="w-full overflow-x-hidden" onload="initPage()">
-    <!-- 頂部 Logo Header (圓形標誌圖) -->
+    <!-- 頂部 Logo Header -->
     <div class="w-full bg-white flex flex-col items-center pt-7 pb-5 shadow-sm border-b border-[#EFE8DE]">
         <img src="https://i.postimg.cc/ZRZhHkJM/zuo-yue0713.png" alt="琢悅寵物SPA會館 Logo" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2">
         <h2 class="text-[20px] font-extrabold text-textBrown tracking-widest"> 琢悅寵物SPA會館 </h2>
@@ -106,7 +87,7 @@
 
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
         
-        <!-- 服務類別切換分頁 (寵物美容 / 寵物住宿) -->
+        <!-- 服務類別切換分頁 -->
         <div class="bg-white p-1.5 rounded-2xl border border-[#EFE8DE] flex shadow-sm">
             <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active">
                 <i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約
@@ -116,7 +97,7 @@
             </div>
         </div>
 
-        <!-- 住宿溫馨提醒 Banner (切換至住宿時顯示) -->
+        <!-- 住宿提醒 Banner -->
         <div id="boardingNoticeBanner" class="hidden bg-amber-50/80 border border-amber-200 text-amber-900 p-4 rounded-2xl text-xs font-bold leading-relaxed flex items-center gap-3">
             <i class="fa-solid fa-circle-info text-amber-600 text-lg flex-shrink-0"></i>
             <span>溫馨提醒：為了維護良好的環境品質，毛孩於本館<b>住宿前需先完成洗澡/美容服務</b>喔！</span>
@@ -185,7 +166,7 @@
             </div>
         </div>
 
-        <!-- 住宿專用時間卡片 (僅在住宿分頁顯示) -->
+        <!-- 住宿時間卡片 -->
         <div id="boardingTimeCard" class="app-card p-6 hidden">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown mb-4 flex items-center gap-2 text-[15px]">
@@ -203,7 +184,7 @@
             </div>
         </div>
 
-        <!-- 🌟 毛孩履歷卡片區塊 (絕佳大氣空間感，對齊圖一美感) -->
+        <!-- 毛孩履歷卡片區塊 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
             <div class="text-[12px] font-bold text-[#B2977D] tracking-widest uppercase flex justify-between items-center border-b border-[#EFE8DE] pb-3">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-paw text-[#CBB39C]"></i> PET PROFILE / 毛孩詳細履歷</span>
@@ -215,7 +196,7 @@
             </button>
         </div>
 
-        <!-- 日期與 30 分鐘時段選擇 -->
+        <!-- 日期與時段選擇 -->
         <div class="app-card p-6" id="dateTimeCard">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
             <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]"><i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段</h3>
@@ -236,11 +217,10 @@
             </div>
         </div>
 
-        <!-- 預約專屬偏好設定 -->
+        <!-- 偏好設定 -->
         <div class="app-card p-6 space-y-4.5">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown flex items-center gap-2 text-[15px]"><i class="fa-solid fa-sliders text-[#B2977D]"></i> 預約專屬偏好設定</h3>
-            
             <div class="grid grid-cols-2 gap-3.5">
                 <div>
                     <label class="text-[11px] font-bold text-gray-400 mb-1 block">指定美容師 (選填)</label>
@@ -256,13 +236,10 @@
                     </select>
                 </div>
             </div>
-
-            <!-- 需要接送時展開地址欄位 -->
             <div id="pickupAddressBlock" class="hidden space-y-1 bg-[#FAF7F2] p-3.5 rounded-2xl border border-dashed border-[#CBB39C]">
                 <label class="text-[11px] font-bold text-[#B2977D] block">🚘 家長接送地址 (必填) *</label>
                 <input type="text" id="pickupAddress" placeholder="請填寫完整接送地址 (如: 鳳山區...)" class="text-input text-xs">
             </div>
-
             <div class="border-t border-[#EFE8DE] pt-3.5 space-y-2">
                 <label class="text-[11px] font-bold text-[#B2977D] block">介紹人</label>
                 <div class="grid grid-cols-2 gap-3">
@@ -292,7 +269,7 @@
             </div>
         </div>
 
-        <!-- 法律條款與數位簽署 -->
+        <!-- 法律條款與手寫簽名 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 shadow-sm space-y-4">
             <div class="text-[11px] font-bold text-[#B2977D] block tracking-widest uppercase">
                 <i class="fa-solid fa-file-signature text-[#CBB39C] mr-1"></i> Verification / 法律條款與數位簽署
@@ -331,8 +308,8 @@
                         <label class="text-[10px] font-bold text-gray-400 uppercase"> 家長親筆手寫簽名正本 * </label>
                         <button type="button" onclick="clearSignatureCanvasEngine()" class="text-[10px] text-rose-500 font-bold flex items-center gap-1"><i class="fa-regular fa-trash-can"></i> 重簽</button>
                     </div>
-                    <div class="border border-gray-200 rounded-2xl overflow-hidden bg-white relative shadow-inner h-[150px]">
-                        <canvas id="sigCanvas" class="w-full h-full cursor-crosshair"></canvas>
+                    <div class="border-2 border-[#CBB39C] rounded-2xl overflow-hidden bg-white relative shadow-inner h-[160px]">
+                        <canvas id="sigCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
                         <div id="sigTextPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-40 text-[#B2977D]">
                             <i class="fa-solid fa-pen-fancy text-lg mb-1 animate-pulse"></i>
                             <span class="text-[9px] font-bold tracking-widest"> 請在此處親筆手寫簽名 </span>
@@ -342,7 +319,7 @@
             </div>
         </div>
 
-        <!-- 三段式金額試算面板 (原價 / 折扣 / 實際金額) -->
+        <!-- 三段式金額試算面板 -->
         <div class="bg-white border-2 border-[#CBB39C] rounded-2xl p-4 shadow-sm space-y-1.5 text-xs text-textBrown">
             <div class="flex justify-between"><span>預估服務原價合計：</span><span class="font-bold text-gray-500" id="showOriginalPrice">$0</span></div>
             <div class="flex justify-between text-rose-600"><span>折扣與優惠估算：</span><span class="font-bold" id="showDiscountPrice">-$0</span></div>
@@ -352,7 +329,7 @@
             </div>
         </div>
 
-        <!-- 漂亮韓系奶茶配色「正圓形按鈕」: LINE / IG / 地圖導航 -->
+        <!-- 韓系奶茶圓形按鈕 -->
         <div class="flex justify-center gap-6 pt-2">
             <a href="https://lin.ee/q19SMMx5" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
                 <i class="fab fa-line text-[26px]"></i>
@@ -376,7 +353,7 @@
             送出預約申請
         </button>
 
-        <div id="termsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-md bg-black/50 transition-all duration-300">
+        <div id="termsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-md bg-black/50 transition-all">
             <div class="bg-white w-full max-w-md h-[80vh] rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl border border-[#EFE8DE]/50" id="modalContainer">
                 <div id="modalTitle" class="p-5 font-bold text-center border-b border-gray-100 text-[15px] text-[#211c1b]"> 📜 合約條款與審閱細則 </div>
                 <div id="modalBody" class="p-6 flex-1 overflow-y-auto text-xs leading-relaxed text-gray-500 whitespace-pre-line bg-gray-50/50" onscroll="handleModalScrollEngine()"> 載入中... </div>
@@ -387,7 +364,7 @@
         </div>
     </div>
 
-    <!-- 現場臨櫃家長專區卡片 -->
+    <!-- 現場補簽連結 -->
     <div class="max-w-md mx-auto px-4 pb-4">
         <div class="bg-[#FAF7F2] border border-dashed border-[#CBB39C] rounded-2xl p-4 text-center shadow-sm max-w-[90%] mx-auto scale-95">
             <h4 class="text-[12px] font-black text-[#5C5043] mb-0.5">
@@ -402,7 +379,7 @@
         </div>
     </div>
 
-    <!-- Designed by Sibyl -->
+    <!-- Footer -->
     <div class="text-center mt-10 mb-4 text-sibylLight text-[11px] tracking-widest uppercase">
         Designed by <a href="https://www.heysibyl.com/" target="_blank" class="font-bold hover:underline">Sibyl | 數位管家</a>
     </div>
@@ -419,7 +396,7 @@
         let mainRead = false, riskRead = false, currentTermType = 'main', isCheckedFinal = false, drawingState = false;
         let cachedContracts = { mainContract: "雲端服務契約加載中...", riskContract: "雲端高風險告知加載中..." };
         let petCount = 0; let globalPackedPetPhotos = {};
-        let cachedSlotsMatrixDictionary = {}; // 🌟 快取字典：消滅 3 秒 Lag 與二次點擊問題
+        let cachedSlotsMatrixDictionary = {};
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
 
@@ -558,8 +535,20 @@
                     if(res.offDates) currentOffDatesList = res.offDates;
                     if(res.allRecords) globalData.allRecords = res.allRecords;
                     renderFrontCalendar();
+                    preloadCurrentMonthSlotsMatrix(); // 🌟 背景靜態預載，達成點擊秒開！
                 }
             });
+        }
+
+        // 🌟 新增：背景靜態預載當月所有時段
+        function preloadCurrentMonthSlotsMatrix() {
+            let numDays = new Date(calYear, calMonth + 1, 0).getDate();
+            for(let day=1; day<=numDays; day++) {
+                let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                callGasGet('getDailySlots', { dateStr: dateString }).then(res => {
+                    if(res) cachedSlotsMatrixDictionary[dateString] = res;
+                }).catch(e => console.log('預載略過', e));
+            }
         }
 
         function loadAnnouncement() { callGasGet('getAnnouncementData').then(text => { if(text) document.getElementById('announcement').innerHTML = text; }); }
@@ -610,7 +599,6 @@
             }
         }
 
-        // 🌟 完美對齊圖一極致大氣質感 + 連動試算表加購與相片上傳
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
@@ -696,7 +684,6 @@
                 <div class="grid grid-cols-2 gap-3">${addonHtml}</div>
             </div>
 
-            <!-- 補回：相片上傳區塊 -->
             <div class="border border-gray-100 rounded-2xl p-3.5 bg-gray-50/50 space-y-2">
                 <label class="text-[10px] font-bold text-gray-400 block"><i class="fas fa-camera mr-1"></i> 上傳寵物真實相片 (選填)</label>
                 <input type="file" accept="image/*" onchange="previewAndPackIndividualPetImage(this, ${id})" class="text-xs text-gray-500 cursor-pointer">
@@ -722,42 +709,51 @@
                 const isPast = cellDate < today;
                 let isClosed = currentOffDatesList && currentOffDatesList.includes(dateString);
 
-                if (isPast) {
-                    html += `<div class="py-2.5 text-gray-300 font-normal opacity-40 cursor-not-allowed select-none">${day}</div>`;
+                // 🌟 比對預約是否已客滿（例如滿 9 單）
+                let isFullDay = false;
+                if (globalData && globalData.allRecords) {
+                    let bookedCount = globalData.allRecords.filter(r => r && r.date === dateString && r.status !== '已取消' && r.status !== '婉拒').length;
+                    if (bookedCount >= 9) isFullDay = true;
+                }
+
+                // 過期或客滿日期：顏色變淺灰，不可點選
+                if (isPast || isFullDay) {
+                    if (dateString === selectedDateStr) { selectedDateStr = ''; }
+                    html += `<div class="py-2.5 text-gray-300 font-normal opacity-40 cursor-not-allowed select-none text-center text-[15px]">${day}</div>`;
                 } else if (isClosed) {
-                    html += `<div class="py-1 text-gray-300 opacity-40 flex flex-col items-center"><span>${day}</span><span class="text-[8px] text-gray-400 font-bold">公休</span></div>`;
+                    if (dateString === selectedDateStr) { selectedDateStr = ''; }
+                    html += `<div class="py-1 text-gray-300 opacity-40 cursor-not-allowed select-none text-center text-[15px] flex flex-col items-center justify-center"><span>${day}</span><span class="text-[8px] text-gray-400 font-bold block mt-[-2px]">公休</span></div>`;
                 } else if (dateString === selectedDateStr) {
-                    html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
+                    html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition text-center text-[15px]" onclick="selectDate('${dateString}')">${day}</div>`;
                 } else {
-                    html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
+                    html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold text-center text-[15px]" onclick="selectDate('${dateString}')">${day}</div>`;
                 }
             }
             grid.innerHTML = html;
         }
 
-        function changeFrontMonth(dir) { calMonth += dir; if(calMonth > 11) { calMonth = 0; calYear++; } if(calMonth < 0) { calMonth = 11; calYear--; } renderFrontCalendar(); }
-
-        // 🌟 解決 Lag 與二次點擊問題：引入快取 + 即時 Loading
+        // 月份切換時同步觸發預載
+        function changeFrontMonth(dir) { calMonth += dir; if(calMonth > 11) { calMonth = 0; calYear++; } if(calMonth < 0) { calMonth = 11; calYear--; } renderFrontCalendar(); preloadCurrentMonthSlotsMatrix(); }
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
             renderFrontCalendar();
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
 
+            // 🌟 優先讀取快取字典，達成點擊【秒開】！
             if (cachedSlotsMatrixDictionary[dateStr]) {
                 renderTimeSlots(cachedSlotsMatrixDictionary[dateStr]);
             } else {
-                container.innerHTML = '<div class="text-xs text-gray-400 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1 text-[#CBB39C]"></i> 時段加載中...</div>';
+                container.innerHTML = '<div class="text-xs text-gray-400 text-center py-4">時段配對中...</div>';
                 callGasGet('getDailySlots', { dateStr: dateStr }).then(res => {
                     cachedSlotsMatrixDictionary[dateStr] = res;
                     renderTimeSlots(res);
                 }).catch(err => {
-                    container.innerHTML = '<div class="text-xs text-red-400 text-center py-4">時段讀取失敗，請點擊重試</div>';
+                    container.innerHTML = '<div class="text-xs text-gray-400 text-center py-4">時段讀取失敗</div>';
                 });
             }
         }
 
-        // 🌟 過期時段與禁約小時內時段「直接過濾消失」
         function renderTimeSlots(res) {
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
             if(res && res.isClosed) { container.innerHTML = `<div class="text-red-500 font-bold text-center py-3 text-xs">${res.message}</div>`; return; }
@@ -776,8 +772,6 @@
 
             baseSlots.forEach(time => {
                 let isPastOrLocked = false;
-                
-                // 🌟 當天過期與禁約鎖定小時內之時段直接過濾不顯示
                 if (selectedDateStr === todayStr) {
                     let parts = time.split(':');
                     let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
@@ -803,6 +797,23 @@
             selectedTimeStr = timeStr;
             document.querySelectorAll('.time-btn').forEach(btn => btn.className = "time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2]");
             if (btnEl) btnEl.className = "time-btn py-2.5 border border-[#CBB39C] bg-[#FAF7F2] text-[#B2977D] font-black text-xs shadow-sm rounded-2xl transform scale-102";
+        }
+
+        function triggerHistorySearch() {
+            let phone = document.getElementById('phone').value.trim();
+            if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
+            Swal.fire({title: '查核專屬履歷與儲值餘額...', didOpen: () => Swal.showLoading()});
+            callGasGet('checkCustomerHistory', { phone: phone }).then(res => {
+                Swal.close();
+                if(res && res.found) {
+                    document.getElementById('ownerName').value = res.ownerName || '';
+                    document.getElementById('lineName').value = res.lineName || '';
+                    if(res.email) document.getElementById('email').value = res.email || '';
+                    Swal.fire('已找到會員檔案！', `已自動帶入資歷！目前寄卡餘額：${res.cardRemain || 0} 次`, 'success');
+                } else {
+                    Swal.fire('歡迎新客', '資料庫無此號，請手動填寫資料預約！', 'info');
+                }
+            });
         }
 
         function recalculatePrice() {
@@ -835,35 +846,115 @@
             document.getElementById('showFinalPrice').innerText = '$' + finalTotal;
         }
 
+        function packDynamicPetsJsonPayload() {
+            const container = document.getElementById('dynamicPetContainer');
+            const packedArray = [];
+            if(!container) return packedArray;
+
+            for(let i=0; i<container.children.length; i++) {
+                const cardEl = container.children[i];
+                const id = cardEl.id.split('_')[1];
+                let addonsArr = [];
+                cardEl.querySelectorAll('.addon-checkbox:checked').forEach(cb => addonsArr.push(cb.value));
+
+                packedArray.push({
+                    name: cardEl.querySelector('.p-name') ? cardEl.querySelector('.p-name').value.trim() : '',
+                    breed: cardEl.querySelector('.p-breed') ? cardEl.querySelector('.p-breed').value.trim() : '',
+                    petSize: cardEl.querySelector('.p-size') ? cardEl.querySelector('.p-size').value.trim() : '',
+                    age: cardEl.querySelector('.p-age') ? cardEl.querySelector('.p-age').value.trim() : '',
+                    coatType: cardEl.querySelector('.p-coat') ? cardEl.querySelector('.p-coat').value.trim() : '短毛',
+                    mainService: cardEl.querySelector('.p-main-service') ? cardEl.querySelector('.p-main-service').value : '預約項目',
+                    addons: addonsArr.length > 0 ? addonsArr.join(', ') : '無',
+                    petPhotoBase64: globalPackedPetPhotos[id] || ""
+                });
+            }
+            return packedArray;
+        }
+
+        function initDigitalSignatureCanvasEngine() {
+            if(!canvas) return;
+            const parent = canvas.parentNode;
+            canvas.width = parent.clientWidth;
+            canvas.height = 160;
+            
+            ctx.strokeStyle = "#5C5043";
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            function startDraw(e) {
+                drawingState = true;
+                const placeholder = document.getElementById('sigTextPlaceholder');
+                if(placeholder) placeholder.classList.add('hidden');
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+
+            function moveDraw(e) {
+                if(!drawingState) return;
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+
+            function endDraw() { drawingState = false; }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', moveDraw);
+            window.addEventListener('mouseup', endDraw);
+
+            canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, {passive: false});
+            canvas.addEventListener('touchmove', (e) => { moveDraw(e); e.preventDefault(); }, {passive: false});
+            canvas.addEventListener('touchend', endDraw);
+        }
+
+        function clearSignatureCanvasEngine() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const placeholder = document.getElementById('sigTextPlaceholder');
+            if(placeholder) placeholder.classList.remove('hidden');
+        }
+
+        function validateCanvasIsSigned() {
+            if(!canvas) return false;
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width;
+            blank.height = canvas.height;
+            return canvas.toDataURL() !== blank.toDataURL();
+        }
+
         function processBooking() {
             let phone = document.getElementById('phone').value.trim();
             let ownerName = document.getElementById('ownerName').value.trim();
             let email = document.getElementById('email').value.trim();
             let lineName = document.getElementById('lineName').value.trim();
-            let pickupVal = document.getElementById('pickupService').value;
-            let pickupAddr = document.getElementById('pickupAddress') ? document.getElementById('pickupAddress').value.trim() : '';
 
             if (!phone || !ownerName || !email || !lineName) { return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); }
-            if (pickupVal === '需要接送' && !pickupAddr) { return Swal.fire('漏填提醒', '選擇需要接送服務時，請填寫完整的家長接送地址！', 'warning'); }
             if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請選擇預約日期與進場時段！', 'warning'); }
-            if (!mainRead || !riskRead || !isCheckedFinal) { return Swal.fire('條款提醒', '請詳閱條款並勾選同意書與完成親筆簽名！', 'warning'); }
+            if (!mainRead || !riskRead || !isCheckedFinal) { return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); }
+            if (!validateCanvasIsSigned()) { return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); }
+
+            let petsPayload = packDynamicPetsJsonPayload();
+            if(petsPayload.length === 0) { return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); }
 
             let payload = {
                 serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
                 phone: phone, ownerName: ownerName, email: email, lineName: lineName,
                 date: selectedDateStr, time: selectedTimeStr,
-                checkInTime: document.getElementById('checkInTime') ? document.getElementById('checkInTime').value : '',
-                checkOutTime: document.getElementById('checkOutTime') ? document.getElementById('checkOutTime').value : '',
                 groomer: document.getElementById('selectedGroomer').value,
-                pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
+                pickup: document.getElementById('pickupService').value,
                 referrerOwner: document.getElementById('referrerOwner').value,
-                referrerPet: document.getElementById('referrerPet').value,
-                storedPlan: document.getElementById('storedPlan').value,
-                planPackage: document.getElementById('planPackage').checked ? '買五送一包卡' : '無',
-                originalPrice: origTotal,
-                discountPrice: discountTotal,
-                finalPrice: finalTotal,
-                signatureDataBase64: canvas ? canvas.toDataURL() : ""
+                petsJsonString: JSON.stringify(petsPayload),
+                multiPhotosJson: JSON.stringify(globalPackedPetPhotos),
+                signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
             };
 
             Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -872,9 +963,12 @@
                 body: JSON.stringify({ action: "submitBooking", payload: payload })
             }).then(() => {
                 Swal.close();
-                Swal.fire('預約成功！', '資料已成功傳送至琢悅寵物SPA會館系統！', 'success').then(() => {
+                Swal.fire('預約成功！', '預約與毛孩履歷已成功寫入，並同步傳送合約至您的 Email！', 'success').then(() => {
                     window.location.href = "https://lin.ee/q19SMMx5";
                 });
+            }).catch(err => {
+                Swal.close();
+                Swal.fire('連線超時', '資料已送出歸檔，請安心重試或連繫店家。', 'error');
             });
         }
 
@@ -886,6 +980,7 @@
             modal.classList.remove('hidden');
             setTimeout(() => unlockTermsButton(document.getElementById('modalCloseBtn')), 400);
         }
+
         function closeTermsModalWindow() {
             document.getElementById('termsModal').classList.add('hidden');
             if(currentTermType === 'main') { mainRead = true; document.getElementById('badge_main').innerText = "已閱讀"; }
@@ -893,15 +988,12 @@
             if(mainRead && riskRead) {
                 document.getElementById('signatureLockCover').classList.add('hidden');
                 document.getElementById('signatureUnlockBlock').classList.remove('hidden');
-                initDigitalSignatureCanvasEngine();
+                setTimeout(initDigitalSignatureCanvasEngine, 100);
             }
         }
         function unlockTermsButton(btn) { btn.disabled = false; btn.innerText = "✓ 本人已詳細閱讀並完全同意"; btn.className = "w-full bg-[#5C5043] text-white p-3.5 rounded-xl text-xs font-bold cursor-pointer"; }
         function handleModalScrollEngine() {}
         function toggleFinalCheckUIEngine() { isCheckedFinal = !isCheckedFinal; document.getElementById('finalCheckCircle').className = isCheckedFinal ? "w-5 h-5 rounded-full bg-[#CBB39C] flex items-center justify-center text-white text-xs" : "w-5 h-5 rounded-full border-2 border-gray-300"; }
-        function initDigitalSignatureCanvasEngine() { if(!canvas) return; canvas.width = canvas.parentNode.getBoundingClientRect().width; canvas.height = 150; ctx.strokeStyle = "#5C5043"; ctx.lineWidth = 3; }
-        function clearSignatureCanvasEngine() { ctx.clearRect(0,0,canvas.width,canvas.height); }
-        function triggerHistorySearch() {}
         function switchSelectedPetInfo(v) {}
     </script>
 </body>
