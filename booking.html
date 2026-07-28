@@ -930,7 +930,23 @@
                 body: JSON.stringify({ action: "submitBooking", payload: payload })
             }).then(() => {
                 Swal.close();
-                Swal.fire('預約成功！', '資料已成功傳送至琢悅寵物SPA會館！', 'success').then(() => {
+                // 🌟 優化：新增垃圾信件提示與醒目跳轉按鈕
+                Swal.fire({
+                    title: '🎉 預約成功！',
+                    html: `
+                        <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
+                            <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
+                            <p>系統已同步發送「預約確認信件」至您的 Email 郵箱。</p>
+                            <div class="bg-amber-50 p-3 rounded-lg border border-amber-200/80 text-amber-900 font-bold">
+                                📧 <strong class="text-amber-800">貼心提醒：</strong><br>
+                                若您在收件匣沒有看到確認信，<strong>信件可能被誤判並跑去「垃圾信件匣」</strong>，再麻煩幫忙點擊查看並標示為「非垃圾郵件」唷！
+                            </div>
+                        </div>
+                    `,
+                    icon: 'success',
+                    confirmButtonColor: '#CBB39C',
+                    confirmButtonText: '點此加 LINE 官方帳號確認'
+                }).then(() => {
                     window.location.href = "https://lin.ee/q19SMMx5";
                 });
             });
