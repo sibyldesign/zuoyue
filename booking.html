@@ -67,9 +67,6 @@
         .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
         .addon-checkbox:disabled { cursor: not-allowed; }
-        
-        /* 🌟 依據圖一：過期、公休、額滿日期字體呈現淺棕色（#CBB39C/40） */
-        .day-dimmed-light-brown { color: #CBB39C !important; opacity: 0.45; cursor: not-allowed !important; font-weight: normal; }
     </style>
 </head>
 <body class="w-full overflow-x-hidden" onload="initPage()">
@@ -210,7 +207,6 @@
                 </div>
                 <div id="hotelBathSubPanel" class="hidden pt-3 border-t border-[#EFE8DE] space-y-3">
                     <div>
-                        <!-- 🌟 補充提示文案 -->
                         <label class="text-[11px] font-bold text-textBrown block mb-1">請選擇退宿美容/洗澡項目 * <span class="text-amber-800 text-[10px] font-normal">（請至下方『選擇退宿洗澡日期與時段』選取時間）</span></label>
                         <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
                         </select>
@@ -234,7 +230,6 @@
         <!-- 指定美容師與其他需求 -->
         <div class="app-card p-6 space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
-            <!-- 🌟 修改標題：指定美容師與其他需求 -->
             <h3 class="font-bold text-textBrown flex items-center gap-2 text-[15px]"><i class="fa-solid fa-user-check text-[#B2977D]"></i> 指定美容師與其他需求</h3>
             <div class="grid grid-cols-2 gap-3.5">
                 <div>
@@ -264,10 +259,9 @@
             </div>
         </div>
 
-        <!-- 選擇進場 / 退宿洗澡日期與時段 -->
+        <!-- 日期與時段選擇 -->
         <div class="app-card p-6" id="dateTimeCard">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
-            <!-- 🌟 動態切換標題：美容模式叫「選擇進場日期與時段」，住宿退宿叫「選擇退宿洗澡日期與時段」 -->
             <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]" id="dateTimeCardTitle">
                 <i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段
             </h3>
@@ -322,7 +316,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 -->
+        <!-- 預算計價即時試算 (包含退宿洗澡金額與加購括號標示) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -331,8 +325,16 @@
             
             <div class="space-y-2 text-xs text-gray-600">
                 <div class="flex justify-between items-center">
-                    <span>1. 施作項目原價預估區間：</span>
+                    <span>1. 施作主項目原價預估區間：</span>
                     <span class="font-bold text-textBrown" id="summaryOriginalRange">--</span>
+                </div>
+                <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D]">
+                    <span>（包含專屬加購護理：）</span>
+                    <span class="font-bold" id="summaryAddonPriceText">+$0</span>
+                </div>
+                <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/60 p-2 rounded-lg border border-amber-200">
+                    <span>退宿加做洗澡美容項目：</span>
+                    <span id="summaryHotelBathPriceText">$0</span>
                 </div>
                 <div class="flex justify-between items-center text-rose-500">
                     <span>2. 本次折抵/優惠扣抵：</span>
@@ -465,6 +467,7 @@
         let cachedContracts = { mainContract: "雲端服務契約加載中...", riskContract: "雲端高風險告知加載中..." };
         let petCount = 0; let globalPackedPetPhotos = {};
         let cachedSlotsMatrixDictionary = {};
+        let cachedMonthlyMap = {};
         let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
@@ -496,12 +499,29 @@
         }
 
         function initPage() {
-            renderFrontCalendar();
             loadAnnouncement();
             loadCloudContracts();
             loadPortfolio();
             loadServices();
             loadGroomerList();
+            fetchMonthlyAvailabilityAndRenderCal();
+        }
+
+        function fetchMonthlyAvailabilityAndRenderCal() {
+            let monthStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
+            let groomerVal = document.getElementById('selectedGroomer') ? document.getElementById('selectedGroomer').value : '不指定';
+            let cacheKey = `${monthStr}_${groomerVal}`;
+
+            if (cachedMonthlyMap[cacheKey]) {
+                renderFrontCalendarWithMap(cachedMonthlyMap[cacheKey]);
+            } else {
+                callGasGet('getMonthlyAvailabilityMap', { monthStr: monthStr, groomer: groomerVal }).then(mapRes => {
+                    cachedMonthlyMap[cacheKey] = mapRes || {};
+                    renderFrontCalendarWithMap(cachedMonthlyMap[cacheKey]);
+                }).catch(() => {
+                    renderFrontCalendarWithMap({});
+                });
+            }
         }
 
         function triggerHistorySearch() {
@@ -639,8 +659,9 @@
         }
 
         function onGroomerSelectionChange() {
+            cachedMonthlyMap = {};
             cachedSlotsMatrixDictionary = {};
-            if (selectedDateStr) selectDate(selectedDateStr);
+            fetchMonthlyAvailabilityAndRenderCal();
         }
 
         function loadServices() { 
@@ -683,8 +704,11 @@
             }); 
         }
 
+        // 🌟 核心計算引擎：支援退宿加做美容洗澡金額 + 專屬加購護理（括號標示）
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
+            let addonTotal = 0;
+            let hotelBathPriceMin = 0, hotelBathPriceMax = 0;
             let newBuyPrice = 0;
             let discountRate = 1;
 
@@ -718,9 +742,55 @@
                     }
                     card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
                         let p = parseInt(cb.getAttribute('data-price') || 0);
+                        addonTotal += p;
                         displayMin += p;
                         if (displayMax > 0) displayMax += p;
                     });
+                }
+            }
+
+            // 退宿加做美容/洗澡項目金額計算
+            const bathSelect = document.getElementById('hotelBathMainService');
+            const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
+            if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
+                const opt = bathSelect.options[bathSelect.selectedIndex];
+                const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
+                if (priceRaw.includes('起')) {
+                    let p = parseInt(priceRaw.replace('起','')) || 0;
+                    hotelBathPriceMin = p;
+                } else if (priceRaw.includes('-')) {
+                    let parts = priceRaw.split('-');
+                    hotelBathPriceMin = parseInt(parts[0]) || 0;
+                    hotelBathPriceMax = parseInt(parts[1]) || 0;
+                } else {
+                    let p = parseInt(priceRaw) || 0;
+                    hotelBathPriceMin = p;
+                    hotelBathPriceMax = p;
+                }
+                displayMin += hotelBathPriceMin;
+                if (displayMax > 0) displayMax += (hotelBathPriceMax || hotelBathPriceMin);
+            }
+
+            // 顯示加購護理細項
+            const addonRow = document.getElementById('summaryAddonDetailRow');
+            if (addonRow) {
+                if (addonTotal > 0) {
+                    addonRow.classList.remove('hidden');
+                    document.getElementById('summaryAddonPriceText').innerText = `+$${addonTotal.toLocaleString()}`;
+                } else {
+                    addonRow.classList.add('hidden');
+                }
+            }
+
+            // 顯示退宿洗澡金額
+            const hotelBathRow = document.getElementById('summaryHotelBathRow');
+            if (hotelBathRow) {
+                if (isHotelBathNeed && hotelBathPriceMin > 0) {
+                    hotelBathRow.classList.remove('hidden');
+                    let showText = (hotelBathPriceMax > hotelBathPriceMin) ? `$${hotelBathPriceMin} ~ $${hotelBathPriceMax}` : `$${hotelBathPriceMin}`;
+                    document.getElementById('summaryHotelBathPriceText').innerText = `+$${showText}`;
+                } else {
+                    hotelBathRow.classList.add('hidden');
                 }
             }
 
@@ -782,7 +852,6 @@
             card.id = `petCardRoot_${id}`;
             
             let filteredCat = activeServiceType === 'grooming' ? '美容' : '住宿';
-            // 🌟 修改提示文案：主服務項目的『請選擇住宿主服務項目』改成『請選擇住宿前美容主服務項目』
             let servicePlaceholder = activeServiceType === 'grooming' ? '請選擇美容主服務項目' : '請選擇住宿前美容主服務項目';
             let serviceOptions = `<option value="" disabled selected>${servicePlaceholder}</option>`;
             let categorySet = new Set();
@@ -875,8 +944,12 @@
             calculateBookingTotalPriceEngine();
         }
 
-        // 🌟 依據圖一：公休、額滿、未排班日期，字體顏色呈現淺棕色（#CBB39C/40）
         function renderFrontCalendar() {
+            fetchMonthlyAvailabilityAndRenderCal();
+        }
+
+        // 🌟 對比淡化圖一呈現：公休/額滿/未排班呈現淡奶茶色且鎖定 pointer-events
+        function renderFrontCalendarWithMap(mapRes) {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
             const firstDay = new Date(calYear, calMonth, 1).getDay(); const numDays = new Date(calYear, calMonth + 1, 0).getDate();
@@ -887,11 +960,11 @@
                 let cellDate = new Date(calYear, calMonth, day); 
                 let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 const isPast = cellDate < today;
-                let isClosed = currentOffDatesList && currentOffDatesList.includes(dateString);
+                let dayStatus = mapRes[dateString] || (currentOffDatesList.includes(dateString) ? 'CLOSED' : 'OPEN');
                 
-                if (isPast || isClosed) {
-                    // 圖一效果：過期或公休字體變淡棕色
-                    html += `<div class="py-2.5 day-dimmed-light-brown select-none">${day}</div>`;
+                if (isPast || dayStatus === 'CLOSED' || dayStatus === 'FULL' || dayStatus === 'NO_SCHEDULE') {
+                    let label = dayStatus === 'CLOSED' ? '公休' : (dayStatus === 'FULL' ? '額滿' : '');
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none" style="color:#CBB39C !important; opacity:0.35;"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
                 } else if (dateString === selectedDateStr) {
                     html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
                 } else {
@@ -901,9 +974,13 @@
             grid.innerHTML = html;
         }
 
-        function changeFrontMonth(dir) { calMonth += dir; if(calMonth > 11) { calMonth = 0; calYear++; } if(calMonth < 0) { calMonth = 11; calYear--; } renderFrontCalendar(); }
+        function changeFrontMonth(dir) { 
+            calMonth += dir; 
+            if(calMonth > 11) { calMonth = 0; calYear++; } 
+            if(calMonth < 0) { calMonth = 11; calYear--; } 
+            fetchMonthlyAvailabilityAndRenderCal(); 
+        }
 
-        // 🌟 秒開時段（記憶體快取）
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
@@ -1175,4 +1252,3 @@
     </script>
 </body>
 </html>
-
