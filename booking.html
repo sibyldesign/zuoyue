@@ -67,6 +67,17 @@
         .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
         .addon-checkbox:disabled { cursor: not-allowed; }
+
+        /* 🌟 圖二優化：公休 / 額滿 / 未排班日期的顯著淺奶茶棕色鎖定樣式 */
+        .day-dimmed-light-brown {
+            background-color: #F2ECE4 !important;
+            color: #CBB39C !important;
+            border: 1px solid #E6DDD2 !important;
+            border-radius: 12px;
+            cursor: not-allowed !important;
+            pointer-events: none !important; /* 徹底禁止點選 */
+            opacity: 0.45 !important;
+        }
     </style>
 </head>
 <body class="w-full overflow-x-hidden" onload="initPage()">
@@ -304,19 +315,19 @@
                     <span class="text-[10px] text-[#B2977D] font-bold">🎁 超值加購</span>
                 </div>
                 <select id="buyNewPackageSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                    <option value="none" data-price="0">不加購包卡</option>
+                    <option value="none" data-price="0" data-bonus="0">不加購包卡</option>
                 </select>
             </div>
 
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
                 <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">3. 現場加購【儲值金方案】：</label>
                 <select id="buyNewDepositSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                    <option value="none" data-price="0" data-discount="1">不加購儲值</option>
+                    <option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>
                 </select>
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (包含退宿洗澡金額與加購括號標示) -->
+        <!-- 預算計價即時試算 (包含退宿洗澡金額與加購括號標示與贈送金顯示) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -434,7 +445,7 @@
                 <a href="https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec?page=signature"
                    target="_blank"
                    class="w-full bg-[#CBB39C] text-white py-2.5 rounded-xl text-[12px] font-black tracking-widest shadow-sm active:scale-95 transition block text-center select-none cursor-pointer">
-                   ⚡ 點此補簽數位合約
+                    ⚡ 點此補簽數位合約
                 </a>
             </div>
         </div>
@@ -664,6 +675,7 @@
             fetchMonthlyAvailabilityAndRenderCal();
         }
 
+        // 🌟 載入服務與方案選單（圖一修正：精準讀算並標示贈送金額，無則為0）
         function loadServices() { 
             callGasGet('getServiceSettings').then(data => { 
                 allServices = Array.isArray(data) ? data : []; 
@@ -672,8 +684,8 @@
                 const depSelect = document.getElementById('buyNewDepositSelect');
                 const bathSelect = document.getElementById('hotelBathMainService');
                 
-                let pkgHtml = `<option value="none" data-price="0">不加購包卡</option>`;
-                let depHtml = `<option value="none" data-price="0" data-discount="1">不加購儲值</option>`;
+                let pkgHtml = `<option value="none" data-price="0" data-bonus="0">不加購包卡</option>`;
+                let depHtml = `<option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>`;
                 let bathHtml = `<option value="" disabled selected>請選擇退宿加做之美容洗澡項目</option>`;
 
                 allServices.forEach(s => {
@@ -686,12 +698,19 @@
                         priceRaw = PRICE_RANGE_MAP[mapKey];
                     }
 
+                    // 🌟 自動正則解析名稱中的贈送金，無則為 0
+                    let bonusVal = 0;
+                    let bonusMatch = name.match(/送\s*(\d+)/i) || name.match(/贈\s*(\d+)/i);
+                    if (bonusMatch) {
+                        bonusVal = parseInt(bonusMatch[1]) || 0;
+                    }
+
                     if (cat.includes('包卡') || name.includes('包卡')) {
-                        pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}">${name} ($${priceRaw})</option>`;
+                        pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-bonus="${bonusVal}">${name} ($${priceRaw})</option>`;
                     } else if (cat.includes('儲值') || name.includes('儲值')) {
                         let disc = 0.9;
                         if (name.includes('10000') || priceRaw.includes('10000')) disc = 0.8;
-                        depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}">${name}</option>`;
+                        depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}" data-bonus="${bonusVal}">${name}</option>`;
                     } else if (!cat.includes('加購')) {
                         bathHtml += `<option value="${name}" data-raw-price="${priceRaw}">${name} ($${priceRaw})</option>`;
                     }
@@ -704,12 +723,13 @@
             }); 
         }
 
-        // 🌟 核心計算引擎：支援退宿加做美容洗澡金額 + 專屬加購護理（括號標示）
+        // 🌟 核心計算引擎：加購方案包含金額與贈送金即時計算顯示
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonTotal = 0;
             let hotelBathPriceMin = 0, hotelBathPriceMax = 0;
             let newBuyPrice = 0;
+            let newBuyBonusTotal = 0;
             let discountRate = 1;
 
             const depSelect = document.getElementById('buyNewDepositSelect');
@@ -799,16 +819,25 @@
                 : `$${displayMin.toLocaleString()}`;
             document.getElementById('summaryOriginalRange').innerText = origRangeStr;
 
+            // 🌟 統計現場加購方案之金額與贈送金
             const pkgSelect = document.getElementById('buyNewPackageSelect');
-            const pkgPrice = pkgSelect ? parseInt(pkgSelect.options[pkgSelect.selectedIndex]?.getAttribute('data-price') || 0) : 0;
-            const depPrice = depSelect ? parseInt(depSelect.options[depSelect.selectedIndex]?.getAttribute('data-price') || 0) : 0;
+            const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
+            const pkgPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
+            const pkgBonus = pkgOpt ? parseInt(pkgOpt.getAttribute('data-bonus') || 0) : 0;
+
+            const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
+            const depPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
+            const depBonus = depOpt ? parseInt(depOpt.getAttribute('data-bonus') || 0) : 0;
+
             newBuyPrice = pkgPrice + depPrice;
+            newBuyBonusTotal = pkgBonus + depBonus;
 
             const newBuyRow = document.getElementById('summaryNewBuyRow');
             if (newBuyRow) {
                 if (newBuyPrice > 0) {
                     newBuyRow.classList.remove('hidden');
-                    document.getElementById('summaryNewBuyPrice').innerText = `+$${newBuyPrice.toLocaleString()}`;
+                    let bonusShowText = newBuyBonusTotal > 0 ? ` (含贈送金 $${newBuyBonusTotal.toLocaleString()})` : '';
+                    document.getElementById('summaryNewBuyPrice').innerText = `+$${newBuyPrice.toLocaleString()}${bonusShowText}`;
                 } else {
                     newBuyRow.classList.add('hidden');
                 }
@@ -948,7 +977,7 @@
             fetchMonthlyAvailabilityAndRenderCal();
         }
 
-        // 🌟 對比淡化圖一呈現：公休/額滿/未排班呈現淡奶茶色且鎖定 pointer-events
+        // 🌟 核心：對比淡化圖二呈現！公休/額滿/未排班日呈淡奶茶色鎖定，一眼立即可辨
         function renderFrontCalendarWithMap(mapRes) {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
@@ -962,9 +991,10 @@
                 const isPast = cellDate < today;
                 let dayStatus = mapRes[dateString] || (currentOffDatesList.includes(dateString) ? 'CLOSED' : 'OPEN');
                 
+                // 🌟 公休/額滿/未排班套用專屬 CSS (.day-dimmed-light-brown)，呈現淺奶茶色且徹底鎖定 pointer-events
                 if (isPast || dayStatus === 'CLOSED' || dayStatus === 'FULL' || dayStatus === 'NO_SCHEDULE') {
                     let label = dayStatus === 'CLOSED' ? '公休' : (dayStatus === 'FULL' ? '額滿' : '');
-                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none" style="color:#CBB39C !important; opacity:0.35;"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
                 } else if (dateString === selectedDateStr) {
                     html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
                 } else {
@@ -1000,6 +1030,7 @@
             }
         }
 
+        // 🌟 核心：只渲染美容師在《員工班表》有開放 (🟢已開班) 的時段
         function renderTimeSlots(res) {
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
             if(res && res.isClosed) { container.innerHTML = `<div class="text-red-500 font-bold text-center py-3 text-xs">${res.message}</div>`; return; }
