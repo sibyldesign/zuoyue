@@ -207,7 +207,27 @@
                     <input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()">
                 </div>
             </div>
+            <!-- 退宿洗澡美容詢問 -->
+            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
+                <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
+                <div class="flex gap-4">
+                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+                        <input type="radio" name="hotelBathNeed" value="NO" checked onchange="toggleHotelBathPanel(false)" class="accent-[#CBB39C]"> 否，僅需住宿
+                    </label>
+                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
+                        <input type="radio" name="hotelBathNeed" value="YES" onchange="toggleHotelBathPanel(true)" class="accent-[#CBB39C]"> 是，退宿當天加做洗澡美容
+                    </label>
+                </div>
+                <div id="hotelBathSubPanel" class="hidden pt-3 border-t border-[#EFE8DE] space-y-3">
+                    <div>
+                        <label class="text-[11px] font-bold text-textBrown block mb-1">請選擇退宿美容/洗澡項目 * <span class="text-amber-800 text-[10px] font-normal">（請至下方『選擇退宿洗澡日期與時段』選取時間）</span></label>
+                        <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
+
 
         <!-- 毛孩履歷卡片區塊 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
