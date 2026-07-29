@@ -211,9 +211,6 @@
                         <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
                         </select>
                     </div>
-                    <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-800 font-bold">
-                        💡 已為您開啟下方「選擇進場日期與時段」，請選取退宿加做洗澡美容的準確日期與進場時間。
-                    </div>
                 </div>
             </div>
         </div>
@@ -230,7 +227,7 @@
             </button>
         </div>
 
-        <!-- 美容師與偏好設定 (位於進場時段上方，優先選擇) -->
+        <!-- 美容師與偏好設定 -->
         <div class="app-card p-6 space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown flex items-center gap-2 text-[15px]"><i class="fa-solid fa-user-check text-[#B2977D]"></i> 指定美容師與偏好設定</h3>
@@ -262,7 +259,7 @@
             </div>
         </div>
 
-        <!-- 日期與時段選擇 (預設於住宿且選否時收折) -->
+        <!-- 日期與時段選擇 (秒開優化) -->
         <div class="app-card p-6" id="dateTimeCard">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
             <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]"><i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段</h3>
@@ -319,7 +316,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (支援完美價格區間與打折區間) -->
+        <!-- 預算計價即時試算 (🌟 價格區間與雙向打折完全保留) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -419,7 +416,7 @@
             送出預約申請
         </button>
 
-        <!-- 現場臨櫃家長專區 (補簽) -->
+        <!-- 現場臨櫃家長專區 -->
         <div class="max-w-md mx-auto px-4 pt-4 pb-2">
             <div class="bg-[#FAF7F2] border border-dashed border-[#CBB39C] rounded-2xl p-4 text-center shadow-sm max-w-[90%] mx-auto scale-95">
                 <h4 class="text-[12px] font-black text-[#5C5043] mb-0.5">
@@ -453,7 +450,7 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec";
         let activeServiceType = 'grooming'; 
-        let systemBufferHours = 1; // 🌟 1小時前禁約緩衝機制完好保留
+        let systemBufferHours = 1; 
         let currentOffDatesList = []; let globalData = { allRecords: [] };
         let allServices = []; let groomerList = []; let allPhotos = [];
         let selectedDateStr = ''; let selectedTimeStr = ''; 
@@ -465,6 +462,19 @@
         let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
+
+        // 🌟 自動推算預設區間的正規表示式對應表（確保試算表就算傳數字也能自動轉回預設區間）
+        const PRICE_RANGE_MAP = {
+            "洗澡_小型犬": "450起",
+            "大美容_小型犬": "900-1200",
+            "全身手剪_小型犬": "1300-1600",
+            "洗澡_中型犬": "550-750",
+            "大美容_中型犬": "1100-1500",
+            "全身手剪_中型犬": "1600-2000",
+            "洗澡_大型犬": "1000-3000",
+            "大美容_大型犬": "2000-6000",
+            "全身手剪_大型犬": "3000-9000"
+        };
 
         function callGasGet(action, params = {}) {
             return new Promise((resolve, reject) => {
@@ -561,7 +571,6 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
-        // 🌟 住宿退宿洗澡收折與時段連動開關
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
             const dtCard = document.getElementById('dateTimeCard');
@@ -591,7 +600,6 @@
             } else {
                 tB.className = "tab-btn active"; tG.className = "tab-btn text-[#A39585]";
                 bCard.classList.remove('hidden'); bBanner.classList.remove('hidden');
-                // 住宿預設若選否，則收折進場時段
                 let bathNeedVal = document.querySelector('input[name="hotelBathNeed"]:checked')?.value || 'NO';
                 if (bathNeedVal === 'YES') {
                     if (dtCard) dtCard.classList.remove('hidden');
@@ -616,11 +624,11 @@
         }
 
         function onGroomerSelectionChange() {
-            cachedSlotsMatrixDictionary = {}; // 切換美容師清空快取
+            cachedSlotsMatrixDictionary = {};
             if (selectedDateStr) selectDate(selectedDateStr);
         }
 
-        // 🌟 自動對接《服務與動態時間設定》：正確帶入犬種分類、主服務項目與價格
+        // 🌟 核心修復：解析服務項目並精準保留原始價格區間字串
         function loadServices() { 
             callGasGet('getServiceSettings').then(data => { 
                 allServices = Array.isArray(data) ? data : []; 
@@ -636,16 +644,22 @@
                 allServices.forEach(s => {
                     let cat = (s.category || '').toString();
                     let name = (s.service || '').toString();
-                    let priceVal = parseInt(s.price) || 0;
+                    let priceRaw = (s.price || '0').toString();
+                    
+                    // 自動對照表補全機制
+                    let mapKey = `${name}_${cat}`;
+                    if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) {
+                        priceRaw = PRICE_RANGE_MAP[mapKey];
+                    }
 
                     if (cat.includes('包卡') || name.includes('包卡')) {
-                        pkgHtml += `<option value="${name}" data-price="${priceVal}">${name} ($${priceVal.toLocaleString()})</option>`;
+                        pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}">${name} ($${priceRaw})</option>`;
                     } else if (cat.includes('儲值') || name.includes('儲值')) {
                         let disc = 0.9;
-                        if (name.includes('10000') || priceVal >= 10000) disc = 0.8;
-                        depHtml += `<option value="${name}" data-price="${priceVal}" data-discount="${disc}">${name}</option>`;
+                        if (name.includes('10000') || priceRaw.includes('10000')) disc = 0.8;
+                        depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}">${name}</option>`;
                     } else if (!cat.includes('加購')) {
-                        bathHtml += `<option value="${name}" data-raw-price="${s.price}">${name} ($${s.price})</option>`;
+                        bathHtml += `<option value="${name}" data-raw-price="${priceRaw}">${name} ($${priceRaw})</option>`;
                     }
                 });
 
@@ -656,7 +670,7 @@
             }); 
         }
 
-        // 🌟 核心：價格區間計算 (完全支援 450起 / 900-1200 / 1300-1600 / 打折區間試算)
+        // 🌟 核心即時試算引擎：完美支援 $900 ~ $1,200 打折 ➔ $810 ~ $1,080
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let newBuyPrice = 0;
@@ -698,7 +712,6 @@
                 }
             }
 
-            // 格式化原價區間
             let origRangeStr = (displayMax > displayMin && displayMax > 0) 
                 ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
                 : `$${displayMin.toLocaleString()}`;
@@ -767,7 +780,12 @@
             Array.from(categorySet).forEach(cat => {
                 serviceOptions += `<optgroup label="【 犬種分類：${cat} 】">`;
                 allServices.filter(s => s.category === cat).forEach(item => { 
-                    serviceOptions += `<option value="${item.service}" data-raw-price="${item.price}">${item.service} ($${item.price})</option>`; 
+                    let priceRaw = (item.price || '0').toString();
+                    let mapKey = `${item.service}_${cat}`;
+                    if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) {
+                        priceRaw = PRICE_RANGE_MAP[mapKey];
+                    }
+                    serviceOptions += `<option value="${item.service}" data-raw-price="${priceRaw}">${item.service} ($${priceRaw})</option>`; 
                 });
                 serviceOptions += `</optgroup>`;
             });
@@ -870,7 +888,7 @@
 
         function changeFrontMonth(dir) { calMonth += dir; if(calMonth > 11) { calMonth = 0; calYear++; } if(calMonth < 0) { calMonth = 11; calYear--; } renderFrontCalendar(); }
 
-        // 🌟 時段秒開優化：以快取 dict 優先讀取 + 完整 1 小時禁約過濾機制
+        // 🌟 時段秒開優化：使用智慧快取機制，點擊日期極速渲染
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
@@ -882,7 +900,7 @@
             if (cachedSlotsMatrixDictionary[cacheKey]) {
                 renderTimeSlots(cachedSlotsMatrixDictionary[cacheKey]);
             } else {
-                container.innerHTML = '<div class="text-xs text-gray-400 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1 text-[#CBB39C]"></i> 時段加載中...</div>';
+                container.innerHTML = '<div class="text-xs text-gray-400 text-center py-4"><i class="fa-solid fa-spinner fa-spin mr-1 text-[#CBB39C]"></i> 讀取美容師班表中...</div>';
                 callGasGet('getDailySlots', { dateStr: dateStr, groomer: groomerVal }).then(res => {
                     cachedSlotsMatrixDictionary[cacheKey] = res;
                     renderTimeSlots(res);
@@ -890,18 +908,18 @@
             }
         }
 
-        // 🌟 包含「預約時間前1小時禁約」的核心過濾邏輯
         function renderTimeSlots(res) {
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
             if(res && res.isClosed) { container.innerHTML = `<div class="text-red-500 font-bold text-center py-3 text-xs">${res.message}</div>`; return; }
             let now = new Date();
             let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             
-            let baseSlots = (res && res.availableSlots) ? res.availableSlots : [
-                "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-                "15:00", "15:30", "16:00", "16:30", "17:00"
-            ];
+            let baseSlots = (res && res.availableSlots && res.availableSlots.length > 0) ? res.availableSlots : [];
+            if (baseSlots.length === 0) {
+                container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日該美容師未排班或不可預約 🐾</div>`;
+                return;
+            }
+
             let html = '<div class="grid grid-cols-3 gap-2.5">';
             let availableCount = 0;
             baseSlots.forEach(time => {
@@ -909,7 +927,6 @@
                 if (selectedDateStr === todayStr) {
                     let parts = time.split(':');
                     let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
-                    // 1小時前禁約邏輯
                     let bufferTimeThreshold = new Date(now.getTime() + (systemBufferHours * 60 * 60 * 1000));
                     if (slotTime < bufferTimeThreshold) { isPastOrLocked = true; }
                 }
@@ -1069,7 +1086,6 @@
             if (!phone || !ownerName || !email || !lineName) { return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); }
             if (pickupVal === '需要接送' && !pickupAddr) { return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); }
             
-            // 若進場時段區塊有顯示，則必須勾選日期與時間
             const dtCard = document.getElementById('dateTimeCard');
             if (dtCard && !dtCard.classList.contains('hidden')) {
                 if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請點選上方日曆選擇預約日期與進場時段！', 'warning'); }
