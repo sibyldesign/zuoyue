@@ -205,7 +205,6 @@
                 </div>
             </div>
             
-            <!-- 退宿洗澡美容詢問區塊 (預設「否」隱藏下方選單與月曆) -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -246,7 +245,7 @@
                 <div>
                     <label class="text-[11px] font-bold text-gray-400 mb-1 block">指定美容師 (優先選取) *</label>
                     <select id="selectedGroomer" onchange="onGroomerSelectionChange()" class="text-input text-xs font-bold text-gray-700">
-                        <option value="不指定">不指定 (由店家安排)</option>
+                        <option value="不指定" data-id="ALL">不指定 (由店家安排)</option>
                     </select>
                 </div>
                 <div>
@@ -325,32 +324,42 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 -->
+        <!-- 預算計價即時試算 (🌟 重構獨立視覺版面，徹底解決黏在一起與括號過多問題) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
                 <span class="text-[10px] text-[#B2977D] font-black" id="summaryCustomerBalanceShow">💳 包卡: 0次 | 💰 儲值: $0</span>
             </h3>
             
-            <div class="space-y-2.5 text-xs text-gray-600">
+            <div class="space-y-2 text-xs text-gray-600">
+                <!-- 1. 主項目預估原價高亮塊 -->
                 <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
                     <div class="flex justify-between items-center font-bold text-amber-900">
-                        <span id="summaryOriginalRangeLabel">1. 施作主項目預估原價：</span>
+                        <span>1. 施作主項目預估原價：</span>
                         <span class="font-black text-sm text-amber-900" id="summaryOriginalRange">--</span>
                     </div>
                 </div>
-                <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1">
+                <!-- 1.1 主項目名稱明細列 -->
+                <div id="summaryMainDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1.5 pt-0.5">
+                    <span>（包含施作主項目：）</span>
+                    <span class="font-bold text-gray-700" id="summaryMainItemNamesText">--</span>
+                </div>
+                <!-- 專屬加購明細列 -->
+                <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1.5">
                     <span>（包含專屬加購護理：）</span>
                     <span class="font-black" id="summaryAddonPriceText">+$0</span>
                 </div>
+                <!-- 退宿洗澡加做列 -->
                 <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
                     <span>退宿加做洗澡美容項目：</span>
                     <span id="summaryHotelBathPriceText">$0</span>
                 </div>
-                <div class="flex justify-between items-center text-rose-500 font-bold px-1">
+                <!-- 2. 折扣扣抵列 -->
+                <div class="flex justify-between items-center text-rose-500 font-bold px-1.5 pt-1">
                     <span>2. 本次折抵/優惠扣抵：</span>
                     <span class="font-black" id="summaryDiscountText">無折抵</span>
                 </div>
+                <!-- 3. 新購加購方案費用列 -->
                 <div id="summaryNewBuyRow" class="hidden flex justify-between items-center text-amber-800 font-bold bg-amber-50 p-2.5 rounded-xl border border-amber-200/60">
                     <span>3. 現場加購方案費用：</span>
                     <span id="summaryNewBuyPrice">+$0</span>
@@ -479,7 +488,7 @@
         let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         let userCardRemainCount = 0; let userDepositBalance = 0;
-        let globalFrontShiftsCache = {}; // 全量班表快照，實現 0.1 秒秒出時段
+        let globalFrontShiftsCache = {};
 
         const canvas = document.getElementById('sigCanvas'); 
         const ctx = canvas ? canvas.getContext('2d') : null;
@@ -510,7 +519,6 @@
             });
         }
 
-        // 🌟 預載 Bundle 數據包 (1 次請求秒出公告、圖片與全量班表)
         function initPage() {
             callGasGet('getFrontInitialBundle').then(bundle => {
                 if (bundle) {
@@ -569,8 +577,8 @@
         function setupGroomerDropdown(list) {
             if (Array.isArray(list) && list.length > 0) {
                 groomerList = list;
-                let optHtml = '<option value="不指定">不指定 (由店家安排)</option>';
-                list.forEach(g => { optHtml += `<option value="${g.name}">${g.name} (${g.title || '美容師'})</option>`; });
+                let optHtml = '<option value="不指定" data-id="ALL">不指定 (由店家安排)</option>';
+                list.forEach(g => { optHtml += `<option value="${g.name}" data-id="${g.id}">${g.name} (${g.title || '美容師'})</option>`; });
                 document.getElementById('selectedGroomer').innerHTML = optHtml;
             }
         }
@@ -602,7 +610,6 @@
             } 
         }
 
-        // 🌟 0 延遲本地算快照繪製月曆（已移除「無排班」標籤）
         function renderFrontCalendarFast() {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
@@ -610,7 +617,11 @@
             let today = new Date(); today.setHours(0,0,0,0); let html = '';
             for(let i=0; i<firstDay; i++) html += `<div class="py-2.5"></div>`;
             
-            let groomerVal = document.getElementById('selectedGroomer') ? document.getElementById('selectedGroomer').value : '不指定';
+            let groomerSelect = document.getElementById('selectedGroomer');
+            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
+            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
+
             for(let day=1; day<=numDays; day++) {
                 let cellDate = new Date(calYear, calMonth, day); 
                 let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -622,21 +633,24 @@
                     let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
                     for (let s = 0; s < slots.length; s++) {
                         let t = slots[s];
-                        if (groomerVal === '不指定') {
+                        if (groomerVal === '不指定' || groomerId === 'ALL') {
                             for (let gKey in globalFrontShiftsCache) {
                                 if (gKey.includes(`_${dateString}_${t}`) && globalFrontShiftsCache[gKey] === true) {
                                     hasOpenSlot = true; break;
                                 }
                             }
                         } else {
-                            let key = `${groomerVal}_${dateString}_${t}`;
-                            if (globalFrontShiftsCache[key] === true) { hasOpenSlot = true; break; }
+                            let keyById = `${groomerId}_${dateString}_${t}`;
+                            let keyByName = `${groomerVal}_${dateString}_${t}`;
+                            if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) { 
+                                hasOpenSlot = true; break; 
+                            }
                         }
                         if (hasOpenSlot) break;
                     }
                 }
                 if (isPast || isClosed || !hasOpenSlot) {
-                    let label = isClosed ? '公休' : ''; // 移除「無排班」字樣
+                    let label = isClosed ? '公休' : '';
                     html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
                 } else if (dateString === selectedDateStr) {
                     html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
@@ -799,6 +813,7 @@
             renderFrontCalendarFast();
         }
 
+        // 🌟 核心：預算試算重構（獨立主項目顯示，修正儲值金全額扣抵計算）
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -824,7 +839,7 @@
                         if (mainSelect && mainSelect.selectedIndex >= 0) {
                             const opt = mainSelect.options[mainSelect.selectedIndex];
                             const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                            if (opt.value) mainItemNamesArr.push(`${opt.value} ($${priceRaw})`);
+                            if (opt.value) mainItemNamesArr.push(opt.value);
                             
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
@@ -840,7 +855,8 @@
                     } else {
                         card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
                             const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
-                            if (cb.value) mainItemNamesArr.push(`${cb.value} ($${priceRaw})`);
+                            let cleanVal = cb.value.split('(')[0].trim();
+                            if (cb.value) mainItemNamesArr.push(cleanVal);
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
                             } else if (priceRaw.includes('-')) {
@@ -895,6 +911,17 @@
                 if (displayMax > 0) displayMax += (hotelBathPriceMax || hotelBathPriceMin);
             }
 
+            // 1.1 主項目名稱明細獨立呈現
+            const mainDetailRow = document.getElementById('summaryMainDetailRow');
+            if (mainDetailRow) {
+                if (mainItemNamesArr.length > 0) {
+                    mainDetailRow.classList.remove('hidden');
+                    document.getElementById('summaryMainItemNamesText').innerText = mainItemNamesArr.join(' · ');
+                } else {
+                    mainDetailRow.classList.add('hidden');
+                }
+            }
+
             const addonRow = document.getElementById('summaryAddonDetailRow');
             if (addonRow) {
                 if (addonMin > 0) {
@@ -917,8 +944,8 @@
                 }
             }
 
-            let selectedItemTitleText = mainItemNamesArr.length > 0 ? ` (${mainItemNamesArr.join(', ')})` : '';
-            document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目原價預估區間${selectedItemTitleText}：`;
+            // 黃底第一行乾淨顯示金額
+            document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目預估原價：`;
             let origRangeStr = (displayMax > displayMin && displayMax > 0) 
                 ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
                 : `$${displayMin.toLocaleString()}`;
@@ -928,6 +955,7 @@
             const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
             const pkgPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
             const pkgBonus = pkgOpt ? parseInt(pkgOpt.getAttribute('data-bonus') || 0) : 0;
+            const isBuyingNewPkg = pkgOpt && pkgSelect.value !== 'none';
 
             const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
             const depPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
@@ -949,9 +977,27 @@
 
             let discText = "無折抵";
             let finalCalculatedShow = "";
+            let isUseDeposit = document.getElementById('useExistingDeposit')?.checked && userDepositBalance > 0;
+
+            // 🌟 修正儲值金扣抵結算計算
             if (document.getElementById('useExistingCard')?.checked && userCardRemainCount > 0) {
-                discText = "套用已購包卡扣抵";
-                finalCalculatedShow = "$0 (包卡扣1次)";
+                discText = "套用已有包卡扣抵 1 次";
+                finalCalculatedShow = "$0 (包卡扣抵)";
+            } else if (isBuyingNewPkg) {
+                discText = "套用新購包卡扣抵 1 次 (剩餘 5 次記錄於帳戶)";
+                finalCalculatedShow = "$0 (新購包卡扣抵)";
+            } else if (isUseDeposit) {
+                if (userDepositBalance >= displayMin) {
+                    discText = `套用已有儲值金全額扣抵 (額度 $${userDepositBalance.toLocaleString()})`;
+                    finalCalculatedShow = "$0 (儲值金支付)";
+                } else {
+                    let remainPayMin = displayMin - userDepositBalance;
+                    let remainPayMax = (displayMax > 0) ? (displayMax - userDepositBalance) : remainPayMin;
+                    discText = `使用已有儲值金扣抵 $${userDepositBalance.toLocaleString()}`;
+                    finalCalculatedShow = (remainPayMax > remainPayMin && remainPayMax > 0)
+                        ? `$${remainPayMin.toLocaleString()} ~ $${remainPayMax.toLocaleString()} (補差額)`
+                        : `$${remainPayMin.toLocaleString()} (補差額)`;
+                }
             } else if (discountRate < 1) {
                 let discMin = Math.round(displayMin * discountRate);
                 let discMax = Math.round(displayMax * discountRate);
@@ -964,8 +1010,10 @@
             }
 
             document.getElementById('summaryDiscountText').innerText = discText;
-            if (newBuyPrice > 0) {
-                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalCalculatedShow} (+加購 $${newBuyPrice.toLocaleString()})`;
+            if (newBuyPrice > 0 && finalCalculatedShow !== "$0 (包卡扣抵)" && finalCalculatedShow !== "$0 (新購包卡扣抵)") {
+                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalCalculatedShow} (+加購方案 $${newBuyPrice.toLocaleString()})`;
+            } else if (newBuyPrice > 0) {
+                document.getElementById('bookingTotalPriceDisplay').innerText = `$${newBuyPrice.toLocaleString()} (加購方案費用)`;
             } else {
                 document.getElementById('bookingTotalPriceDisplay').innerText = finalCalculatedShow;
             }
@@ -1133,26 +1181,32 @@
             renderFrontCalendarFast(); 
         }
 
-        // 🌟 點擊日期 0.1 秒秒出時段 (直接比對記憶體快照)
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
             renderFrontCalendarFast();
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
-            let groomerVal = document.getElementById('selectedGroomer').value;
             
+            let groomerSelect = document.getElementById('selectedGroomer');
+            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
+            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
+
             let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
             let availableSlots = [];
             slots.forEach(time => {
-                if (groomerVal === '不指定') {
+                if (groomerVal === '不指定' || groomerId === 'ALL') {
                     for (let gKey in globalFrontShiftsCache) {
                         if (gKey.includes(`_${dateStr}_${time}`) && globalFrontShiftsCache[gKey] === true) {
                             if (!availableSlots.includes(time)) availableSlots.push(time);
                         }
                     }
                 } else {
-                    let key = `${groomerVal}_${dateStr}_${time}`;
-                    if (globalFrontShiftsCache[key] === true) availableSlots.push(time);
+                    let keyById = `${groomerId}_${dateStr}_${time}`;
+                    let keyByName = `${groomerVal}_${dateStr}_${time}`;
+                    if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) {
+                        availableSlots.push(time);
+                    }
                 }
             });
             renderTimeSlots({ availableSlots: availableSlots });
@@ -1322,11 +1376,15 @@
             
             let petsPayload = packDynamicPetsJsonPayload();
             if(petsPayload.length === 0) { return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); }
+            
+            let groomerSelect = document.getElementById('selectedGroomer');
+            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+
             let payload = {
                 serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
                 phone: phone, ownerName: ownerName, email: email, lineName: lineName,
                 date: selectedDateStr, time: selectedTimeStr,
-                groomer: document.getElementById('selectedGroomer').value,
+                groomer: groomerVal,
                 pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
                 referrerOwner: document.getElementById('referrerOwner').value,
                 petsJsonString: JSON.stringify(petsPayload),
@@ -1384,4 +1442,3 @@
     </script>
 </body>
 </html>
-
