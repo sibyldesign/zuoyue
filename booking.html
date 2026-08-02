@@ -207,27 +207,7 @@
                     <input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()">
                 </div>
             </div>
-            <!-- 退宿洗澡美容詢問 -->
-            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
-                <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                        <input type="radio" name="hotelBathNeed" value="NO" checked onchange="toggleHotelBathPanel(false)" class="accent-[#CBB39C]"> 否，僅需住宿
-                    </label>
-                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                        <input type="radio" name="hotelBathNeed" value="YES" onchange="toggleHotelBathPanel(true)" class="accent-[#CBB39C]"> 是，退宿當天加做洗澡美容
-                    </label>
-                </div>
-                <div id="hotelBathSubPanel" class="hidden pt-3 border-t border-[#EFE8DE] space-y-3">
-                    <div>
-                        <label class="text-[11px] font-bold text-textBrown block mb-1">請選擇退宿美容/洗澡項目 * <span class="text-amber-800 text-[10px] font-normal">（請至下方『選擇退宿洗澡日期與時段』選取時間）</span></label>
-                        <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                        </select>
-                    </div>
-                </div>
-            </div>
         </div>
-
 
         <!-- 毛孩履歷卡片區塊 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
@@ -508,13 +488,92 @@
             });
         }
 
+        // 🌟 超速初始化：使用 1 次中樞連線讀取全站資料
         function initPage() {
-            loadAnnouncement();
-            loadCloudContracts();
-            loadPortfolio();
-            loadServices();
-            loadGroomerList();
-            fetchMonthlyAvailabilityAndRenderCal();
+            callGasGet('getFrontInitialBundle').then(bundle => {
+                if (bundle) {
+                    if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
+                    if (bundle.services) setupServiceDropdownsAndData(bundle.services);
+                    if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
+                    if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
+                    if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
+                }
+                fetchMonthlyAvailabilityAndRenderCal();
+            }).catch(() => {
+                fetchMonthlyAvailabilityAndRenderCal();
+            });
+        }
+
+        function setupServiceDropdownsAndData(data) {
+            allServices = Array.isArray(data) ? data : []; 
+            const pkgSelect = document.getElementById('buyNewPackageSelect');
+            const depSelect = document.getElementById('buyNewDepositSelect');
+            
+            let pkgHtml = `<option value="none" data-price="0" data-bonus="0">不加購包卡</option>`;
+            let depHtml = `<option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>`;
+
+            allServices.forEach(s => {
+                let cat = (s.category || '').toString();
+                let name = (s.service || '').toString();
+                let priceRaw = (s.price || '0').toString();
+                
+                let mapKey = `${name}_${cat}`;
+                if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) {
+                    priceRaw = PRICE_RANGE_MAP[mapKey];
+                }
+
+                let bonusVal = 0;
+                let bonusMatch = name.match(/送\s*(\d+)/i) || name.match(/贈\s*(\d+)/i);
+                if (bonusMatch) bonusVal = parseInt(bonusMatch[1]) || 0;
+
+                if (cat.includes('包卡') || name.includes('包卡')) {
+                    pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-bonus="${bonusVal}">${name} ($${priceRaw})</option>`;
+                } else if (cat.includes('儲值') || name.includes('儲值')) {
+                    let disc = 0.9;
+                    if (name.includes('10000') || priceRaw.includes('10000')) disc = 0.8;
+                    depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}" data-bonus="${bonusVal}">${name}</option>`;
+                }
+            });
+
+            if (pkgSelect) pkgSelect.innerHTML = pkgHtml;
+            if (depSelect) depSelect.innerHTML = depHtml;
+            renderPetFormCards();
+        }
+
+        function setupGroomerDropdown(list) {
+            if (Array.isArray(list) && list.length > 0) {
+                groomerList = list;
+                let optHtml = '<option value="不指定">不指定 (由店家安排)</option>';
+                list.forEach(g => { optHtml += `<option value="${g.name}">${g.name} (${g.title || '美容師'})</option>`; });
+                document.getElementById('selectedGroomer').innerHTML = optHtml;
+            }
+        }
+
+        function setupContractsAndSlider(res) {
+            if (res) {
+                cachedContracts = res;
+                if (res.sliderPhotos && res.sliderPhotos.length > 0) buildDynamicSliderModule(res.sliderPhotos);
+                if (res.bufferHours) systemBufferHours = parseFloat(res.bufferHours) || 1;
+                if (res.boardingNotice) {
+                    const noticeEl = document.getElementById('boardingNoticeText');
+                    if (noticeEl) noticeEl.innerText = res.boardingNotice;
+                }
+            }
+        }
+
+        function setupPortfolioData(data) {
+            if (data) { 
+                allPhotos = data; let categorySet = new Set(); categorySet.add("全部");
+                allPhotos.forEach(item => { if(item.category) categorySet.add(item.category); });
+                const tabContainer = document.getElementById('portfolioTabsContainer');
+                if (tabContainer) {
+                    tabContainer.innerHTML = Array.from(categorySet).map((cat, idx) => {
+                        let activeClass = (idx === 0) ? "bg-[#5C5043] text-white shadow-sm" : "border border-[#EFE8DE] text-textBrown bg-white";
+                        return `<button onclick="filterPhotos('${cat}', this)" class="portfolio-btn whitespace-nowrap px-4 py-1.5 rounded-full text-[12px] font-bold ${activeClass}">${cat}</button>`;
+                    }).join('');
+                }
+                renderGrid('全部'); 
+            } 
         }
 
         function fetchMonthlyAvailabilityAndRenderCal() {
@@ -625,70 +684,18 @@
                 tB.className = "tab-btn active"; tG.className = "tab-btn text-[#A39585]";
                 bCard.classList.remove('hidden'); bBanner.classList.remove('hidden');
                 if (dtCard) dtCard.classList.remove('hidden');
-                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
-                if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
+                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇入住日期與進場時段`;
+                if (subTitle) subTitle.innerText = `選取入住進場時段`;
                 badge.innerText = "住宿模式";
             }
             renderPetFormCards();
             calculateBookingTotalPriceEngine();
         }
 
-        function loadGroomerList() {
-            callGasGet('getGroomerList').then(list => {
-                if (Array.isArray(list) && list.length > 0) {
-                    groomerList = list;
-                    let optHtml = '<option value="不指定">不指定 (由店家安排)</option>';
-                    list.forEach(g => { optHtml += `<option value="${g.name}">${g.name} (${g.title || '美容師'})</option>`; });
-                    document.getElementById('selectedGroomer').innerHTML = optHtml;
-                }
-            });
-        }
-
         function onGroomerSelectionChange() {
             cachedMonthlyMap = {};
             cachedSlotsMatrixDictionary = {};
             fetchMonthlyAvailabilityAndRenderCal();
-        }
-
-        function loadServices() { 
-            callGasGet('getServiceSettings').then(data => { 
-                allServices = Array.isArray(data) ? data : []; 
-                
-                const pkgSelect = document.getElementById('buyNewPackageSelect');
-                const depSelect = document.getElementById('buyNewDepositSelect');
-                
-                let pkgHtml = `<option value="none" data-price="0" data-bonus="0">不加購包卡</option>`;
-                let depHtml = `<option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>`;
-
-                allServices.forEach(s => {
-                    let cat = (s.category || '').toString();
-                    let name = (s.service || '').toString();
-                    let priceRaw = (s.price || '0').toString();
-                    
-                    let mapKey = `${name}_${cat}`;
-                    if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) {
-                        priceRaw = PRICE_RANGE_MAP[mapKey];
-                    }
-
-                    let bonusVal = 0;
-                    let bonusMatch = name.match(/送\s*(\d+)/i) || name.match(/贈\s*(\d+)/i);
-                    if (bonusMatch) {
-                        bonusVal = parseInt(bonusMatch[1]) || 0;
-                    }
-
-                    if (cat.includes('包卡') || name.includes('包卡')) {
-                        pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-bonus="${bonusVal}">${name} ($${priceRaw})</option>`;
-                    } else if (cat.includes('儲值') || name.includes('儲值')) {
-                        let disc = 0.9;
-                        if (name.includes('10000') || priceRaw.includes('10000')) disc = 0.8;
-                        depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}" data-bonus="${bonusVal}">${name}</option>`;
-                    }
-                });
-
-                if (pkgSelect) pkgSelect.innerHTML = pkgHtml;
-                if (depSelect) depSelect.innerHTML = depHtml;
-                renderPetFormCards(); 
-            }); 
         }
 
         function calculateBookingTotalPriceEngine() {
@@ -820,7 +827,7 @@
             appendNewPetFormCard();
         }
 
-        // 🌟 渲染毛孩卡片：住宿複選採用高顏值「分類分塊卡片」，乾淨清晰！
+        // 🌟 住宿項目：採用高級「分類分塊卡片」，頂部一次標明犬種/貓咪標籤，極簡乾淨！
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
@@ -828,7 +835,6 @@
             card.id = `petCardRoot_${id}`;
             
             let filteredCat = activeServiceType === 'grooming' ? '美容' : '住宿';
-            
             let mainServiceHTML = "";
             let categorySet = new Set();
             allServices.forEach(s => { 
@@ -854,7 +860,7 @@
                     <select class="text-input p-main-service text-xs text-gray-700 font-extrabold" onchange="onMainServiceChange(${id})" required>${serviceOptions}</select>
                 </div>`;
             } else {
-                // 🌟 住宿複選優化：採用按類別卡片分區，上方標示一次類別標籤！
+                // 🌟 分類卡片區塊構造（上方標示一次類別名稱）
                 let categoryBlocksHtml = "";
                 Array.from(categorySet).forEach(cat => {
                     let catItems = allServices.filter(s => s.category === cat);
@@ -865,9 +871,11 @@
                             let mapKey = `${item.service}_${cat}`;
                             if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) priceRaw = PRICE_RANGE_MAP[mapKey];
                             catBoxes += `
-                            <label class="addon-card flex items-center gap-2 cursor-pointer p-2.5 bg-white border border-[#EFE8DE] rounded-xl hover:border-[#CBB39C] transition">
-                                <input type="checkbox" class="addon-checkbox p-main-checkbox" value="${item.service} (${cat})" data-raw-price="${priceRaw}" onchange="onBoardingMainCheckChange(${id})">
-                                <span class="text-xs font-bold text-textBrown">${item.service} ($${priceRaw})</span>
+                            <label class="addon-card flex items-center justify-between gap-2 cursor-pointer p-3 bg-white border border-[#EFE8DE] rounded-2xl hover:border-[#CBB39C] transition">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" class="addon-checkbox p-main-checkbox" value="${item.service} (${cat})" data-raw-price="${priceRaw}" onchange="onBoardingMainCheckChange(${id})">
+                                    <span class="text-xs font-bold text-textBrown">${item.service} ($${priceRaw})</span>
+                                </div>
                             </label>`;
                         });
 
@@ -1065,7 +1073,7 @@
 
         function selectTime(timeStr, btnEl) {
             selectedTimeStr = timeStr;
-            document.querySelectorAll('.time-btn').forEach(btn => btn.className = "time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-[#FFFFFF] hover:bg-[#FAF7F2]");
+            document.querySelectorAll('.time-btn').forEach(btn => btn.className = "time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2]");
             if (btnEl) btnEl.className = "time-btn py-2.5 border border-[#CBB39C] bg-[#FAF7F2] text-[#B2977D] font-black text-xs shadow-sm rounded-2xl transform scale-102";
         }
 
