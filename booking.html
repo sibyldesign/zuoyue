@@ -208,7 +208,7 @@
                 </div>
             </div>
 
-            <!-- 🌟 對齊截圖二：退宿洗澡美容詢問區塊，預設選擇「否，僅需住宿」時隱藏下方下拉選單 -->
+            <!-- 🌟 退宿洗澡美容詢問區塊 (選「否」預設隱藏下拉選單) -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -330,7 +330,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (🌟 對齊需求：黃底位置精準標示選取主項目的金額與名稱) -->
+        <!-- 預算計價即時試算 (🌟 加購護理支援區間 + 黃底位置詳細項目名稱) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -513,6 +513,7 @@
             });
         }
 
+        // 🌟 超速初始化：使用中樞 Bundle 打包載入全站靜態設定
         function initPage() {
             callGasGet('getFrontInitialBundle').then(bundle => {
                 if (bundle) {
@@ -725,7 +726,7 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
-        // 🌟 住宿退宿洗澡 Panel 展開控制 + 動態標題連動
+        // 🌟 住宿退宿洗澡切換與日曆卡片標題動態連動
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
             const cardTitle = document.getElementById('dateTimeCardTitle');
@@ -781,10 +782,10 @@
             fetchMonthlyAvailabilityAndRenderCal();
         }
 
-        // 🌟 預算計價即時試算（黃底位置標示選取之主項目名稱與金額區間）
+        // 🌟 預算計價即時試算 (支援加購護理區間金額與主項目詳細標示)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
-            let addonTotal = 0;
+            let addonMin = 0, addonMax = 0;
             let hotelBathPriceMin = 0, hotelBathPriceMax = 0;
             let newBuyPrice = 0;
             let newBuyBonusTotal = 0;
@@ -809,7 +810,7 @@
                         if (mainSelect && mainSelect.selectedIndex >= 0) {
                             const opt = mainSelect.options[mainSelect.selectedIndex];
                             const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                            if (opt.value) mainItemNamesArr.push(opt.value);
+                            if (opt.value) mainItemNamesArr.push(`${opt.value} ($${priceRaw})`);
                             
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
@@ -825,7 +826,7 @@
                     } else {
                         card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
                             const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
-                            if (cb.value) mainItemNamesArr.push(cb.value);
+                            if (cb.value) mainItemNamesArr.push(`${cb.value} ($${priceRaw})`);
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
                             } else if (priceRaw.includes('-')) {
@@ -839,11 +840,25 @@
                         });
                     }
 
+                    // 🌟 加購護理支援金額區間加總
                     card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-                        let p = parseInt(cb.getAttribute('data-price') || 0);
-                        addonTotal += p;
-                        displayMin += p;
-                        if (displayMax > 0) displayMax += p;
+                        let priceRaw = (cb.getAttribute('data-price') || '0').toString();
+                        if (priceRaw.includes('起')) {
+                            let p = parseInt(priceRaw.replace('起','')) || 0;
+                            addonMin += p; displayMin += p;
+                        } else if (priceRaw.includes('-')) {
+                            let parts = priceRaw.split('-');
+                            let minP = parseInt(parts[0]) || 0;
+                            let maxP = parseInt(parts[1]) || 0;
+                            addonMin += minP; addonMax += maxP;
+                            displayMin += minP;
+                            if (displayMax > 0) displayMax += maxP;
+                        } else {
+                            let p = parseInt(priceRaw) || 0;
+                            addonMin += p; addonMax += p;
+                            displayMin += p;
+                            if (displayMax > 0) displayMax += p;
+                        }
                     });
                 }
             }
@@ -870,9 +885,10 @@
 
             const addonRow = document.getElementById('summaryAddonDetailRow');
             if (addonRow) {
-                if (addonTotal > 0) {
+                if (addonMin > 0) {
                     addonRow.classList.remove('hidden');
-                    document.getElementById('summaryAddonPriceText').innerText = `+$${addonTotal.toLocaleString()}`;
+                    let addonShowText = (addonMax > addonMin) ? `+$${addonMin.toLocaleString()} ~ $${addonMax.toLocaleString()}` : `+$${addonMin.toLocaleString()}`;
+                    document.getElementById('summaryAddonPriceText').innerText = addonShowText;
                 } else {
                     addonRow.classList.add('hidden');
                 }
@@ -889,7 +905,6 @@
                 }
             }
 
-            // 🌟 在試算標題詳細顯示選取的項目名稱
             let selectedItemTitleText = mainItemNamesArr.length > 0 ? ` (${mainItemNamesArr.join(', ')})` : '';
             document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目原價預估區間${selectedItemTitleText}：`;
 
