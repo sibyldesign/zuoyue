@@ -208,7 +208,7 @@
                 </div>
             </div>
 
-            <!-- 🌟 對齊截圖二：退宿洗澡美容詢問與選項 -->
+            <!-- 🌟 對齊截圖二：退宿洗澡美容詢問區塊，預設選擇「否，僅需住宿」時隱藏下方下拉選單 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -302,14 +302,13 @@
             
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
                 <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">1. 使用已有卡額折抵本次預約：</label>
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
-                    <!-- 🌟 預設安全鎖定：未輸入/驗證電話或無餘額者無法點擊 -->
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700" title="💡 請先於上方輸入家長聯絡電話並點擊「查詢/自動帶入」">
                     <input type="checkbox" id="useExistingCard" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
-                    <span id="useCardLabelText">使用已購包卡扣抵 1 次 (無可用餘額)</span>
+                    <span id="useCardLabelText">使用已購包卡扣抵 1 次 (💡 請先於上方輸入電話並帶入)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700" title="💡 請先於上方輸入家長聯絡電話並點擊「查詢/自動帶入」">
                     <input type="checkbox" id="useExistingDeposit" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
-                    <span id="useDepositLabelText">使用已有儲值金扣抵本次消費 (無可用餘額)</span>
+                    <span id="useDepositLabelText">使用已有儲值金扣抵本次消費 (💡 請先於上方輸入電話並帶入)</span>
                 </label>
             </div>
 
@@ -331,7 +330,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (🌟 對齊圖一：呈現剩餘包卡及儲值金餘額) -->
+        <!-- 預算計價即時試算 (🌟 對齊需求：黃底位置精準標示選取主項目的金額與名稱) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -340,7 +339,7 @@
             
             <div class="space-y-2 text-xs text-gray-600">
                 <div class="flex justify-between items-center">
-                    <span>1. 施作主項目原價預估區間：</span>
+                    <span id="summaryOriginalRangeLabel">1. 施作主項目原價預估區間：</span>
                     <span class="font-bold text-textBrown" id="summaryOriginalRange">--</span>
                 </div>
                 <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D]">
@@ -623,7 +622,6 @@
             }
         }
 
-        // 🌟 查核手機號碼並解鎖扣款按鈕
         function triggerHistorySearch() {
             let phone = document.getElementById('phone').value.trim();
             if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
@@ -652,7 +650,6 @@
                         badgeBlock.classList.remove('hidden');
                     }
 
-                    // 🌟 智慧解鎖/鎖定扣款選項
                     const cardCb = document.getElementById('useExistingCard');
                     const depCb = document.getElementById('useExistingDeposit');
                     
@@ -693,8 +690,8 @@
                     document.getElementById('useExistingCard').checked = false;
                     document.getElementById('useExistingDeposit').disabled = true;
                     document.getElementById('useExistingDeposit').checked = false;
-                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 1 次 (無可用餘額)`;
-                    document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (無可用餘額)`;
+                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 1 次 (💡 請先於上方輸入電話並帶入)`;
+                    document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (💡 請先於上方輸入電話並帶入)`;
                     calculateBookingTotalPriceEngine();
                     Swal.fire('歡迎新客', '資料庫無此號，請手動填寫資料預約！', 'info');
                 }
@@ -728,15 +725,13 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
-        // 🌟 住宿退宿洗澡切換與日曆卡片標題動態連動
+        // 🌟 住宿退宿洗澡 Panel 展開控制 + 動態標題連動
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
-            const dtCard = document.getElementById('dateTimeCard');
             const cardTitle = document.getElementById('dateTimeCardTitle');
             const subTitle = document.getElementById('timeSlotSubTitle');
             if (show) {
                 panel.classList.remove('hidden');
-                if (dtCard) dtCard.classList.remove('hidden');
                 if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
                 if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
             } else {
@@ -780,6 +775,13 @@
             calculateBookingTotalPriceEngine();
         }
 
+        function onGroomerSelectionChange() {
+            cachedMonthlyMap = {};
+            cachedSlotsMatrixDictionary = {};
+            fetchMonthlyAvailabilityAndRenderCal();
+        }
+
+        // 🌟 預算計價即時試算（黃底位置標示選取之主項目名稱與金額區間）
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonTotal = 0;
@@ -787,8 +789,8 @@
             let newBuyPrice = 0;
             let newBuyBonusTotal = 0;
             let discountRate = 1;
+            let mainItemNamesArr = [];
 
-            // 🌟 即時更新右上方餘額看板
             document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
 
             const depSelect = document.getElementById('buyNewDepositSelect');
@@ -807,6 +809,7 @@
                         if (mainSelect && mainSelect.selectedIndex >= 0) {
                             const opt = mainSelect.options[mainSelect.selectedIndex];
                             const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
+                            if (opt.value) mainItemNamesArr.push(opt.value);
                             
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
@@ -822,6 +825,7 @@
                     } else {
                         card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
                             const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
+                            if (cb.value) mainItemNamesArr.push(cb.value);
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
                             } else if (priceRaw.includes('-')) {
@@ -844,7 +848,7 @@
                 }
             }
 
-            // 退宿加做美容洗澡金額計算
+            // 退宿加做美容洗澡項目金額計算
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
@@ -884,6 +888,10 @@
                     hotelBathRow.classList.add('hidden');
                 }
             }
+
+            // 🌟 在試算標題詳細顯示選取的項目名稱
+            let selectedItemTitleText = mainItemNamesArr.length > 0 ? ` (${mainItemNamesArr.join(', ')})` : '';
+            document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目原價預估區間${selectedItemTitleText}：`;
 
             let origRangeStr = (displayMax > displayMin && displayMax > 0) 
                 ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
