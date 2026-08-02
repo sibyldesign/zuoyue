@@ -208,7 +208,7 @@
                 </div>
             </div>
 
-            <!-- 退宿洗澡美容詢問區塊 (預設「否」隱藏下方選單與月曆) -->
+            <!-- 退宿洗澡美容詢問區塊 (選「否」預設隱藏下拉選單) -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -330,7 +330,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (🌟 主項目獨立黃底高亮 + 專屬加購區間金額) -->
+        <!-- 預算計價即時試算 (🌟 對齊圖二：主項目與加購樣式統一，高亮黃底清楚顯示細項) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -338,31 +338,43 @@
             </h3>
             
             <div class="space-y-2.5 text-xs text-gray-600">
-                <!-- 主項目黃底高亮區域 -->
+                <!-- 1. 主項目標頭 -->
+                <div class="flex justify-between items-center font-black text-textBrown">
+                    <span>1. 施作主項目原價預估區間：</span>
+                    <span class="text-sm font-black text-textBrown" id="summaryOriginalRange">--</span>
+                </div>
+
+                <!-- 🌟 主項目細項黃底高亮區塊 (對齊圖二美感) -->
                 <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
-                    <div class="flex justify-between items-center font-bold text-amber-900">
-                        <span id="summaryOriginalRangeLabel">1. 施作主項目預估原價：</span>
-                        <span class="font-black text-sm text-amber-900" id="summaryOriginalRange">--</span>
+                    <div class="font-bold text-amber-900 leading-relaxed" id="summaryMainServiceDetailsText">
+                        請選擇施作服務項目
                     </div>
                 </div>
 
-                <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1">
+                <!-- 專屬加購護理 -->
+                <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1 pt-1">
                     <span>（包含專屬加購護理：）</span>
                     <span class="font-black" id="summaryAddonPriceText">+$0</span>
                 </div>
-                <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
-                    <span>退宿加做洗澡美容項目：</span>
-                    <span id="summaryHotelBathPriceText">$0</span>
+
+                <!-- 退宿加做洗澡美容項目 (黃底高亮) -->
+                <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80">
+                    <span id="summaryHotelBathLabelText">退宿加做洗澡美容項目：</span>
+                    <span class="font-black" id="summaryHotelBathPriceText">+$0</span>
                 </div>
-                <div class="flex justify-between items-center text-rose-500 font-bold px-1">
+
+                <div class="flex justify-between items-center text-rose-500 font-bold px-1 pt-1">
                     <span>2. 本次折抵/優惠扣抵：</span>
                     <span class="font-black" id="summaryDiscountText">無折抵</span>
                 </div>
+
+                <!-- 現場加購方案費用 -->
                 <div id="summaryNewBuyRow" class="hidden flex justify-between items-center text-amber-800 font-bold bg-amber-50 p-2.5 rounded-xl border border-amber-200/60">
                     <span>3. 現場加購方案費用：</span>
                     <span id="summaryNewBuyPrice">+$0</span>
                 </div>
             </div>
+
             <div class="border-t border-[#EFE8DE] pt-3 flex justify-between items-center">
                 <span class="font-black text-sm text-textBrown">現場預估應付金額：</span>
                 <span class="text-xl font-black text-[#B2977D]" id="bookingTotalPriceDisplay">--</span>
@@ -489,7 +501,7 @@
         let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         let userCardRemainCount = 0; let userDepositBalance = 0;
-        let globalFrontShiftsCache = {}; // 🌟 排班全量快照，實現 0.001 秒開月曆
+        let globalFrontShiftsCache = {}; 
 
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
 
@@ -519,7 +531,6 @@
             });
         }
 
-        // 🌟 1 次請求預載 Bundle 數據包 (1 秒即刻完成開頁)
         function initPage() {
             callGasGet('getFrontInitialBundle').then(bundle => {
                 if (bundle) {
@@ -612,34 +623,6 @@
                 }
                 renderGrid('全部'); 
             } 
-        }
-
-        // 🌟 0 延遲本地算快照繪製月曆
-        function renderFrontCalendarFast() {
-            const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
-            const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
-            const firstDay = new Date(calYear, calMonth, 1).getDay(); const numDays = new Date(calYear, calMonth + 1, 0).getDate();
-            let today = new Date(); today.setHours(0,0,0,0); let html = '';
-
-            for(let i=0; i<firstDay; i++) html += `<div class="py-2.5"></div>`;
-            
-            for(let day=1; day<=numDays; day++) {
-                let cellDate = new Date(calYear, calMonth, day); 
-                let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                const isPast = cellDate < today;
-
-                let isClosed = currentOffDatesList.includes(dateString);
-                
-                if (isPast || isClosed) {
-                    let label = isClosed ? '公休' : '';
-                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
-                } else if (dateString === selectedDateStr) {
-                    html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
-                } else {
-                    html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
-                }
-            }
-            grid.innerHTML = html;
         }
 
         function fetchMonthlyAvailabilityAndRenderCal() {
@@ -762,7 +745,7 @@
                 if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
             } else {
                 panel.classList.add('hidden');
-                if (dtCard) dtCard.classList.add('hidden'); // 選「否」時預設隱藏日曆與時段
+                if (dtCard) dtCard.classList.add('hidden'); // 預設選「否」隱藏日曆
                 selectedDateStr = '';
                 selectedTimeStr = '';
             }
@@ -793,7 +776,7 @@
                     if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
                     if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
                 } else {
-                    if (dtCard) dtCard.classList.add('hidden'); // 預設選「否」時隱藏日曆
+                    if (dtCard) dtCard.classList.add('hidden'); // 預設選「否」隱藏日曆
                 }
                 badge.innerText = "住宿模式";
             }
@@ -802,12 +785,10 @@
         }
 
         function onGroomerSelectionChange() {
-            cachedMonthlyMap = {};
-            cachedSlotsMatrixDictionary = {};
-            fetchMonthlyAvailabilityAndRenderCal();
+            renderFrontCalendarFast();
         }
 
-        // 🌟 預算計價即時試算 (主項目與專屬加購護理支援區間金額高亮)
+        // 🌟 預算計價即時試算 (高亮黃底修復 + 專屬加購區間金額完全支援)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -865,7 +846,6 @@
                         });
                     }
 
-                    // 🌟 專屬加購護理支援區間金額試算 (如：+$200~$350)
                     card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
                         let priceRaw = (cb.getAttribute('data-price') || '0').toString();
                         if (priceRaw.includes('起')) {
@@ -888,7 +868,7 @@
                 }
             }
 
-            // 退宿加做美容洗澡金額計算
+            // 退宿加做美容洗澡項目金額計算
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
@@ -930,8 +910,15 @@
                 }
             }
 
-            let selectedItemTitleText = mainItemNamesArr.length > 0 ? ` (${mainItemNamesArr.join(', ')})` : '';
-            document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目原價預估區間${selectedItemTitleText}：`;
+            // 🌟 精準渲染黃底主項目清單（如：大美容 ($900-1200)）
+            const mainDetailsCard = document.getElementById('summaryMainServiceDetailsText');
+            if (mainDetailsCard) {
+                if (mainItemNamesArr.length > 0) {
+                    mainDetailsCard.innerText = mainItemNamesArr.join(' + ');
+                } else {
+                    mainDetailsCard.innerText = "請選擇施作服務項目";
+                }
+            }
 
             let origRangeStr = (displayMax > displayMin && displayMax > 0) 
                 ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
@@ -992,6 +979,7 @@
             appendNewPetFormCard();
         }
 
+        // 🌟 簡化選單：將「【 犬種分類：小型犬 】」乾淨改為「【 小型犬 】」
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
@@ -1148,7 +1136,7 @@
             renderFrontCalendarFast();
         }
 
-        // 🌟 0 延遲本地算快照繪製月曆
+        // 🌟 0 延遲本地算快照繪製月曆 (移除多餘的「無排班」雜亂字樣，讓月曆乾淨好看)
         function renderFrontCalendarFast() {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
@@ -1166,7 +1154,6 @@
 
                 let isClosed = currentOffDatesList.includes(dateString);
                 
-                // 🌟 從預載的全量快照檢查是否有開放時段
                 let hasOpenSlot = false;
                 if (!isClosed && !isPast) {
                     let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
@@ -1187,7 +1174,8 @@
                 }
 
                 if (isPast || isClosed || !hasOpenSlot) {
-                    let label = isClosed ? '公休' : (!hasOpenSlot && !isPast ? '無排班' : '');
+                    // 🌟 移除多餘「無排班」文字，只有店休時顯示小文字公休，畫面最極簡美觀
+                    let label = isClosed ? '公休' : '';
                     html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
                 } else if (dateString === selectedDateStr) {
                     html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
@@ -1205,7 +1193,7 @@
             renderFrontCalendarFast(); 
         }
 
-        // 🌟 點擊日期極速算時段
+        // 🌟 0.001 秒秒選日期算時段
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
@@ -1213,7 +1201,6 @@
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
             let groomerVal = document.getElementById('selectedGroomer').value;
 
-            // 優先從本地記憶體算時段，0 延遲
             let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
             let availableSlots = [];
 
