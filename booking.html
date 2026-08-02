@@ -91,7 +91,7 @@
         <div class="font-bold mb-1 flex items-center justify-center gap-2 text-[14px] tracking-wide">
             <i class="fas fa-bullhorn"></i> 店家最新公告
         </div>
-        <div id="announcement"> 公告載入中... </div>
+        <div id="announcement"> 載入中... </div>
     </div>
     
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
@@ -119,7 +119,7 @@
         <div class="app-card p-6 bg-[#FAF8F5]">
             <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
             <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
-                <div class="text-xs text-gray-400">分類載入中...</div>
+                <div class="text-xs text-gray-400">載入中...</div>
             </div>
             <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
                 <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
@@ -135,7 +135,7 @@
         <div class="app-card p-4 bg-white relative">
             <div class="relative overflow-hidden rounded-2xl w-full aspect-[960/1706] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
                 <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
-                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統說明圖載入中...</div>
+                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
                 </div>
                 <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
                 <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
@@ -325,7 +325,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (🌟 主項目獨立黃底高亮 + 專屬加購區間金額) -->
+        <!-- 預算計價即時試算 -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -333,7 +333,6 @@
             </h3>
             
             <div class="space-y-2.5 text-xs text-gray-600">
-                <!-- 主項目黃底高亮區域 -->
                 <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
                     <div class="flex justify-between items-center font-bold text-amber-900">
                         <span id="summaryOriginalRangeLabel">1. 施作主項目預估原價：</span>
@@ -480,7 +479,7 @@
         let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         let userCardRemainCount = 0; let userDepositBalance = 0;
-        let globalFrontShiftsCache = {}; // 排班全量快照，實現 0.1 秒開月曆與時段
+        let globalFrontShiftsCache = {}; // 全量班表快照，實現 0.1 秒秒出時段
 
         const canvas = document.getElementById('sigCanvas'); 
         const ctx = canvas ? canvas.getContext('2d') : null;
@@ -511,7 +510,7 @@
             });
         }
 
-        // 預載 Bundle 數據包 (1 秒即刻完成開頁)
+        // 🌟 預載 Bundle 數據包 (1 次請求秒出公告、圖片與全量班表)
         function initPage() {
             callGasGet('getFrontInitialBundle').then(bundle => {
                 if (bundle) {
@@ -603,7 +602,7 @@
             } 
         }
 
-        // 0 延遲本地算快照繪製月曆
+        // 🌟 0 延遲本地算快照繪製月曆（已移除「無排班」標籤）
         function renderFrontCalendarFast() {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
@@ -636,7 +635,9 @@
                         if (hasOpenSlot) break;
                     }
                 }
-                if (isPast || isClosed || !hasOpenSlot) { let label = isClosed ? '公休' : ''; html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`; }
+                if (isPast || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : ''; // 移除「無排班」字樣
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
                 } else if (dateString === selectedDateStr) {
                     html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
                 } else {
@@ -744,7 +745,6 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
-        // 住宿退宿洗澡 Panel 展開控制與連動隱藏選擇日期時段日曆
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
             const dtCard = document.getElementById('dateTimeCard');
@@ -757,7 +757,7 @@
                 if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
             } else {
                 panel.classList.add('hidden');
-                if (dtCard) dtCard.classList.add('hidden'); // 選「否」時預設隱藏日曆與時段
+                if (dtCard) dtCard.classList.add('hidden');
                 selectedDateStr = '';
                 selectedTimeStr = '';
             }
@@ -787,7 +787,7 @@
                     if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
                     if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
                 } else {
-                    if (dtCard) dtCard.classList.add('hidden'); // 預設選「否」時隱藏日曆
+                    if (dtCard) dtCard.classList.add('hidden');
                 }
                 badge.innerText = "住宿模式";
             }
@@ -799,7 +799,6 @@
             renderFrontCalendarFast();
         }
 
-        // 預算計價即時試算 (主項目與專屬加購護理支援區間金額高亮)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -1134,7 +1133,7 @@
             renderFrontCalendarFast(); 
         }
 
-        // 點擊日期 0.1 秒秒出時段
+        // 🌟 點擊日期 0.1 秒秒出時段 (直接比對記憶體快照)
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
