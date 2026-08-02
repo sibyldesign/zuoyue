@@ -208,7 +208,7 @@
                 </div>
             </div>
 
-            <!-- 🌟 退宿洗澡美容詢問區塊 (選「否」預設隱藏下拉選單) -->
+            <!-- 🌟 退宿洗澡詢問區塊 (預設「否」，選擇「是」才展露下拉選單與下方的日期月曆) -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -513,7 +513,6 @@
             });
         }
 
-        // 🌟 超速初始化：使用中樞 Bundle 打包載入全站靜態設定
         function initPage() {
             callGasGet('getFrontInitialBundle').then(bundle => {
                 if (bundle) {
@@ -522,6 +521,7 @@
                     if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
                     if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
                     if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
+                    if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
                 }
                 fetchMonthlyAvailabilityAndRenderCal();
             }).catch(() => {
@@ -726,19 +726,22 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
-        // 🌟 住宿退宿洗澡切換與日曆卡片標題動態連動
+        // 🌟 住宿退宿洗澡 Panel 展開控制與連動隱藏選擇日期時段日曆
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
+            const dtCard = document.getElementById('dateTimeCard');
             const cardTitle = document.getElementById('dateTimeCardTitle');
             const subTitle = document.getElementById('timeSlotSubTitle');
             if (show) {
                 panel.classList.remove('hidden');
+                if (dtCard) dtCard.classList.remove('hidden');
                 if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
                 if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
             } else {
                 panel.classList.add('hidden');
-                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇入住日期與進場時段`;
-                if (subTitle) subTitle.innerText = `選取入住進場時段`;
+                if (dtCard) dtCard.classList.add('hidden');
+                selectedDateStr = '';
+                selectedTimeStr = '';
             }
             calculateBookingTotalPriceEngine();
         }
@@ -761,14 +764,13 @@
             } else {
                 tB.className = "tab-btn active"; tG.className = "tab-btn text-[#A39585]";
                 bCard.classList.remove('hidden'); bBanner.classList.remove('hidden');
-                if (dtCard) dtCard.classList.remove('hidden');
                 let bathNeedVal = document.querySelector('input[name="hotelBathNeed"]:checked')?.value || 'NO';
                 if (bathNeedVal === 'YES') {
+                    if (dtCard) dtCard.classList.remove('hidden');
                     if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
                     if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
                 } else {
-                    if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇入住日期與進場時段`;
-                    if (subTitle) subTitle.innerText = `選取入住進場時段`;
+                    if (dtCard) dtCard.classList.add('hidden'); // 預設選否時隱藏日曆
                 }
                 badge.innerText = "住宿模式";
             }
@@ -782,7 +784,7 @@
             fetchMonthlyAvailabilityAndRenderCal();
         }
 
-        // 🌟 預算計價即時試算 (支援加購護理區間金額與主項目詳細標示)
+        // 🌟 預算計價即時試算 (加購護理完整支援區間金額)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -840,7 +842,7 @@
                         });
                     }
 
-                    // 🌟 加購護理支援金額區間加總
+                    // 🌟 專屬加購護理完全支援區間金額試算
                     card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
                         let priceRaw = (cb.getAttribute('data-price') || '0').toString();
                         if (priceRaw.includes('起')) {
@@ -863,7 +865,7 @@
                 }
             }
 
-            // 退宿加做美容洗澡項目金額計算
+            // 退宿加做美容洗澡金額計算
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
@@ -967,6 +969,7 @@
             appendNewPetFormCard();
         }
 
+        // 🌟 移除多餘「犬種分類：」贅字，改用精緻小卡區塊！
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
@@ -984,7 +987,8 @@
             if (activeServiceType === 'grooming') {
                 let serviceOptions = `<option value="" disabled selected>請選擇美容主服務項目</option>`;
                 Array.from(categorySet).forEach(cat => {
-                    serviceOptions += `<optgroup label="【 犬種分類：${cat} 】">`;
+                    // 🌟 移除「犬種分類：」簡化標籤
+                    serviceOptions += `<optgroup label="【 ${cat} 】">`;
                     allServices.filter(s => s.category === cat).forEach(item => { 
                         let priceRaw = (item.price || '0').toString();
                         let mapKey = `${item.service}_${cat}`;
