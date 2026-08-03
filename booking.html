@@ -81,7 +81,7 @@
 <body class="w-full overflow-x-hidden" onload="initPage()">
     <!-- 頂部 Header -->
     <div class="w-full bg-white flex flex-col items-center pt-7 pb-5 shadow-sm border-b border-[#EFE8DE]">
-        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" class="w-32 h-32 object-contain rounded-full border border-gray-100 mb-2">
+        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" loading="lazy" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
         <h2 class="text-[20px] font-extrabold text-textBrown tracking-widest"> 琢悅寵物SPA會館 </h2>
         <p class="text-[11px] text-[#A39585] tracking-wider mt-0.5">Pet Grooming & Luxury Boarding</p>
     </div>
@@ -96,7 +96,7 @@
     
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
         
-        <!-- 服務類別切換 -->
+        <!-- 服務類別切換 (美容 / 住宿) -->
         <div class="bg-white p-1.5 rounded-2xl border border-[#EFE8DE] flex shadow-sm">
             <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active">
                 <i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約
@@ -113,34 +113,6 @@
                 <div class="font-black text-amber-900 text-sm mb-0.5">🐾 住宿小提醒</div>
                 <span id="boardingNoticeText">為了讓毛孩住得更安心、更舒適，建議您攜帶毛孩平時食用的飼料，避免因更換飲食造成腸胃不適。</span>
             </div>
-        </div>
-
-        <!-- 美容作品集相簿 -->
-        <div class="app-card p-6 bg-[#FAF8F5]">
-            <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
-            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
-                <div class="text-xs text-gray-400">載入中...</div>
-            </div>
-            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
-                <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
-            </div>
-            <div class="text-center mt-4">
-                <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
-                    查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- 動態輪播圖 -->
-        <div class="app-card p-4 bg-white relative">
-            <div class="relative overflow-hidden rounded-2xl w-full aspect-[960/1706] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
-                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
-                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
-                </div>
-                <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
-                <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
-            </div>
-            <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
 
         <!-- 家長聯絡資訊卡片 -->
@@ -324,7 +296,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (🌟 主項目乾淨無多餘括號高亮) -->
+        <!-- 預算計價即時試算 (🌟 主項目獨立乾淨顯示，無多餘括號) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -334,12 +306,12 @@
             <div class="space-y-2.5 text-xs text-gray-600">
                 <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
                     <div class="flex justify-between items-center font-bold text-amber-900">
-                        <span id="summaryOriginalRangeLabel">1. 施作主項目預估原價：</span>
+                        <span id="summaryOriginalRangeLabel">1. 施作主項目原價預估區間：</span>
                         <span class="font-black text-sm text-amber-900" id="summaryOriginalRange">--</span>
                     </div>
                 </div>
                 <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1">
-                    <span>（包含專屬加購護理：）</span>
+                    <span>包含專屬加購護理：</span>
                     <span class="font-black" id="summaryAddonPriceText">+$0</span>
                 </div>
                 <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
@@ -359,6 +331,34 @@
                 <span class="font-black text-sm text-textBrown">現場預估應付金額：</span>
                 <span class="text-xl font-black text-[#B2977D]" id="bookingTotalPriceDisplay">--</span>
             </div>
+        </div>
+
+        <!-- 美容作品集相簿 -->
+        <div class="app-card p-6 bg-[#FAF8F5]">
+            <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
+            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
+                <div class="text-xs text-gray-400">載入中...</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
+                <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
+                    查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 動態輪播圖 -->
+        <div class="app-card p-4 bg-white relative">
+            <div class="relative overflow-hidden rounded-2xl w-full aspect-[960/1706] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
+                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
+                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
+                </div>
+                <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
+                <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
 
         <!-- 條款與簽名 -->
@@ -411,7 +411,7 @@
             </div>
         </div>
 
-        <!-- 社群按鈕、地址與營業時間 -->
+        <!-- 社群按鈕與營業時間 -->
         <div class="flex justify-center gap-6 pt-2">
             <a href="https://lin.ee/q19SMMx5" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
                 <i class="fab fa-line text-[26px]"></i>
@@ -429,6 +429,7 @@
         <div class="text-center mb-4 text-[12px] text-gray-500 font-bold tracking-widest">
             <i class="far fa-clock mr-1"></i> 營業時間 9:00-19:00 (最晚進場 17:00)
         </div>
+
         <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl transition duration-300 text-sm shadow-md text-center block font-black">
             送出預約申請
         </button>
@@ -459,7 +460,6 @@
         </div>
     </div>
 
-    <!-- Designed by Sibyl -->
     <div class="text-center mt-10 mb-4 text-sibylLight text-[11px] tracking-widest uppercase">
         Designed by <a href="https://www.heysibyl.com/" target="_blank" class="font-bold hover:underline">Sibyl | 數位管家</a>
     </div>
@@ -479,10 +479,9 @@
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
         let userCardRemainCount = 0; let userDepositBalance = 0;
         let globalFrontShiftsCache = {};
-
         const canvas = document.getElementById('sigCanvas'); 
         const ctx = canvas ? canvas.getContext('2d') : null;
-
+        
         const PRICE_RANGE_MAP = {
             "洗澡_小型犬": "450起",
             "大美容_小型犬": "900-1200",
@@ -526,6 +525,7 @@
             });
         }
 
+        // 🌟 核心修復：精確篩選「美容」與「住宿」分頁主項目及加購
         function setupServiceDropdownsAndData(data) {
             allServices = Array.isArray(data) ? data : []; 
             const pkgSelect = document.getElementById('buyNewPackageSelect');
@@ -554,7 +554,7 @@
                     let disc = 0.9;
                     if (name.includes('10000') || priceRaw.includes('10000')) disc = 0.8;
                     depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}" data-bonus="${bonusVal}">${name}</option>`;
-                } else if (!cat.includes('加購')) {
+                } else if (!cat.includes('加購') && !cat.includes('住宿')) {
                     bathHtml += `<option value="${name}" data-raw-price="${priceRaw}">${name} ($${priceRaw})</option>`;
                 }
             });
@@ -564,7 +564,6 @@
             renderPetFormCards();
         }
 
-        // 🌟 核心修復：在美容師下拉選單選項補上 data-id="${g.id}"，實現精確 ID 排班比對
         function setupGroomerDropdown(list) {
             if (Array.isArray(list) && list.length > 0) {
                 groomerList = list;
@@ -601,7 +600,6 @@
             } 
         }
 
-        // 🌟 核心修復：結合美容師 ID 與名稱雙重驗證月曆開班狀態
         function renderFrontCalendarFast() {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
@@ -613,7 +611,6 @@
             let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
             let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
             let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
-
             for(let day=1; day<=numDays; day++) {
                 let cellDate = new Date(calYear, calMonth, day); 
                 let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -805,7 +802,7 @@
             renderFrontCalendarFast();
         }
 
-        // 🌟 核心：預算試算（簡化主項目標題顯示，精確計算包卡扣抵）
+        // 🌟 核心：預算即時試算 (將施作主項目原價標題獨立高亮，移除黏著括號)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -831,7 +828,7 @@
                         if (mainSelect && mainSelect.selectedIndex >= 0) {
                             const opt = mainSelect.options[mainSelect.selectedIndex];
                             const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                            if (opt.value) mainItemNamesArr.push(opt.value); // 簡化名稱，不加額外括號
+                            if (opt.value) mainItemNamesArr.push(opt.value);
                             
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
@@ -883,7 +880,6 @@
                     });
                 }
             }
-
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
@@ -902,7 +898,6 @@
                 displayMin += hotelBathPriceMin;
                 if (displayMax > 0) displayMax += (hotelBathPriceMax || hotelBathPriceMin);
             }
-
             const addonRow = document.getElementById('summaryAddonDetailRow');
             if (addonRow) {
                 if (addonMin > 0) {
@@ -913,7 +908,6 @@
                     addonRow.classList.add('hidden');
                 }
             }
-
             const hotelBathRow = document.getElementById('summaryHotelBathRow');
             if (hotelBathRow) {
                 if (isHotelBathNeed && hotelBathPriceMin > 0) {
@@ -924,8 +918,8 @@
                     hotelBathRow.classList.add('hidden');
                 }
             }
-
-            // 簡潔標題格式：項目與金額分開顯示
+            
+            // 🌟 修正點：施作主項目名稱與價格獨立乾淨呈現
             let selectedItemTitleText = mainItemNamesArr.length > 0 ? ` (${mainItemNamesArr.join(' · ')})` : '';
             document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目原價預估${selectedItemTitleText}：`;
             let origRangeStr = (displayMax > displayMin && displayMax > 0) 
@@ -938,14 +932,11 @@
             const pkgPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
             const pkgBonus = pkgOpt ? parseInt(pkgOpt.getAttribute('data-bonus') || 0) : 0;
             const isBuyingNewPkg = pkgOpt && pkgSelect.value !== 'none';
-
             const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
             const depPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
             const depBonus = depOpt ? parseInt(depOpt.getAttribute('data-bonus') || 0) : 0;
-
             newBuyPrice = pkgPrice + depPrice;
             newBuyBonusTotal = pkgBonus + depBonus;
-
             const newBuyRow = document.getElementById('summaryNewBuyRow');
             if (newBuyRow) {
                 if (newBuyPrice > 0) {
@@ -956,11 +947,8 @@
                     newBuyRow.classList.add('hidden');
                 }
             }
-
             let discText = "無折抵";
             let finalCalculatedShow = "";
-
-            // 🌟 核心包卡商業邏輯：已有包卡，或現場「新購包卡」皆可扣抵當次主項目
             if (document.getElementById('useExistingCard')?.checked && userCardRemainCount > 0) {
                 discText = "套用已有包卡扣抵 1 次";
                 finalCalculatedShow = "$0 (包卡扣抵)";
@@ -977,7 +965,6 @@
             } else {
                 finalCalculatedShow = origRangeStr;
             }
-
             document.getElementById('summaryDiscountText').innerText = discText;
             if (newBuyPrice > 0) {
                 document.getElementById('bookingTotalPriceDisplay').innerText = `${finalCalculatedShow} (+加購方案 $${newBuyPrice.toLocaleString()})`;
@@ -992,6 +979,7 @@
             appendNewPetFormCard();
         }
 
+        // 🌟 核心：分頁分離 (美容分頁只抓美容主項目與美容加購；住宿分頁只抓住宿主項目與住宿加購)
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
@@ -1001,9 +989,13 @@
             let filteredCat = activeServiceType === 'grooming' ? '美容' : '住宿';
             let mainServiceHTML = "";
             let categorySet = new Set();
+            
             allServices.forEach(s => { 
                 let cat = s.category || '';
-                if(cat && !cat.includes('加購') && !cat.includes('包卡') && !cat.includes('儲值')) categorySet.add(cat); 
+                if(cat && !cat.includes('加購') && !cat.includes('包卡') && !cat.includes('儲值')) {
+                    if (activeServiceType === 'grooming' && !cat.includes('住宿')) categorySet.add(cat);
+                    if (activeServiceType === 'boarding' && cat.includes('住宿')) categorySet.add(cat);
+                } 
             });
 
             if (activeServiceType === 'grooming') {
@@ -1059,7 +1051,11 @@
             }
 
             let addonHtml = "";
-            let addonItems = allServices.filter(s => s.category && s.category.includes('加購'));
+            let addonItems = allServices.filter(s => {
+                let cat = s.category || '';
+                if (activeServiceType === 'grooming') return cat.includes('加購') && !cat.includes('住宿加購');
+                return cat.includes('住宿加購') || (cat.includes('加購') && cat.includes('住宿'));
+            });
             if (addonItems.length > 0) {
                 addonItems.forEach(add => {
                     addonHtml += `
@@ -1069,7 +1065,6 @@
                     </label>`;
                 });
             }
-
             let extraFieldsGrooming = `
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
@@ -1080,7 +1075,6 @@
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性別 *</label><select class="text-input p-gender text-xs font-bold"><option value="公">公</option><option value="母">母</option></select></div>
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性格備註 *</label><input type="text" class="text-input p-personality text-xs font-bold" placeholder="親人親狗? 其他特質"></div>
                 </div>`;
-
             card.innerHTML = `
             <div class="flex justify-between items-center border-b border-[#EFE8DE] pb-3 mb-1">
                 <span class="bg-[#CBB39C] text-white font-bold text-[11px] px-3.5 py-1.5 rounded-xl shadow-xs">施作毛孩 NO. ${id} (${filteredCat})</span>
@@ -1148,7 +1142,6 @@
             renderFrontCalendarFast(); 
         }
 
-        // 🌟 點擊日期 0.1 秒秒出時段 (兼顧美容師 ID 與姓名比對)
         function selectDate(dateStr) {
             selectedDateStr = dateStr; 
             selectedTimeStr = ''; 
@@ -1159,7 +1152,6 @@
             let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
             let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
             let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
-
             let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
             let availableSlots = [];
             slots.forEach(time => {
@@ -1347,7 +1339,6 @@
             
             let groomerSelect = document.getElementById('selectedGroomer');
             let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
-
             let payload = {
                 serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
                 phone: phone, ownerName: ownerName, email: email, lineName: lineName,
@@ -1410,4 +1401,3 @@
     </script>
 </body>
 </html>
-
