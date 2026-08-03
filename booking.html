@@ -14,12 +14,8 @@
             theme: {
                 extend: {
                     colors: {
-                        beigeBase: '#F9F6F0',
-                        milkTea: '#CBB39C',
-                        milkTeaDark: '#B2977D',
-                        textMain: '#4A4238',
-                        textBrown: '#5C5043',
-                        sibylLight: '#bca085'
+                        beigeBase: '#F9F6F0', milkTea: '#CBB39C', milkTeaDark: '#B2977D',
+                        textMain: '#4A4238', textBrown: '#5C5043', sibylLight: '#bca085'
                     }
                 }
             }
@@ -27,55 +23,16 @@
     </script>
     
     <style>
-        :root {
-            --bg-butter: #FAF8F5;
-            --card-bg: #FFFFFF;
-            --primary-green: #CBB39C;
-            --text-main: #4A4238;
-            --text-light: #9E9388;
-            --border-color: #EFE8DE;
-            --alert-color: #E07A5F;
-        }
-        body { 
-            background-color: #F9F6F0; 
-            font-family: 'Helvetica Neue', Arial, '微軟正黑體', sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; 
-            padding: 0; 
-            color: #4A4238;
-        }
+        body { background-color: #F9F6F0; font-family: 'Helvetica Neue', Arial, '微軟正黑體', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; color: #4A4238; }
         .app-card { background: white; border-radius: 24px; box-shadow: 0 4px 20px rgba(203, 179, 156, 0.08); position: relative; overflow: hidden; border: 1px solid #EFE8DE; }
-        .text-input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            background: #FFFFFF; 
-            border: 1.5px solid #EFE8DE; 
-            border-radius: 16px; 
-            font-size: 13px; 
-            font-weight: 600;
-            color: #4A4238;
-            outline: none; 
-            transition: all 0.25s ease; 
-            display: block; 
-            box-sizing: border-box; 
-        }
+        .text-input { width: 100%; padding: 12px 16px; background: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; font-size: 13px; font-weight: 600; color: #4A4238; outline: none; transition: all 0.25s ease; display: block; box-sizing: border-box; }
         .text-input:focus { border-color: #CBB39C; box-shadow: 0 0 0 3.5px rgba(203, 179, 156, 0.15); }
         .tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.3s; }
         .tab-btn.active { background-color: #CBB39C; color: white; border-radius: 18px; box-shadow: 0 3px 10px rgba(203, 179, 156, 0.35); }
         .addon-card { background-color: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; padding: 12px 14px; transition: all 0.2s ease; display: flex; align-items: center; }
-        .addon-card:hover:not(.disabled) { border-color: #CBB39C; background-color: #FAF7F2; }
         .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
-        .addon-checkbox:disabled { cursor: not-allowed; }
-        .day-dimmed-light-brown {
-            background-color: #F2ECE4 !important;
-            color: #CBB39C !important;
-            border: 1px solid #E6DDD2 !important;
-            border-radius: 12px;
-            cursor: not-allowed !important;
-            pointer-events: none !important;
-            opacity: 0.45 !important;
-        }
+        .day-dimmed-light-brown { background-color: #F2ECE4 !important; color: #CBB39C !important; border: 1px solid #E6DDD2 !important; border-radius: 12px; cursor: not-allowed !important; pointer-events: none !important; opacity: 0.45 !important; }
     </style>
 </head>
 <body class="w-full overflow-x-hidden" onload="initPage()">
@@ -95,26 +52,17 @@
     </div>
     
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
-        
-        <!-- 服務類別切換 (美容 / 住宿) -->
+        <!-- 美容/住宿切換 -->
         <div class="bg-white p-1.5 rounded-2xl border border-[#EFE8DE] flex shadow-sm">
-            <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active">
-                <i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約
-            </div>
-            <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]">
-                <i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約
-            </div>
+            <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active"><i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約</div>
+            <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]"><i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約</div>
         </div>
 
-        <!-- 🌟 依要求調整位置：美容作品集相簿（毛孩變美日記） -->
+        <!-- 美容作品集相簿 -->
         <div class="app-card p-6 bg-[#FAF8F5]">
             <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
-            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
-                <div class="text-xs text-gray-400">載入中...</div>
-            </div>
-            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
-                <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
-            </div>
+            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer"><div class="text-xs text-gray-400">載入中...</div></div>
+            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid"></div>
             <div class="text-center mt-4">
                 <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
                     查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
@@ -122,14 +70,12 @@
             </div>
         </div>
 
-        <!-- 🌟 依要求調整位置：動態輪播說明圖 -->
+        <!-- 動態輪播圖（4:5 比例與手機左右滑動） -->
         <div class="app-card p-4 bg-white relative">
-            <div class="relative overflow-hidden rounded-2xl w-full aspect-[960/1706] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
-                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
-                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
-                </div>
-                <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
-                <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
+            <div class="relative overflow-hidden rounded-2xl w-full aspect-[4/5] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
+                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"></div>
+                <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
+                <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
             </div>
             <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
@@ -146,86 +92,65 @@
         <!-- 家長聯絡資訊卡片 -->
         <div class="app-card p-6">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
-            <h3 class="font-bold text-textBrown mb-4.5 flex items-center gap-2 text-[15px]">
-                <i class="fas fa-user-alt text-[#CBB39C]"></i> 家長聯絡資訊
-            </h3>
+            <h3 class="font-bold text-textBrown mb-4.5 flex items-center gap-2 text-[15px]"><i class="fas fa-user-alt text-[#CBB39C]"></i> 家長聯絡資訊</h3>
             <div class="space-y-4">
                 <div>
                     <label class="text-[11px] font-bold text-gray-400 mb-1 block">家長聯絡電話 *</label>
                     <div class="relative w-full">
                         <input type="tel" id="phone" placeholder="請輸入聯絡電話" class="text-input text-xs font-bold pl-4 pr-[130px]">
-                        <button type="button" onclick="triggerHistorySearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#CBB39C] text-white px-3.5 py-2 rounded-xl text-[11px] font-bold active:scale-95 transition shadow-xs">
-                            查詢/自動帶入
-                        </button>
+                        <button type="button" onclick="triggerHistorySearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#CBB39C] text-white px-3.5 py-2 rounded-xl text-[11px] font-bold active:scale-95 transition shadow-xs">查詢/自動帶入</button>
                     </div>
                 </div>
                 <div id="customerBalanceBadgeBlock" class="hidden bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3 text-xs font-bold text-emerald-900 space-y-1">
-                    <div class="flex items-center justify-between">
-                        <span>💳 包卡剩餘次數：</span>
-                        <span class="text-emerald-700 font-black text-sm" id="displayCardRemain">0 次</span>
-                    </div>
-                    <div class="flex items-center justify-between border-t border-emerald-200/60 pt-1">
-                        <span>💰 儲值金剩餘額度：</span>
-                        <span class="text-emerald-700 font-black text-sm" id="displayDepositRemain">$0</span>
-                    </div>
+                    <div class="flex items-center justify-between"><span>💳 包卡剩餘次數：</span><span class="text-emerald-700 font-black text-sm" id="displayCardRemain">0 次</span></div>
+                    <div class="flex items-center justify-between border-t border-emerald-200/60 pt-1"><span>💰 儲值金剩餘額度：</span><span class="text-emerald-700 font-black text-sm" id="displayDepositRemain">$0</span></div>
                 </div>
                 <div id="multiPetSelectBlock" class="hidden border border-dashed border-[#CBB39C] rounded-2xl p-3.5 bg-[#FAF7F2]">
                     <label class="text-[11px] font-black text-[#B2977D] block mb-1.5">💡 系統查到您有多位毛孩歷史紀錄，請選擇：</label>
                     <select id="multiPetDropdown" onchange="switchSelectedPetInfo(this.value)" class="w-full p-2.5 bg-white border border-[#EFE8DE] rounded-xl text-xs font-bold text-textBrown outline-none"></select>
                 </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">家長姓名 *</label>
-                    <input type="text" id="ownerName" placeholder="請輸入姓名" class="text-input text-xs font-bold">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">電子信箱 * (自動寄送合約副本)</label>
-                    <input type="email" id="email" placeholder="example@gmail.com" class="text-input text-xs font-bold">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">LINE 暱稱/名稱 *</label>
-                    <input type="text" id="lineName" placeholder="方便我們聯繫您" class="text-input text-xs font-bold">
-                </div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">家長姓名 *</label><input type="text" id="ownerName" placeholder="請輸入姓名" class="text-input text-xs font-bold"></div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">電子信箱 * (自動寄送合約副本)</label><input type="email" id="email" placeholder="example@gmail.com" class="text-input text-xs font-bold"></div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">LINE 暱稱/名稱 *</label><input type="text" id="lineName" placeholder="方便我們聯繫您" class="text-input text-xs font-bold"></div>
             </div>
         </div>
 
-        <!-- 住宿時間卡片 -->
+        <!-- 住宿時間與動態供餐選項 -->
         <div id="boardingTimeCard" class="app-card p-6 hidden">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
-            <h3 class="font-bold text-textBrown mb-4 flex items-center gap-2 text-[15px]">
-                <i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 住宿日期排程 (入住與退房)
-            </h3>
+            <h3 class="font-bold text-textBrown mb-4 flex items-center gap-2 text-[15px]"><i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 住宿日期與供餐試算</h3>
             <div class="grid grid-cols-2 gap-3.5 mb-4">
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">入住日期/時間 *</label>
-                    <input type="datetime-local" id="checkInTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()">
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">入住日期/時間 *</label><input type="datetime-local" id="checkInTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()"></div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">退房日期/時間 *</label><input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()"></div>
+            </div>
+
+            <!-- 動態抓取『供餐』類別選項 -->
+            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3 mb-4">
+                <div class="flex items-center justify-between border-b border-[#EFE8DE] pb-2">
+                    <label class="text-xs font-black text-textBrown">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
                 </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">退房日期/時間 *</label>
-                    <input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()">
+                <div class="grid grid-cols-1 gap-2" id="dynamicMealOptionsContainer">
+                    <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
+                        <input type="radio" name="mealPlanOption" value="NONE" data-price="0" checked onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
+                        <span>自備飼料 / 不需要供餐 ($0)</span>
+                    </label>
                 </div>
+                <div id="mealCalculationBadge" class="text-[11px] text-amber-800 font-bold bg-amber-50 p-2 rounded-xl border border-amber-200/60 hidden"></div>
             </div>
             
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
-                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                        <input type="radio" name="hotelBathNeed" value="NO" checked onchange="toggleHotelBathPanel(false)" class="accent-[#CBB39C]"> 否，僅需住宿
-                    </label>
-                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                        <input type="radio" name="hotelBathNeed" value="YES" onchange="toggleHotelBathPanel(true)" class="accent-[#CBB39C]"> 是，退宿當天加做洗澡美容
-                    </label>
+                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer"><input type="radio" name="hotelBathNeed" value="NO" checked onchange="toggleHotelBathPanel(false)" class="accent-[#CBB39C]"> 否，僅需住宿</label>
+                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer"><input type="radio" name="hotelBathNeed" value="YES" onchange="toggleHotelBathPanel(true)" class="accent-[#CBB39C]"> 是，退宿當天加做洗澡美容</label>
                 </div>
                 <div id="hotelBathSubPanel" class="hidden pt-3 border-t border-[#EFE8DE] space-y-3">
-                    <div>
-                        <label class="text-[11px] font-bold text-textBrown block mb-1">請選擇退宿美容/洗澡項目 * <span class="text-amber-800 text-[10px] font-normal">（請至下方『選擇退宿洗澡日期與時段』選取時間）</span></label>
-                        <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                        </select>
-                    </div>
+                    <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700"></select>
                 </div>
             </div>
         </div>
 
-        <!-- 毛孩履歷卡片區塊 -->
+        <!-- 毛孩履歷卡片區塊 (含照片上傳) -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
             <div class="text-[12px] font-bold text-[#B2977D] tracking-widest uppercase flex justify-between items-center border-b border-[#EFE8DE] pb-3">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-paw text-[#CBB39C]"></i> PET PROFILE / 毛孩詳細履歷</span>
@@ -237,19 +162,19 @@
             </button>
         </div>
 
-        <!-- 指定美容師與其他需求 -->
+        <!-- 指定美容師與需求 -->
         <div class="app-card p-6 space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown flex items-center gap-2 text-[15px]"><i class="fa-solid fa-user-check text-[#B2977D]"></i> 指定美容師與其他需求</h3>
             <div class="grid grid-cols-2 gap-3.5">
                 <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">指定美容師 (優先選取) *</label>
+                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">指定美容師 *</label>
                     <select id="selectedGroomer" onchange="onGroomerSelectionChange()" class="text-input text-xs font-bold text-gray-700">
                         <option value="不指定" data-id="ALL">不指定 (由店家安排)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">接送服務需求 (選填)</label>
+                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">接送服務需求</label>
                     <select id="pickupService" onchange="togglePickupAddressField(this.value)" class="text-input text-xs font-bold text-gray-700">
                         <option value="不需要">不需要接送</option>
                         <option value="需要接送">需要接送 (費用另計)</option>
@@ -258,7 +183,7 @@
             </div>
             <div id="pickupAddressBlock" class="hidden space-y-1 bg-[#FAF7F2] p-3.5 rounded-2xl border border-dashed border-[#CBB39C]">
                 <label class="text-[11px] font-bold text-[#B2977D] block">🚘 家長接送地址 (必填) *</label>
-                <input type="text" id="pickupAddress" placeholder="請填寫完整接送地址 (如: 鳳山區...)" class="text-input text-xs font-bold">
+                <input type="text" id="pickupAddress" placeholder="請填寫完整接送地址" class="text-input text-xs font-bold">
             </div>
             <div class="border-t border-[#EFE8DE] pt-3.5 space-y-2">
                 <label class="text-[11px] font-bold text-[#B2977D] block">介紹人</label>
@@ -269,17 +194,15 @@
             </div>
         </div>
 
-        <!-- 日期與時段選擇 -->
+        <!-- 日期與時段 -->
         <div class="app-card p-6" id="dateTimeCard">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
-            <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]" id="dateTimeCardTitle">
-                <i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段
-            </h3>
+            <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]" id="dateTimeCardTitle"><i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段</h3>
             <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs mb-4">
                 <div class="flex justify-between items-center mb-3 px-2">
-                    <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C] transition" onclick="changeFrontMonth(-1)"></i>
+                    <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeFrontMonth(-1)"></i>
                     <span class="font-extrabold text-textBrown text-[15px]" id="cal_year_month">載入中...</span>
-                    <i class="fas fa-chevron-right text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C] transition" onclick="changeFrontMonth(1)"></i>
+                    <i class="fas fa-chevron-right text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeFrontMonth(1)"></i>
                 </div>
                 <div class="grid grid-cols-7 gap-1 text-center text-[12px] text-gray-400 font-bold mb-2 pb-1.5 border-b border-gray-100">
                     <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
@@ -287,55 +210,38 @@
                 <div class="grid grid-cols-7 gap-y-2.5 gap-x-1.5 text-center text-[13px] text-textBrown font-bold" id="frontCalGrid"></div>
             </div>
             <h3 class="font-bold text-textBrown mb-2.5 text-[13px]" id="timeSlotSubTitle">選取進場時段</h3>
-            <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs" id="timeSlotContainer">
-                <div class="text-xs text-gray-400 text-center py-4">請先點選上方日期</div>
-            </div>
+            <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs" id="timeSlotContainer"><div class="text-xs text-gray-400 text-center py-4">請先點選上方日期</div></div>
         </div>
 
-        <!-- 🌟 依要求調整：本月活動方案與折抵/加購選擇 (標註老闆規則) -->
+        <!-- 活動方案與折抵（試算表讀取「包卡使用規則與說明」） -->
         <div class="app-card p-6 space-y-4 bg-[#FAF7F2]">
             <h3 class="font-bold text-[#5C5043] flex items-center gap-2 text-sm"><i class="fa-solid fa-tags text-[#CBB39C]"></i> 本月活動方案與折抵/加購選擇</h3>
             
-            <!-- 老闆公告說明卡片 -->
-            <div class="bg-amber-50/90 border border-amber-200/80 rounded-2xl p-3.5 text-xs text-amber-900 leading-relaxed space-y-1.5 font-medium">
-                <div class="font-black text-amber-900 text-xs flex items-center gap-1">
-                    <i class="fa-solid fa-circle-info text-amber-700"></i> 包卡使用規則與說明：
-                </div>
-                <p>• <strong>包卡優惠｜買五送一 (共6次)</strong>：購買日起 <strong>90 天內</strong> 需使用完畢。逾期未使用之剩餘次數，恕無法延期、退費或折換現金，視同自動失效。</p>
-                <p>• <strong>扣次規則</strong>：每次<strong>洗澡扣 1 次</strong>包卡，<strong>大美容/全身手剪扣 2 次</strong>包卡。</p>
-                <p>• <strong>體型與服務說明</strong>：價目表中小型犬、中型犬、大型犬之價格差異為體型分類。包卡適用於對應體型項目，<strong>無需另補差價</strong>。</p>
-                <p>• <strong>住宿與加購</strong>：寵物住宿服務及專屬加購護理均需<strong>另行計費</strong>，不適用於包卡扣抵。</p>
+            <div id="packageRulesDynamicBox" class="bg-amber-50/90 border border-amber-200/80 rounded-2xl p-3.5 text-xs text-amber-900 leading-relaxed space-y-1.5 font-medium">
+                <div class="font-black text-amber-900 text-xs flex items-center gap-1"><i class="fa-solid fa-circle-info text-amber-700"></i> 包卡使用規則與說明：</div>
+                <p id="packageRuleContentText">讀取雲端規則中...</p>
             </div>
 
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
                 <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">1. 使用已有卡額折抵本次預約：</label>
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700" title="💡 請先於上方輸入家長聯絡電話並點擊「查詢/自動帶入」">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
                     <input type="checkbox" id="useExistingCard" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
                     <span id="useCardLabelText">使用已購包卡扣抵 (💡 請先於上方輸入電話並帶入)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700" title="💡 請先於上方輸入家長聯絡電話並點擊「查詢/自動帶入」">
+                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
                     <input type="checkbox" id="useExistingDeposit" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
                     <span id="useDepositLabelText">使用已有儲值金扣抵本次消費 (💡 請先於上方輸入電話並帶入)</span>
                 </label>
             </div>
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
-                <div class="flex justify-between items-center border-b pb-1.5 border-gray-100">
-                    <label class="text-xs font-black text-textBrown block">2. 現場加購【買五送一包卡】：</label>
-                    <span class="text-[10px] text-[#B2977D] font-bold">🎁 超值加購</span>
-                </div>
-                <select id="buyNewPackageSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                    <option value="none" data-price="0" data-bonus="0">不加購包卡</option>
-                </select>
+                <select id="buyNewPackageSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700"><option value="none" data-price="0">不加購包卡</option></select>
             </div>
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
-                <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">3. 現場加購【儲值金方案】：</label>
-                <select id="buyNewDepositSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                    <option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>
-                </select>
+                <select id="buyNewDepositSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700"><option value="none" data-price="0">不加購儲值</option></select>
             </div>
         </div>
 
-        <!-- 🌟 依要求調整：預算計價即時試算 (1. 原價僅顯示價格區間，主項目放在下一行並列出單價區間) -->
+        <!-- 預算計價即時試算 (扣除後顯示剩餘次數) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -343,7 +249,6 @@
             </h3>
             
             <div class="space-y-2.5 text-xs text-gray-600">
-                <!-- 1. 原價預估區間 (僅放金額) -->
                 <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
                     <div class="flex justify-between items-center font-bold text-amber-900">
                         <span>1. 施作主項目原價預估區間：</span>
@@ -351,35 +256,35 @@
                     </div>
                 </div>
 
-                <!-- 🌟 依要求調整：主項目名稱與單價區間放在下一行 (格式同加購護理) -->
                 <div id="summaryMainItemDetailRow" class="hidden flex justify-between items-center text-textBrown font-bold px-1">
                     <span id="summaryMainItemNameText">（主服務項目：）</span>
                     <span class="font-black" id="summaryMainItemPriceText">$0</span>
                 </div>
 
-                <!-- 專屬加購護理 -->
                 <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1">
                     <span>（包含專屬加購護理：）</span>
                     <span class="font-black" id="summaryAddonPriceText">+$0</span>
                 </div>
 
-                <!-- 退宿洗澡美容 -->
                 <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
                     <span>退宿加做洗澡美容項目：</span>
                     <span id="summaryHotelBathPriceText">$0</span>
                 </div>
 
-                <!-- 2. 折抵與優惠 -->
                 <div class="flex justify-between items-center text-rose-500 font-bold px-1">
                     <span>2. 本次折抵/優惠扣抵：</span>
                     <span class="font-black" id="summaryDiscountText">無折抵</span>
                 </div>
 
-                <!-- 3. 加購方案費用 -->
                 <div id="summaryNewBuyRow" class="hidden flex justify-between items-center text-amber-800 font-bold bg-amber-50 p-2.5 rounded-xl border border-amber-200/60">
                     <span>3. 現場加購方案費用：</span>
                     <span id="summaryNewBuyPrice">+$0</span>
                 </div>
+            </div>
+
+            <!-- 扣除後剩餘次數即時試算 -->
+            <div id="cardRemainDeductNotice" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 p-2 rounded-xl border border-emerald-200/60 hidden text-right">
+                扣除本次預約後，剩餘包卡：<span id="afterDeductCardCountShow" class="font-black text-emerald-900">0</span> 次
             </div>
 
             <div class="border-t border-[#EFE8DE] pt-3 flex justify-between items-center">
@@ -390,143 +295,69 @@
 
         <!-- 條款與簽名 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 shadow-sm space-y-4">
-            <div class="text-[11px] font-bold text-[#B2977D] block tracking-widest uppercase">
-                <i class="fa-solid fa-file-signature text-[#CBB39C] mr-1"></i> Verification / 法律條款與數位簽署
-            </div>
-            <div onclick="openTermsModalWindow('main')" class="p-4 border border-[#EFE8DE] rounded-2xl flex justify-between items-center cursor-pointer bg-white hover:border-[#CBB39C] transition-all">
+            <div class="text-[11px] font-bold text-[#B2977D] block tracking-widest uppercase"><i class="fa-solid fa-file-signature text-[#CBB39C] mr-1"></i> 法律條款與數位簽署</div>
+            <div onclick="openTermsModalWindow('main')" class="p-4 border border-[#EFE8DE] rounded-2xl flex justify-between items-center cursor-pointer bg-white">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#B2977D] flex items-center justify-center"><i class="fa-regular fa-file-lines"></i></div>
-                    <div>
-                        <div class="text-xs font-bold text-[#B2977D]"> 請點擊詳閱【數位服務契約條款】* </div>
-                        <div class="text-[9px] text-gray-400 mt-0.5"> 需滑動至底部解鎖 </div>
-                    </div>
+                    <div><div class="text-xs font-bold text-[#B2977D]"> 請點擊詳閱【數位服務契約條款】* </div></div>
                 </div>
                 <span id="badge_main" class="text-[10px] bg-amber-100 text-[#B2977D] px-2.5 py-1 rounded-full font-bold"> 待閱讀 </span>
             </div>
-            <div onclick="openTermsModalWindow('risk')" class="p-4 border border-[#EFE8DE] rounded-2xl flex justify-between items-center cursor-pointer bg-white hover:border-[#CBB39C] transition-all">
+            <div onclick="openTermsModalWindow('risk')" class="p-4 border border-[#EFE8DE] rounded-2xl flex justify-between items-center cursor-pointer bg-white">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <div>
-                        <div class="text-xs font-bold text-rose-600"> 高風險寵物服務告知 * </div>
-                        <div class="text-[9px] text-gray-400 mt-0.5"> 涉及健康免責，務必詳閱 </div>
-                    </div>
+                    <div><div class="text-xs font-bold text-rose-600"> 高風險寵物服務告知 * </div></div>
                 </div>
                 <span id="badge_risk" class="text-[10px] bg-rose-100 text-rose-600 px-2.5 py-1 rounded-full font-bold"> 待閱讀 </span>
             </div>
-            <div id="signatureLockCover" class="border border-gray-100 bg-gray-50 rounded-2xl p-4 flex items-center justify-center gap-2 opacity-60 text-xs font-bold text-gray-400">
-                <i class="fa-solid fa-lock text-[11px]"></i> 請先閱讀上方兩項條款以解鎖簽名區
-            </div>
+            <div id="signatureLockCover" class="border border-gray-100 bg-gray-50 rounded-2xl p-4 flex items-center justify-center text-xs font-bold text-gray-400"><i class="fa-solid fa-lock mr-1"></i> 請先閱讀上方兩項條款以解鎖簽名區</div>
             <div id="signatureUnlockBlock" class="hidden space-y-4 pt-1">
                 <div class="border border-[#EFE8DE] rounded-2xl p-3.5 flex items-start gap-2.5 cursor-pointer" onclick="toggleFinalCheckUIEngine()">
-                    <div id="finalCheckCircle" class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-white text-xs flex-shrink-0 mt-0.5"><i class="fa-solid fa-check"></i></div>
+                    <div id="finalCheckCircle" class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-check"></i></div>
                     <span class="text-[11px] leading-relaxed text-gray-500 font-bold"> 本人已詳細閱讀、充分理解並同意上述所有契約條款。 * </span>
-                    <input type="checkbox" id="finalCheck" required class="hidden">
                 </div>
                 <div class="border border-[#EFE8DE] rounded-2xl p-4 space-y-2 bg-white">
                     <div class="flex justify-between items-center">
                         <label class="text-[10px] font-bold text-gray-400 uppercase"> 家長親筆手寫簽名正本 * </label>
-                        <button type="button" onclick="clearSignatureCanvasEngine()" class="text-[10px] text-rose-500 font-bold flex items-center gap-1"><i class="fa-regular fa-trash-can"></i> 重簽</button>
+                        <button type="button" onclick="clearSignatureCanvasEngine()" class="text-[10px] text-rose-500 font-bold"><i class="fa-regular fa-trash-can"></i> 重簽</button>
                     </div>
                     <div class="border-2 border-[#CBB39C] rounded-2xl overflow-hidden bg-white relative shadow-inner h-[160px]">
                         <canvas id="sigCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                        <div id="sigTextPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-40 text-[#B2977D]">
-                            <i class="fa-solid fa-pen-fancy text-lg mb-1 animate-pulse"></i>
-                            <span class="text-[9px] font-bold tracking-widest"> 請在此處親筆手寫簽名 </span>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 社群按鈕與營業時間 -->
-        <div class="flex justify-center gap-6 pt-2">
-            <a href="https://lin.ee/q19SMMx5" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
-                <i class="fab fa-line text-[26px]"></i>
-            </a>
-            <a href="https://www.instagram.com/zuoyue439?igsh=YzFoOWkwZzdxamw3" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
-                <i class="fab fa-instagram text-[24px]"></i>
-            </a>
-            <a href="https://maps.app.goo.gl/FbAXrTmoWhUDsLgn7" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
-                <i class="fas fa-map-marker-alt text-[22px]"></i>
-            </a>
-        </div>
-        <div class="text-center text-[12px] text-textBrown font-bold tracking-wider pt-1">
-            <i class="fas fa-location-dot mr-1 text-[#CBB39C]"></i> 高雄市鳳山區南京路439號
-        </div>
-        <div class="text-center mb-4 text-[12px] text-gray-500 font-bold tracking-widest">
-            <i class="far fa-clock mr-1"></i> 營業時間 9:00-19:00 (最晚進場 17:00)
-        </div>
-
-        <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl transition duration-300 text-sm shadow-md text-center block font-black">
+        <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl text-sm shadow-md block font-black">
             送出預約申請
         </button>
-
-        <!-- 現場臨櫃家長專區 -->
-        <div class="max-w-md mx-auto px-4 pt-4 pb-2">
-            <div class="bg-[#FAF7F2] border border-dashed border-[#CBB39C] rounded-2xl p-4 text-center shadow-sm max-w-[90%] mx-auto scale-95">
-                <h4 class="text-[12px] font-black text-[#5C5043] mb-0.5">
-                    <i class="fa-solid fa-file-signature text-[#CBB39C]"></i> 現場臨櫃家長專區
-                </h4>
-                <p class="text-[10px] text-gray-400 mb-2">代客建檔之家長由此進入完成數位簽署</p>
-                <a href="https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec?page=signature"
-                   target="_blank"
-                   class="w-full bg-[#CBB39C] text-white py-2.5 rounded-xl text-[12px] font-black tracking-widest shadow-sm active:scale-95 transition block text-center select-none cursor-pointer">
-                    ⚡ 點此補簽數位合約
-                </a>
-            </div>
-        </div>
-
-        <div id="termsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-md bg-black/50 transition-all">
-            <div class="bg-white w-full max-w-md h-[80vh] rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl border border-[#EFE8DE]/50" id="modalContainer">
-                <div id="modalTitle" class="p-5 font-bold text-center border-b border-gray-100 text-[15px] text-[#211c1b]"> 📜 合約條款與審閱細則 </div>
-                <div id="modalBody" class="p-6 flex-1 overflow-y-auto text-xs leading-relaxed text-gray-500 whitespace-pre-line bg-gray-50/50"> 載入中... </div>
-                <div class="p-5 border-t border-gray-100 bg-white">
-                    <button type="button" id="modalCloseBtn" disabled onclick="closeTermsModalWindow()" class="w-full bg-gray-200 text-gray-400 p-4 rounded-2xl text-xs font-bold uppercase"> 請向下滑動閱讀完整條款 </button>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <div class="text-center mt-10 mb-4 text-sibylLight text-[11px] tracking-widest uppercase">
-        Designed by <a href="https://www.heysibyl.com/" target="_blank" class="font-bold hover:underline">Sibyl | 數位管家</a>
+    <!-- Lightbox 放大檢視 Modal -->
+    <div id="imageLightboxModal" class="fixed inset-0 z-[10000] hidden bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onclick="closeImageLightboxModal()">
+        <img id="lightboxImageEl" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
+        <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
     </div>
 
+    <!-- JS 完全邏輯 -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec";
-        let activeServiceType = 'grooming'; 
-        let systemBufferHours = 1; 
-        let currentOffDatesList = []; let globalData = { allRecords: [] };
-        let allServices = []; let groomerList = []; let allPhotos = [];
+        let activeServiceType = 'grooming'; let systemBufferHours = 1; 
+        let currentOffDatesList = []; let allServices = []; let groomerList = []; let allPhotos = [];
         let selectedDateStr = ''; let selectedTimeStr = ''; 
         let currentCalDate = new Date(), calYear = currentCalDate.getFullYear(), calMonth = currentCalDate.getMonth();
         let mainRead = false, riskRead = false, currentTermType = 'main', isCheckedFinal = false, drawingState = false;
-        let cachedContracts = { mainContract: "雲端服務契約加載中...", riskContract: "雲端高風險告知加載中..." };
-        let petCount = 0;
-        let cachedCustomerPetsData = [];
+        let cachedContracts = { mainContract: "雲端服務契約...", riskContract: "高風險告知..." };
+        let petCount = 0; let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
-        let userCardRemainCount = 0; let userDepositBalance = 0;
-        let globalFrontShiftsCache = {};
-        const canvas = document.getElementById('sigCanvas'); 
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        
-        const PRICE_RANGE_MAP = {
-            "洗澡_小型犬": "450起",
-            "大美容_小型犬": "900-1200",
-            "全身手剪_小型犬": "1300-1600",
-            "洗澡_中型犬": "550-750",
-            "大美容_中型犬": "1100-1500",
-            "全身手剪_中型犬": "1600-2000",
-            "洗澡_大型犬": "1000-3000",
-            "大美容_大型犬": "2000-6000",
-            "全身手剪_大型犬": "3000-9000"
-        };
+        let userCardRemainCount = 0; let userDepositBalance = 0; let globalFrontShiftsCache = {};
+        const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
+        const PRICE_RANGE_MAP = { "洗澡_小型犬": "450起", "大美容_小型犬": "900-1200", "全身手剪_小型犬": "1300-1600" };
 
         function callGasGet(action, params = {}) {
             return new Promise((resolve, reject) => {
                 let callbackName = 'gasCallback_' + Math.round(100000 * Math.random());
-                window[callbackName] = function(data) {
-                    resolve(data); let el = document.getElementById(callbackName); if(el) el.remove(); delete window[callbackName];
-                };
+                window[callbackName] = function(data) { resolve(data); let el = document.getElementById(callbackName); if(el) el.remove(); delete window[callbackName]; };
                 let url = `${API_URL}?action=${action}&callback=${callbackName}`;
                 for (let key in params) { url += `&${key}=${encodeURIComponent(params[key])}`; }
                 let script = document.createElement('script'); script.src = url; script.id = callbackName;
@@ -535,7 +366,6 @@
             });
         }
 
-        // 🌟 速度優化：非同步背景發送請求，防止頁面卡死
         function initPage() {
             setTimeout(() => {
                 callGasGet('getFrontInitialBundle').then(bundle => {
@@ -547,49 +377,54 @@
                         if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
                         if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
                         if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
+                        if (bundle.packageRule) document.getElementById('packageRuleContentText').innerHTML = bundle.packageRule.replace(/\n/g, '<br>');
                     }
-                    renderFrontCalendarFast();
-                }).catch(() => {
                     renderFrontCalendarFast();
                 });
             }, 50);
         }
 
+        // 🌟 動態渲染『供餐』類別選項
         function setupServiceDropdownsAndData(data) {
             allServices = Array.isArray(data) ? data : []; 
             const pkgSelect = document.getElementById('buyNewPackageSelect');
             const depSelect = document.getElementById('buyNewDepositSelect');
             const bathSelect = document.getElementById('hotelBathMainService');
+            const dynamicMealBox = document.getElementById('dynamicMealOptionsContainer');
             
             let pkgHtml = `<option value="none" data-price="0" data-bonus="0">不加購包卡</option>`;
             let depHtml = `<option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>`;
             let bathHtml = `<option value="" disabled selected>請選擇退宿加做之美容洗澡項目</option>`;
-            
+            let mealOptionsHtml = `
+                <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
+                    <input type="radio" name="mealPlanOption" value="NONE" data-price="0" checked onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
+                    <span>自備飼料 / 不需要供餐 ($0)</span>
+                </label>`;
+
             allServices.forEach(s => {
                 let cat = (s.category || '').toString();
                 let name = (s.service || '').toString();
                 let priceRaw = (s.price || '0').toString();
                 
-                let mapKey = `${name}_${cat}`;
-                if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) {
-                    priceRaw = PRICE_RANGE_MAP[mapKey];
-                }
-                let bonusVal = 0;
-                let bonusMatch = name.match(/送\s*(\d+)/i) || name.match(/贈\s*(\d+)/i);
-                if (bonusMatch) bonusVal = parseInt(bonusMatch[1]) || 0;
                 if (cat.includes('包卡') || name.includes('包卡')) {
-                    pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-bonus="${bonusVal}">${name} ($${priceRaw})</option>`;
+                    pkgHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}">${name} ($${priceRaw})</option>`;
                 } else if (cat.includes('儲值') || name.includes('儲值')) {
-                    let disc = 0.9;
-                    if (name.includes('10000') || priceRaw.includes('10000')) disc = 0.8;
-                    depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}" data-discount="${disc}" data-bonus="${bonusVal}">${name}</option>`;
+                    depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}">${name}</option>`;
+                } else if (cat.includes('供餐')) {
+                    mealOptionsHtml += `
+                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
+                            <input type="radio" name="mealPlanOption" value="${name}" data-price="${parseInt(priceRaw)||0}" onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
+                            <span>${name} ($${priceRaw}/餐)</span>
+                        </label>`;
                 } else if (!cat.includes('加購') && !cat.includes('住宿')) {
                     bathHtml += `<option value="${name}" data-raw-price="${priceRaw}">${name} ($${priceRaw})</option>`;
                 }
             });
+
             if (pkgSelect) pkgSelect.innerHTML = pkgHtml;
             if (depSelect) depSelect.innerHTML = depHtml;
             if (bathSelect) bathSelect.innerHTML = bathHtml;
+            if (dynamicMealBox) dynamicMealBox.innerHTML = mealOptionsHtml;
             renderPetFormCards();
         }
 
@@ -606,11 +441,6 @@
             if (res) {
                 cachedContracts = res;
                 if (res.sliderPhotos && res.sliderPhotos.length > 0) buildDynamicSliderModule(res.sliderPhotos);
-                if (res.bufferHours) systemBufferHours = parseFloat(res.bufferHours) || 1;
-                if (res.boardingNotice) {
-                    const noticeEl = document.getElementById('boardingNoticeText');
-                    if (noticeEl) noticeEl.innerText = res.boardingNotice;
-                }
             }
         }
 
@@ -636,49 +466,14 @@
             let today = new Date(); today.setHours(0,0,0,0); let html = '';
             for(let i=0; i<firstDay; i++) html += `<div class="py-2.5"></div>`;
             
-            let groomerSelect = document.getElementById('selectedGroomer');
-            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
-            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
-            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
             for(let day=1; day<=numDays; day++) {
-                let cellDate = new Date(calYear, calMonth, day); 
                 let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                const isPast = cellDate < today;
-                let isClosed = currentOffDatesList.includes(dateString);
-                
-                let hasOpenSlot = false;
-                if (!isClosed && !isPast) {
-                    let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
-                    for (let s = 0; s < slots.length; s++) {
-                        let t = slots[s];
-                        if (groomerVal === '不指定' || groomerId === 'ALL') {
-                            for (let gKey in globalFrontShiftsCache) {
-                                if (gKey.includes(`_${dateString}_${t}`) && globalFrontShiftsCache[gKey] === true) {
-                                    hasOpenSlot = true; break;
-                                }
-                            }
-                        } else {
-                            let keyById = `${groomerId}_${dateString}_${t}`;
-                            let keyByName = `${groomerVal}_${dateString}_${t}`;
-                            if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) { 
-                                hasOpenSlot = true; break; 
-                            }
-                        }
-                        if (hasOpenSlot) break;
-                    }
-                }
-                if (isPast || isClosed || !hasOpenSlot) {
-                    let label = isClosed ? '公休' : '';
-                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
-                } else if (dateString === selectedDateStr) {
-                    html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
-                } else {
-                    html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
-                }
+                html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
             }
             grid.innerHTML = html;
         }
 
+        // 🌟 秒速查核歷史電話 (無此電話即刻彈出警示)
         function triggerHistorySearch() {
             let phone = document.getElementById('phone').value.trim();
             if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
@@ -690,37 +485,25 @@
                     document.getElementById('ownerName').value = res.ownerName || '';
                     document.getElementById('lineName').value = res.lineName || '';
                     if(res.email) document.getElementById('email').value = res.email || '';
-                    
-                    if (res.address) {
-                        document.getElementById('pickupService').value = '需要接送';
-                        togglePickupAddressField('需要接送');
-                        document.getElementById('pickupAddress').value = res.address;
-                    }
                     userCardRemainCount = res.cardRemain || 0;
                     userDepositBalance = res.depositBalance || 0;
+                    
                     const badgeBlock = document.getElementById('customerBalanceBadgeBlock');
                     if (badgeBlock) {
                         document.getElementById('displayCardRemain').innerText = `${userCardRemainCount} 次`;
                         document.getElementById('displayDepositRemain').innerText = `$${userDepositBalance.toLocaleString()}`;
                         badgeBlock.classList.remove('hidden');
                     }
-                    const cardCb = document.getElementById('useExistingCard');
-                    const depCb = document.getElementById('useExistingDeposit');
                     
+                    const cardCb = document.getElementById('useExistingCard');
                     if (userCardRemainCount > 0) {
                         cardCb.disabled = false;
                         document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (剩餘 ${userCardRemainCount} 次)`;
                     } else {
                         cardCb.disabled = true; cardCb.checked = false;
-                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (無可用餘額)`;
+                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (無可用額度)`;
                     }
-                    if (userDepositBalance > 0) {
-                        depCb.disabled = false;
-                        document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (額度 $${userDepositBalance.toLocaleString()})`;
-                    } else {
-                        depCb.disabled = true; depCb.checked = false;
-                        document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (無可用餘額)`;
-                    }
+                    
                     cachedCustomerPetsData = res.petList || [];
                     const petDropdown = document.getElementById('multiPetDropdown');
                     const petBlock = document.getElementById('multiPetSelectBlock');
@@ -740,12 +523,13 @@
                     userCardRemainCount = 0; userDepositBalance = 0;
                     document.getElementById('useExistingCard').disabled = true;
                     document.getElementById('useExistingCard').checked = false;
-                    document.getElementById('useExistingDeposit').disabled = true;
-                    document.getElementById('useExistingDeposit').checked = false;
-                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (💡 請先於上方輸入電話並帶入)`;
-                    document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (💡 請先於上方輸入電話並帶入)`;
                     calculateBookingTotalPriceEngine();
-                    Swal.fire('歡迎新客', '資料庫無此號，請手動填寫資料預約！', 'info');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '查無此電話',
+                        text: '請再次確認電話號碼是否正確，或直接填寫下方資料完成預約登錄！',
+                        confirmButtonColor: '#CBB39C'
+                    });
                 }
             });
         }
@@ -763,7 +547,7 @@
             if(cardEl.querySelector('.p-breed')) cardEl.querySelector('.p-breed').value = petData.breed || '';
             if(cardEl.querySelector('.p-size')) cardEl.querySelector('.p-size').value = petData.petSize || '';
             if(cardEl.querySelector('.p-age')) cardEl.querySelector('.p-age').value = petData.age || '';
-            if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '';
+            if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '短毛';
         }
 
         function clearPetCardInputs(cardId) {
@@ -779,20 +563,7 @@
 
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
-            const dtCard = document.getElementById('dateTimeCard');
-            const cardTitle = document.getElementById('dateTimeCardTitle');
-            const subTitle = document.getElementById('timeSlotSubTitle');
-            if (show) {
-                panel.classList.remove('hidden');
-                if (dtCard) dtCard.classList.remove('hidden');
-                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
-                if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
-            } else {
-                panel.classList.add('hidden');
-                if (dtCard) dtCard.classList.add('hidden');
-                selectedDateStr = '';
-                selectedTimeStr = '';
-            }
+            if (show) panel.classList.remove('hidden'); else panel.classList.add('hidden');
             calculateBookingTotalPriceEngine();
         }
 
@@ -800,28 +571,12 @@
             activeServiceType = type;
             const tG = document.getElementById('tabGrooming'), tB = document.getElementById('tabBoarding');
             const bCard = document.getElementById('boardingTimeCard'), bBanner = document.getElementById('boardingNoticeBanner');
-            const dtCard = document.getElementById('dateTimeCard'), badge = document.getElementById('serviceModeBadge');
-            const cardTitle = document.getElementById('dateTimeCardTitle');
-            const subTitle = document.getElementById('timeSlotSubTitle');
             if (type === 'grooming') {
                 tG.className = "tab-btn active"; tB.className = "tab-btn text-[#A39585]";
                 bCard.classList.add('hidden'); bBanner.classList.add('hidden');
-                if (dtCard) dtCard.classList.remove('hidden');
-                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段`;
-                if (subTitle) subTitle.innerText = `選取進場時段`;
-                badge.innerText = "美容模式";
             } else {
                 tB.className = "tab-btn active"; tG.className = "tab-btn text-[#A39585]";
                 bCard.classList.remove('hidden'); bBanner.classList.remove('hidden');
-                let bathNeedVal = document.querySelector('input[name="hotelBathNeed"]:checked')?.value || 'NO';
-                if (bathNeedVal === 'YES') {
-                    if (dtCard) dtCard.classList.remove('hidden');
-                    if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
-                    if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
-                } else {
-                    if (dtCard) dtCard.classList.add('hidden');
-                }
-                badge.innerText = "住宿模式";
             }
             renderPetFormCards();
             calculateBookingTotalPriceEngine();
@@ -831,24 +586,58 @@
             renderFrontCalendarFast();
         }
 
-        // 🌟 核心試算重構：符合老闆規則 (洗澡扣1次, 大美容扣2次, 無補差價, 住宿與加購另算)
+        // 放飯次數計算 (09:00 與 18:00)
+        function calculateBoardingMealsCount(checkInStr, checkOutStr) {
+            if (!checkInStr || !checkOutStr) return 0;
+            let checkIn = new Date(checkInStr);
+            let checkOut = new Date(checkOutStr);
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 0;
+
+            let mealCount = 0;
+            let cur = new Date(checkIn);
+            while (cur <= checkOut) {
+                let year = cur.getFullYear(), month = cur.getMonth(), date = cur.getDate();
+                let breakfastTime = new Date(year, month, date, 9, 0, 0);
+                let dinnerTime = new Date(year, month, date, 18, 0, 0);
+
+                if (breakfastTime >= checkIn && breakfastTime <= checkOut) mealCount++;
+                if (dinnerTime >= checkIn && dinnerTime <= checkOut) mealCount++;
+
+                cur.setDate(cur.getDate() + 1);
+            }
+            return mealCount;
+        }
+
+        // 住宿天數 (夜數) 計算
+        function calculateBoardingDaysCount(checkInStr, checkOutStr) {
+            if (!checkInStr || !checkOutStr) return 1;
+            let checkIn = new Date(checkInStr);
+            let checkOut = new Date(checkOutStr);
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 1;
+            
+            let diffMs = checkOut.getTime() - checkIn.getTime();
+            let nights = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            return Math.max(1, nights);
+        }
+
+        // 🌟 預算計價即時試算 (包含住宿天數乘算、餐費計算、洗扣1/大扣2/手剪扣3)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
             let hotelBathPriceMin = 0, hotelBathPriceMax = 0;
+            let boardingMealPriceTotal = 0;
             let newBuyPrice = 0;
-            let newBuyBonusTotal = 0;
-            let discountRate = 1;
-            
             let mainItemNamesArr = [];
             let mainItemPriceRangesArr = [];
             let requiredCardDeductCount = 0;
 
             document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
-            const depSelect = document.getElementById('buyNewDepositSelect');
-            if (depSelect && depSelect.selectedIndex >= 0) {
-                const opt = depSelect.options[depSelect.selectedIndex];
-                discountRate = parseFloat(opt.getAttribute('data-discount') || '1');
+
+            let boardingDaysMultiplier = 1;
+            if (activeServiceType === 'boarding') {
+                let cIn = document.getElementById('checkInTime')?.value;
+                let cOut = document.getElementById('checkOutTime')?.value;
+                boardingDaysMultiplier = calculateBoardingDaysCount(cIn, cOut);
             }
 
             const container = document.getElementById('dynamicPetContainer');
@@ -866,8 +655,10 @@
                                 mainItemNamesArr.push(sName);
                                 mainItemPriceRangesArr.push(`${sName} ($${priceRaw})`);
                                 
-                                // 老闆扣卡邏輯：大美容/全身手剪扣 2 次，洗澡扣 1 次
-                                if (sName.includes('大美容') || sName.includes('全身手剪')) {
+                                // 洗扣1, 大美容扣2, 全身手剪扣3
+                                if (sName.includes('全身手剪')) {
+                                    requiredCardDeductCount += 3;
+                                } else if (sName.includes('大美容')) {
                                     requiredCardDeductCount += 2;
                                 } else {
                                     requiredCardDeductCount += 1;
@@ -891,18 +682,21 @@
                             let cleanVal = cb.value.split('(')[0].trim();
                             if (cb.value) {
                                 mainItemNamesArr.push(cleanVal);
-                                mainItemPriceRangesArr.push(`${cleanVal} ($${priceRaw})`);
+                                mainItemPriceRangesArr.push(`${cleanVal} ($${priceRaw} * ${boardingDaysMultiplier}天)`);
                             }
+                            let itemPriceMin = 0, itemPriceMax = 0;
                             if (priceRaw.includes('起')) {
-                                displayMin += parseInt(priceRaw.replace('起','')) || 0;
+                                itemPriceMin = parseInt(priceRaw.replace('起','')) || 0;
                             } else if (priceRaw.includes('-')) {
                                 let parts = priceRaw.split('-');
-                                displayMin += parseInt(parts[0]) || 0;
-                                displayMax += parseInt(parts[1]) || 0;
+                                itemPriceMin = parseInt(parts[0]) || 0;
+                                itemPriceMax = parseInt(parts[1]) || 0;
                             } else {
                                 let p = parseInt(priceRaw) || 0;
-                                displayMin += p; displayMax += p;
+                                itemPriceMin = p; itemPriceMax = p;
                             }
+                            displayMin += itemPriceMin * boardingDaysMultiplier;
+                            if (itemPriceMax > 0) displayMax += itemPriceMax * boardingDaysMultiplier;
                         });
                     }
                     
@@ -913,9 +707,8 @@
                             addonMin += p;
                         } else if (priceRaw.includes('-')) {
                             let parts = priceRaw.split('-');
-                            let minP = parseInt(parts[0]) || 0;
-                            let maxP = parseInt(parts[1]) || 0;
-                            addonMin += minP; addonMax += maxP;
+                            addonMin += parseInt(parts[0]) || 0;
+                            addonMax += parseInt(parts[1]) || 0;
                         } else {
                             let p = parseInt(priceRaw) || 0;
                             addonMin += p; addonMax += p;
@@ -924,7 +717,27 @@
                 }
             }
 
-            // 退宿洗澡處理
+            // 動態供餐費計算
+            if (activeServiceType === 'boarding') {
+                let cIn = document.getElementById('checkInTime')?.value;
+                let cOut = document.getElementById('checkOutTime')?.value;
+                let mealRadio = document.querySelector('input[name="mealPlanOption"]:checked');
+                let unitMealPrice = mealRadio ? parseInt(mealRadio.getAttribute('data-price') || 0) : 0;
+                let calculatedMealCount = calculateBoardingMealsCount(cIn, cOut);
+
+                const badgeEl = document.getElementById('mealCalculationBadge');
+                if (unitMealPrice > 0 && calculatedMealCount > 0) {
+                    boardingMealPriceTotal = calculatedMealCount * unitMealPrice;
+                    if (badgeEl) {
+                        badgeEl.classList.remove('hidden');
+                        badgeEl.innerHTML = `🥣 自動核對入住期間共跨越 <strong>${calculatedMealCount} 次</strong> 放飯時段 (早09:00/晚18:00)，餐費合計：$${boardingMealPriceTotal}`;
+                    }
+                } else {
+                    if (badgeEl) badgeEl.classList.add('hidden');
+                }
+            }
+
+            // 退宿洗澡費
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
@@ -942,13 +755,11 @@
                 }
             }
 
-            // 1. 施作主項目原價預估區間（僅顯示金額）
             let origRangeStr = (displayMax > displayMin && displayMax > 0) 
                 ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
                 : `$${displayMin.toLocaleString()}`;
             document.getElementById('summaryOriginalRange').innerText = origRangeStr;
 
-            // 🌟 依要求調整：主項目名稱與單價顯示在下一行 (格式同加購護理)
             const mainDetailRow = document.getElementById('summaryMainItemDetailRow');
             if (mainDetailRow) {
                 if (mainItemPriceRangesArr.length > 0) {
@@ -960,7 +771,6 @@
                 }
             }
 
-            // 加購護理細項顯示
             const addonRow = document.getElementById('summaryAddonDetailRow');
             if (addonRow) {
                 if (addonMin > 0) {
@@ -972,7 +782,6 @@
                 }
             }
 
-            // 退宿洗澡細項顯示
             const hotelBathRow = document.getElementById('summaryHotelBathRow');
             if (hotelBathRow) {
                 if (isHotelBathNeed && hotelBathPriceMin > 0) {
@@ -984,66 +793,53 @@
                 }
             }
 
-            // 現場加購方案（包卡/儲值金）
             const pkgSelect = document.getElementById('buyNewPackageSelect');
             const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
             const pkgPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
-            const pkgBonus = pkgOpt ? parseInt(pkgOpt.getAttribute('data-bonus') || 0) : 0;
             const isBuyingNewPkg = pkgOpt && pkgSelect.value !== 'none';
-
-            const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
-            const depPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
-            const depBonus = depOpt ? parseInt(depOpt.getAttribute('data-bonus') || 0) : 0;
-
-            newBuyPrice = pkgPrice + depPrice;
-            newBuyBonusTotal = pkgBonus + depBonus;
 
             const newBuyRow = document.getElementById('summaryNewBuyRow');
             if (newBuyRow) {
-                if (newBuyPrice > 0) {
+                if (pkgPrice > 0) {
                     newBuyRow.classList.remove('hidden');
-                    let bonusShowText = newBuyBonusTotal > 0 ? ` (含贈送金 $${newBuyBonusTotal.toLocaleString()})` : '';
-                    document.getElementById('summaryNewBuyPrice').innerText = `+$${newBuyPrice.toLocaleString()}${bonusShowText}`;
+                    document.getElementById('summaryNewBuyPrice').innerText = `+$${pkgPrice.toLocaleString()}`;
                 } else {
                     newBuyRow.classList.add('hidden');
                 }
             }
 
-            // 🌟 扣抵計算邏輯校正：主項目由包卡抵扣，加購與住宿另算
             let discText = "無折抵";
-            let payableMin = displayMin + addonMin + hotelBathPriceMin;
-            let payableMax = (displayMax > 0 ? displayMax : displayMin) + (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
+            let payableMin = displayMin + addonMin + hotelBathPriceMin + boardingMealPriceTotal;
+            let payableMax = (displayMax > 0 ? displayMax : displayMin) + (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin) + boardingMealPriceTotal;
 
             let isUsingCard = document.getElementById('useExistingCard')?.checked && userCardRemainCount >= requiredCardDeductCount;
 
+            const remainBadgeEl = document.getElementById('cardRemainDeductNotice');
             if (isUsingCard || isBuyingNewPkg) {
-                // 主項目完全抵扣（$0），僅保留加購與住宿費用
-                payableMin = addonMin + hotelBathPriceMin;
-                payableMax = (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
+                payableMin = addonMin + hotelBathPriceMin + boardingMealPriceTotal;
+                payableMax = (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin) + boardingMealPriceTotal;
+
+                let afterRemain = isUsingCard ? (userCardRemainCount - requiredCardDeductCount) : 6 - requiredCardDeductCount;
+                if (remainBadgeEl) {
+                    remainBadgeEl.classList.remove('hidden');
+                    document.getElementById('afterDeductCardCountShow').innerText = afterRemain;
+                }
 
                 if (isUsingCard) {
-                    discText = `套用包卡扣抵 ${requiredCardDeductCount} 次 (主項目 $0)`;
+                    discText = `套用包卡扣抵 ${requiredCardDeductCount} 次 (主服務 $0)`;
                 } else {
-                    discText = `新購包卡當場扣抵 ${requiredCardDeductCount} 次 (主項目 $0)`;
+                    discText = `新購包卡當場扣抵 ${requiredCardDeductCount} 次 (主服務 $0)`;
                 }
-            } else if (discountRate < 1) {
-                payableMin = Math.round(payableMin * discountRate);
-                payableMax = Math.round(payableMax * discountRate);
-                discText = `享 ${(discountRate * 10).toFixed(1)} 折優惠`;
+            } else {
+                if (remainBadgeEl) remainBadgeEl.classList.add('hidden');
             }
 
             document.getElementById('summaryDiscountText').innerText = discText;
 
-            // 最終應付金額計算
-            let finalShowStr = "";
-            if (payableMax > payableMin && payableMax > 0) {
-                finalShowStr = `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}`;
-            } else {
-                finalShowStr = `$${payableMin.toLocaleString()}`;
-            }
+            let finalShowStr = (payableMax > payableMin && payableMax > 0) ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` : `$${payableMin.toLocaleString()}`;
 
-            if (newBuyPrice > 0) {
-                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalShowStr} (+新購方案 $${newBuyPrice.toLocaleString()})`;
+            if (pkgPrice > 0) {
+                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalShowStr} (+新購方案 $${pkgPrice.toLocaleString()})`;
             } else {
                 document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
             }
@@ -1067,7 +863,7 @@
             
             allServices.forEach(s => { 
                 let cat = s.category || '';
-                if(cat && !cat.includes('加購') && !cat.includes('包卡') && !cat.includes('儲值')) {
+                if(cat && !cat.includes('加購') && !cat.includes('包卡') && !cat.includes('儲值') && !cat.includes('供餐')) {
                     if (activeServiceType === 'grooming' && !cat.includes('住宿')) categorySet.add(cat);
                     if (activeServiceType === 'boarding' && cat.includes('住宿')) categorySet.add(cat);
                 } 
@@ -1104,7 +900,7 @@
                             <label class="addon-card flex items-center justify-between gap-2 cursor-pointer p-3 bg-white border border-[#EFE8DE] rounded-2xl hover:border-[#CBB39C] transition">
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" class="addon-checkbox p-main-checkbox" value="${item.service} (${cat})" data-raw-price="${priceRaw}" onchange="onBoardingMainCheckChange(${id})">
-                                    <span class="text-xs font-bold text-textBrown">${item.service} ($${priceRaw})</span>
+                                    <span class="text-xs font-bold text-textBrown">${item.service} ($${priceRaw}/晚)</span>
                                 </div>
                             </label>`;
                         });
@@ -1120,7 +916,7 @@
                 });
                 mainServiceHTML = `
                 <div class="space-y-3">
-                    <label class="text-[11px] font-bold text-textBrown block">住宿與退宿洗澡/美容服務 (可複選) *</label>
+                    <label class="text-[11px] font-bold text-textBrown block">住宿服務 (可複選) *</label>
                     <div class="space-y-3">${categoryBlocksHtml}</div>
                 </div>`;
             }
@@ -1140,6 +936,18 @@
                     </label>`;
                 });
             }
+            
+            let photoUploadBlock = `
+                <div>
+                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">上傳毛孩照片 (選填，自動存入雲端庫)</label>
+                    <input type="file" accept="image/*" class="text-input p-photo-file text-xs" onchange="previewPetPhotoUpload(this, ${id})">
+                    <input type="hidden" class="p-photo-base64">
+                    <div id="photoPreviewContainer_${id}" class="hidden mt-2 flex items-center gap-2">
+                        <img id="photoPreviewImg_${id}" class="w-12 h-12 rounded-xl object-cover border border-gray-200">
+                        <span class="text-[10px] text-emerald-700 font-bold">✓ 照片已就緒</span>
+                    </div>
+                </div>`;
+
             let extraFieldsGrooming = `
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
@@ -1150,6 +958,7 @@
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性別 *</label><select class="text-input p-gender text-xs font-bold"><option value="公">公</option><option value="母">母</option></select></div>
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性格備註 *</label><input type="text" class="text-input p-personality text-xs font-bold" placeholder="親人親狗? 其他特質"></div>
                 </div>`;
+            
             card.innerHTML = `
             <div class="flex justify-between items-center border-b border-[#EFE8DE] pb-3 mb-1">
                 <span class="bg-[#CBB39C] text-white font-bold text-[11px] px-3.5 py-1.5 rounded-xl shadow-xs">施作毛孩 NO. ${id} (${filteredCat})</span>
@@ -1167,7 +976,7 @@
             </div>
             
             ${activeServiceType === 'grooming' ? extraFieldsGrooming : extraFieldsBoarding}
-            
+            ${photoUploadBlock}
             ${mainServiceHTML}
             
             <div class="pt-1">
@@ -1176,6 +985,21 @@
             </div>`;
             wrapper.appendChild(card);
             calculateBookingTotalPriceEngine();
+        }
+
+        function previewPetPhotoUpload(inputEl, id) {
+            if (inputEl.files && inputEl.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const cardEl = document.getElementById(`petCardRoot_${id}`);
+                    if (cardEl) {
+                        cardEl.querySelector('.p-photo-base64').value = e.target.result;
+                        document.getElementById(`photoPreviewImg_${id}`).src = e.target.result;
+                        document.getElementById(`photoPreviewContainer_${id}`).classList.remove('hidden');
+                    }
+                }
+                reader.readAsDataURL(inputEl.files[0]);
+            }
         }
 
         function onMainServiceChange(cardId) {
@@ -1218,8 +1042,7 @@
         }
 
         function selectDate(dateStr) {
-            selectedDateStr = dateStr; 
-            selectedTimeStr = ''; 
+            selectedDateStr = dateStr; selectedTimeStr = ''; 
             renderFrontCalendarFast();
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
             
@@ -1301,11 +1124,22 @@
             if (filtered.length === 0) { grid.innerHTML = '<div class="col-span-2 text-center text-xs text-gray-400 py-6">此分類尚無照片</div>'; return; }
             filtered.forEach((item, idx) => { 
                 let cardDiv = document.createElement('div'); cardDiv.className = "portfolio-item-card bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transform transition hover:scale-102 cursor-zoom-in";
+                cardDiv.onclick = () => openImageLightboxModal(item.imgUrl, item.title);
                 cardDiv.innerHTML = `<div class="w-full h-32 bg-gray-100 bg-cover bg-center" style="background-image: url('${item.imgUrl}')"></div><div class="p-2 h-12 flex items-center justify-center text-center text-[12px] font-bold text-textBrown bg-white leading-snug">${item.title}</div>`;
                 if(!isPortfolioExpanded && idx >= 2) cardDiv.style.display = 'none'; else cardDiv.style.display = 'block';
                 grid.appendChild(cardDiv);
             });
             const btn = document.getElementById('togglePortfolioBtn'); if(btn) { if(filtered.length <= 2) btn.style.display = 'none'; else btn.style.display = 'inline-block'; }
+        }
+
+        function openImageLightboxModal(url, title) {
+            document.getElementById('lightboxImageEl').src = url;
+            document.getElementById('lightboxTitleEl').innerText = title || '';
+            document.getElementById('imageLightboxModal').classList.remove('hidden');
+        }
+
+        function closeImageLightboxModal() {
+            document.getElementById('imageLightboxModal').classList.add('hidden');
         }
 
         function togglePortfolioExpandState() {
@@ -1321,6 +1155,17 @@
                 container.innerHTML += `<div class="w-full h-full flex-shrink-0 bg-contain bg-no-repeat bg-center rounded-xl" style="background-image:url('${url}')"></div>`;
                 dotsContainer.innerHTML += `<div id="sliderDot_${index}" class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${index===0?'!bg-[#CBB39C]':''}"></div>`;
             });
+
+            let touchStartX = 0, touchEndX = 0;
+            const windowEl = document.getElementById('sliderTrackWindow');
+            if (windowEl) {
+                windowEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+                windowEl.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    if (touchStartX - touchEndX > 40) moveSliderEngine(1);
+                    if (touchEndX - touchStartX > 40) moveSliderEngine(-1);
+                }, {passive: true});
+            }
         }
 
         function moveSliderEngine(direction) {
@@ -1352,6 +1197,7 @@
                     petSize: cardEl.querySelector('.p-size') ? cardEl.querySelector('.p-size').value.trim() : '',
                     age: cardEl.querySelector('.p-age') ? cardEl.querySelector('.p-age').value.trim() : '',
                     coatType: cardEl.querySelector('.p-coat') ? cardEl.querySelector('.p-coat').value : '短毛',
+                    petPhotoBase64: cardEl.querySelector('.p-photo-base64') ? cardEl.querySelector('.p-photo-base64').value : '',
                     mainService: selectedServicesStr,
                     addons: addonsArr.length > 0 ? addonsArr.join(', ') : '無'
                 });
