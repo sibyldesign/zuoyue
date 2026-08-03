@@ -52,7 +52,7 @@
     </div>
     
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
-        <!-- 美容/住宿切換 -->
+        <!-- 服務類別切換 -->
         <div class="bg-white p-1.5 rounded-2xl border border-[#EFE8DE] flex shadow-sm">
             <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active"><i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約</div>
             <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]"><i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約</div>
@@ -115,16 +115,18 @@
             </div>
         </div>
 
-        <!-- 住宿時間與動態供餐選項 -->
+        <!-- 🌟 住宿時間卡片（改為上下排列） -->
         <div id="boardingTimeCard" class="app-card p-6 hidden">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown mb-4 flex items-center gap-2 text-[15px]"><i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 住宿日期與供餐試算</h3>
-            <div class="grid grid-cols-2 gap-3.5 mb-4">
+            
+            <!-- 上下排列區塊，手機端極致清晰 -->
+            <div class="grid grid-cols-1 gap-3.5 mb-4">
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">入住日期/時間 *</label><input type="datetime-local" id="checkInTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()"></div>
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">退房日期/時間 *</label><input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()"></div>
             </div>
 
-            <!-- 動態抓取『供餐』類別選項 -->
+            <!-- 動態撈取『供餐』類別選項 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3 mb-4">
                 <div class="flex items-center justify-between border-b border-[#EFE8DE] pb-2">
                     <label class="text-xs font-black text-textBrown">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
@@ -138,6 +140,7 @@
                 <div id="mealCalculationBadge" class="text-[11px] text-amber-800 font-bold bg-amber-50 p-2 rounded-xl border border-amber-200/60 hidden"></div>
             </div>
             
+            <!-- 退宿當天洗澡需求選擇 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -150,7 +153,7 @@
             </div>
         </div>
 
-        <!-- 毛孩履歷卡片區塊 (含照片上傳) -->
+        <!-- 毛孩履歷卡片區塊 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
             <div class="text-[12px] font-bold text-[#B2977D] tracking-widest uppercase flex justify-between items-center border-b border-[#EFE8DE] pb-3">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-paw text-[#CBB39C]"></i> PET PROFILE / 毛孩詳細履歷</span>
@@ -213,7 +216,7 @@
             <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs" id="timeSlotContainer"><div class="text-xs text-gray-400 text-center py-4">請先點選上方日期</div></div>
         </div>
 
-        <!-- 活動方案與折抵（試算表讀取「包卡使用規則與說明」） -->
+        <!-- 活動方案與折抵（試算表動態讀取 B16 包卡規則） -->
         <div class="app-card p-6 space-y-4 bg-[#FAF7F2]">
             <h3 class="font-bold text-[#5C5043] flex items-center gap-2 text-sm"><i class="fa-solid fa-tags text-[#CBB39C]"></i> 本月活動方案與折抵/加購選擇</h3>
             
@@ -241,7 +244,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (扣除後顯示剩餘次數) -->
+        <!-- 預算計價即時試算 -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -282,7 +285,7 @@
                 </div>
             </div>
 
-            <!-- 扣除後剩餘次數即時試算 -->
+            <!-- 扣除後剩餘包卡次數顯示 -->
             <div id="cardRemainDeductNotice" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 p-2 rounded-xl border border-emerald-200/60 hidden text-right">
                 扣除本次預約後，剩餘包卡：<span id="afterDeductCardCountShow" class="font-black text-emerald-900">0</span> 次
             </div>
@@ -339,7 +342,6 @@
         <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
     </div>
 
-    <!-- JS 完全邏輯 -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec";
         let activeServiceType = 'grooming'; let systemBufferHours = 1; 
@@ -384,7 +386,7 @@
             }, 50);
         }
 
-        // 🌟 動態渲染『供餐』類別選項
+        // 🌟 動態渲染供餐選項
         function setupServiceDropdownsAndData(data) {
             allServices = Array.isArray(data) ? data : []; 
             const pkgSelect = document.getElementById('buyNewPackageSelect');
@@ -473,7 +475,7 @@
             grid.innerHTML = html;
         }
 
-        // 🌟 秒速查核歷史電話 (無此電話即刻彈出警示)
+        // 🌟 修正 bug：型別完美轉換，帶入資料後「儲值金方塊」立刻解除鎖定！
         function triggerHistorySearch() {
             let phone = document.getElementById('phone').value.trim();
             if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
@@ -485,8 +487,9 @@
                     document.getElementById('ownerName').value = res.ownerName || '';
                     document.getElementById('lineName').value = res.lineName || '';
                     if(res.email) document.getElementById('email').value = res.email || '';
-                    userCardRemainCount = res.cardRemain || 0;
-                    userDepositBalance = res.depositBalance || 0;
+                    
+                    userCardRemainCount = parseInt(res.cardRemain) || 0;
+                    userDepositBalance = parseFloat(res.depositBalance) || 0;
                     
                     const badgeBlock = document.getElementById('customerBalanceBadgeBlock');
                     if (badgeBlock) {
@@ -496,6 +499,8 @@
                     }
                     
                     const cardCb = document.getElementById('useExistingCard');
+                    const depCb = document.getElementById('useExistingDeposit');
+
                     if (userCardRemainCount > 0) {
                         cardCb.disabled = false;
                         document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (剩餘 ${userCardRemainCount} 次)`;
@@ -503,7 +508,16 @@
                         cardCb.disabled = true; cardCb.checked = false;
                         document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (無可用額度)`;
                     }
-                    
+
+                    // 🌟 儲值金即時解鎖
+                    if (userDepositBalance > 0) {
+                        depCb.disabled = false;
+                        document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (額度 $${userDepositBalance.toLocaleString()})`;
+                    } else {
+                        depCb.disabled = true; depCb.checked = false;
+                        document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (無可用額度)`;
+                    }
+
                     cachedCustomerPetsData = res.petList || [];
                     const petDropdown = document.getElementById('multiPetDropdown');
                     const petBlock = document.getElementById('multiPetSelectBlock');
@@ -523,6 +537,8 @@
                     userCardRemainCount = 0; userDepositBalance = 0;
                     document.getElementById('useExistingCard').disabled = true;
                     document.getElementById('useExistingCard').checked = false;
+                    document.getElementById('useExistingDeposit').disabled = true;
+                    document.getElementById('useExistingDeposit').checked = false;
                     calculateBookingTotalPriceEngine();
                     Swal.fire({
                         icon: 'warning',
@@ -561,9 +577,23 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
+        // 🌟 住宿退宿洗澡動態展開控制
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
-            if (show) panel.classList.remove('hidden'); else panel.classList.add('hidden');
+            const dtCard = document.getElementById('dateTimeCard');
+            const cardTitle = document.getElementById('dateTimeCardTitle');
+            const subTitle = document.getElementById('timeSlotSubTitle');
+            if (show) {
+                panel.classList.remove('hidden');
+                if (dtCard) dtCard.classList.remove('hidden');
+                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
+                if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
+            } else {
+                panel.classList.add('hidden');
+                if (dtCard) dtCard.classList.add('hidden');
+                selectedDateStr = '';
+                selectedTimeStr = '';
+            }
             calculateBookingTotalPriceEngine();
         }
 
@@ -571,12 +601,28 @@
             activeServiceType = type;
             const tG = document.getElementById('tabGrooming'), tB = document.getElementById('tabBoarding');
             const bCard = document.getElementById('boardingTimeCard'), bBanner = document.getElementById('boardingNoticeBanner');
+            const dtCard = document.getElementById('dateTimeCard'), badge = document.getElementById('serviceModeBadge');
+            const cardTitle = document.getElementById('dateTimeCardTitle');
+            const subTitle = document.getElementById('timeSlotSubTitle');
             if (type === 'grooming') {
                 tG.className = "tab-btn active"; tB.className = "tab-btn text-[#A39585]";
                 bCard.classList.add('hidden'); bBanner.classList.add('hidden');
+                if (dtCard) dtCard.classList.remove('hidden');
+                if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段`;
+                if (subTitle) subTitle.innerText = `選取進場時段`;
+                badge.innerText = "美容模式";
             } else {
                 tB.className = "tab-btn active"; tG.className = "tab-btn text-[#A39585]";
                 bCard.classList.remove('hidden'); bBanner.classList.remove('hidden');
+                let bathNeedVal = document.querySelector('input[name="hotelBathNeed"]:checked')?.value || 'NO';
+                if (bathNeedVal === 'YES') {
+                    if (dtCard) dtCard.classList.remove('hidden');
+                    if (cardTitle) cardTitle.innerHTML = `<i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇退宿洗澡日期與時段`;
+                    if (subTitle) subTitle.innerText = `選取退宿洗澡時段`;
+                } else {
+                    if (dtCard) dtCard.classList.add('hidden');
+                }
+                badge.innerText = "住宿模式";
             }
             renderPetFormCards();
             calculateBookingTotalPriceEngine();
@@ -586,7 +632,6 @@
             renderFrontCalendarFast();
         }
 
-        // 放飯次數計算 (09:00 與 18:00)
         function calculateBoardingMealsCount(checkInStr, checkOutStr) {
             if (!checkInStr || !checkOutStr) return 0;
             let checkIn = new Date(checkInStr);
@@ -608,7 +653,6 @@
             return mealCount;
         }
 
-        // 住宿天數 (夜數) 計算
         function calculateBoardingDaysCount(checkInStr, checkOutStr) {
             if (!checkInStr || !checkOutStr) return 1;
             let checkIn = new Date(checkInStr);
@@ -620,7 +664,7 @@
             return Math.max(1, nights);
         }
 
-        // 🌟 預算計價即時試算 (包含住宿天數乘算、餐費計算、洗扣1/大扣2/手剪扣3)
+        // 🌟 預算即時算式乘算天數與扣卡次數
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -655,7 +699,6 @@
                                 mainItemNamesArr.push(sName);
                                 mainItemPriceRangesArr.push(`${sName} ($${priceRaw})`);
                                 
-                                // 洗扣1, 大美容扣2, 全身手剪扣3
                                 if (sName.includes('全身手剪')) {
                                     requiredCardDeductCount += 3;
                                 } else if (sName.includes('大美容')) {
@@ -717,7 +760,6 @@
                 }
             }
 
-            // 動態供餐費計算
             if (activeServiceType === 'boarding') {
                 let cIn = document.getElementById('checkInTime')?.value;
                 let cOut = document.getElementById('checkOutTime')?.value;
@@ -737,7 +779,6 @@
                 }
             }
 
-            // 退宿洗澡費
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
