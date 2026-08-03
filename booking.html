@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>琢悅寵物SPA會館｜美容與住宿預約系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
@@ -104,6 +104,34 @@
             <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]">
                 <i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約
             </div>
+        </div>
+
+        <!-- 🌟 依要求調整位置：美容作品集相簿（毛孩變美日記） -->
+        <div class="app-card p-6 bg-[#FAF8F5]">
+            <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
+            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
+                <div class="text-xs text-gray-400">載入中...</div>
+            </div>
+            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
+                <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
+            </div>
+            <div class="text-center mt-4">
+                <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
+                    查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 🌟 依要求調整位置：動態輪播說明圖 -->
+        <div class="app-card p-4 bg-white relative">
+            <div class="relative overflow-hidden rounded-2xl w-full aspect-[960/1706] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
+                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
+                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
+                </div>
+                <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
+                <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
 
         <!-- 住宿提醒 Banner -->
@@ -264,15 +292,26 @@
             </div>
         </div>
 
-        <!-- 本月活動方案與折抵/加購選擇 -->
+        <!-- 🌟 依要求調整：本月活動方案與折抵/加購選擇 (標註老闆規則) -->
         <div class="app-card p-6 space-y-4 bg-[#FAF7F2]">
             <h3 class="font-bold text-[#5C5043] flex items-center gap-2 text-sm"><i class="fa-solid fa-tags text-[#CBB39C]"></i> 本月活動方案與折抵/加購選擇</h3>
             
+            <!-- 老闆公告說明卡片 -->
+            <div class="bg-amber-50/90 border border-amber-200/80 rounded-2xl p-3.5 text-xs text-amber-900 leading-relaxed space-y-1.5 font-medium">
+                <div class="font-black text-amber-900 text-xs flex items-center gap-1">
+                    <i class="fa-solid fa-circle-info text-amber-700"></i> 包卡使用規則與說明：
+                </div>
+                <p>• <strong>包卡優惠｜買五送一 (共6次)</strong>：購買日起 <strong>90 天內</strong> 需使用完畢。逾期未使用之剩餘次數，恕無法延期、退費或折換現金，視同自動失效。</p>
+                <p>• <strong>扣次規則</strong>：每次<strong>洗澡扣 1 次</strong>包卡，<strong>大美容/全身手剪扣 2 次</strong>包卡。</p>
+                <p>• <strong>體型與服務說明</strong>：價目表中小型犬、中型犬、大型犬之價格差異為體型分類。包卡適用於對應體型項目，<strong>無需另補差價</strong>。</p>
+                <p>• <strong>住宿與加購</strong>：寵物住宿服務及專屬加購護理均需<strong>另行計費</strong>，不適用於包卡扣抵。</p>
+            </div>
+
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
                 <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">1. 使用已有卡額折抵本次預約：</label>
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700" title="💡 請先於上方輸入家長聯絡電話並點擊「查詢/自動帶入」">
                     <input type="checkbox" id="useExistingCard" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
-                    <span id="useCardLabelText">使用已購包卡扣抵 1 次 (💡 請先於上方輸入電話並帶入)</span>
+                    <span id="useCardLabelText">使用已購包卡扣抵 (💡 請先於上方輸入電話並帶入)</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700" title="💡 請先於上方輸入家長聯絡電話並點擊「查詢/自動帶入」">
                     <input type="checkbox" id="useExistingDeposit" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
@@ -296,7 +335,7 @@
             </div>
         </div>
 
-        <!-- 預算計價即時試算 (🌟 主項目獨立乾淨顯示，無多餘括號) -->
+        <!-- 🌟 依要求調整：預算計價即時試算 (1. 原價僅顯示價格區間，主項目放在下一行並列出單價區間) -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-calculator text-[#CBB39C]"></i> 預算計價即時試算</span>
@@ -304,61 +343,49 @@
             </h3>
             
             <div class="space-y-2.5 text-xs text-gray-600">
+                <!-- 1. 原價預估區間 (僅放金額) -->
                 <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
                     <div class="flex justify-between items-center font-bold text-amber-900">
-                        <span id="summaryOriginalRangeLabel">1. 施作主項目原價預估區間：</span>
-                        <span class="font-black text-sm text-amber-900" id="summaryOriginalRange">--</span>
+                        <span>1. 施作主項目原價預估區間：</span>
+                        <span class="font-black text-sm text-amber-900" id="summaryOriginalRange">$0</span>
                     </div>
                 </div>
+
+                <!-- 🌟 依要求調整：主項目名稱與單價區間放在下一行 (格式同加購護理) -->
+                <div id="summaryMainItemDetailRow" class="hidden flex justify-between items-center text-textBrown font-bold px-1">
+                    <span id="summaryMainItemNameText">（主服務項目：）</span>
+                    <span class="font-black" id="summaryMainItemPriceText">$0</span>
+                </div>
+
+                <!-- 專屬加購護理 -->
                 <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1">
-                    <span>包含專屬加購護理：</span>
+                    <span>（包含專屬加購護理：）</span>
                     <span class="font-black" id="summaryAddonPriceText">+$0</span>
                 </div>
+
+                <!-- 退宿洗澡美容 -->
                 <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
                     <span>退宿加做洗澡美容項目：</span>
                     <span id="summaryHotelBathPriceText">$0</span>
                 </div>
+
+                <!-- 2. 折抵與優惠 -->
                 <div class="flex justify-between items-center text-rose-500 font-bold px-1">
                     <span>2. 本次折抵/優惠扣抵：</span>
                     <span class="font-black" id="summaryDiscountText">無折抵</span>
                 </div>
+
+                <!-- 3. 加購方案費用 -->
                 <div id="summaryNewBuyRow" class="hidden flex justify-between items-center text-amber-800 font-bold bg-amber-50 p-2.5 rounded-xl border border-amber-200/60">
                     <span>3. 現場加購方案費用：</span>
                     <span id="summaryNewBuyPrice">+$0</span>
                 </div>
             </div>
+
             <div class="border-t border-[#EFE8DE] pt-3 flex justify-between items-center">
                 <span class="font-black text-sm text-textBrown">現場預估應付金額：</span>
                 <span class="text-xl font-black text-[#B2977D]" id="bookingTotalPriceDisplay">--</span>
             </div>
-        </div>
-
-        <!-- 美容作品集相簿 -->
-        <div class="app-card p-6 bg-[#FAF8F5]">
-            <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
-            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
-                <div class="text-xs text-gray-400">載入中...</div>
-            </div>
-            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
-                <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
-            </div>
-            <div class="text-center mt-4">
-                <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
-                    查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- 動態輪播圖 -->
-        <div class="app-card p-4 bg-white relative">
-            <div class="relative overflow-hidden rounded-2xl w-full aspect-[960/1706] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
-                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
-                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
-                </div>
-                <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
-                <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white text-sm hidden md:flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
-            </div>
-            <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
 
         <!-- 條款與簽名 -->
@@ -508,24 +535,26 @@
             });
         }
 
+        // 🌟 速度優化：非同步背景發送請求，防止頁面卡死
         function initPage() {
-            callGasGet('getFrontInitialBundle').then(bundle => {
-                if (bundle) {
-                    if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
-                    if (bundle.services) setupServiceDropdownsAndData(bundle.services);
-                    if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
-                    if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
-                    if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
-                    if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
-                    if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
-                }
-                renderFrontCalendarFast();
-            }).catch(() => {
-                renderFrontCalendarFast();
-            });
+            setTimeout(() => {
+                callGasGet('getFrontInitialBundle').then(bundle => {
+                    if (bundle) {
+                        if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
+                        if (bundle.services) setupServiceDropdownsAndData(bundle.services);
+                        if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
+                        if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
+                        if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
+                        if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
+                        if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
+                    }
+                    renderFrontCalendarFast();
+                }).catch(() => {
+                    renderFrontCalendarFast();
+                });
+            }, 50);
         }
 
-        // 🌟 核心修復：精確篩選「美容」與「住宿」分頁主項目及加購
         function setupServiceDropdownsAndData(data) {
             allServices = Array.isArray(data) ? data : []; 
             const pkgSelect = document.getElementById('buyNewPackageSelect');
@@ -680,10 +709,10 @@
                     
                     if (userCardRemainCount > 0) {
                         cardCb.disabled = false;
-                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 1 次 (剩餘 ${userCardRemainCount} 次)`;
+                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (剩餘 ${userCardRemainCount} 次)`;
                     } else {
                         cardCb.disabled = true; cardCb.checked = false;
-                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 1 次 (無可用餘額)`;
+                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (無可用餘額)`;
                     }
                     if (userDepositBalance > 0) {
                         depCb.disabled = false;
@@ -713,7 +742,7 @@
                     document.getElementById('useExistingCard').checked = false;
                     document.getElementById('useExistingDeposit').disabled = true;
                     document.getElementById('useExistingDeposit').checked = false;
-                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 1 次 (💡 請先於上方輸入電話並帶入)`;
+                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (💡 請先於上方輸入電話並帶入)`;
                     document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (💡 請先於上方輸入電話並帶入)`;
                     calculateBookingTotalPriceEngine();
                     Swal.fire('歡迎新客', '資料庫無此號，請手動填寫資料預約！', 'info');
@@ -802,7 +831,7 @@
             renderFrontCalendarFast();
         }
 
-        // 🌟 核心：預算即時試算 (將施作主項目原價標題獨立高亮，移除黏著括號)
+        // 🌟 核心試算重構：符合老闆規則 (洗澡扣1次, 大美容扣2次, 無補差價, 住宿與加購另算)
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -810,14 +839,18 @@
             let newBuyPrice = 0;
             let newBuyBonusTotal = 0;
             let discountRate = 1;
-            let mainItemNamesArr = [];
             
+            let mainItemNamesArr = [];
+            let mainItemPriceRangesArr = [];
+            let requiredCardDeductCount = 0;
+
             document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
             const depSelect = document.getElementById('buyNewDepositSelect');
             if (depSelect && depSelect.selectedIndex >= 0) {
                 const opt = depSelect.options[depSelect.selectedIndex];
                 discountRate = parseFloat(opt.getAttribute('data-discount') || '1');
             }
+
             const container = document.getElementById('dynamicPetContainer');
             if (container) {
                 for (let i = 0; i < container.children.length; i++) {
@@ -828,7 +861,18 @@
                         if (mainSelect && mainSelect.selectedIndex >= 0) {
                             const opt = mainSelect.options[mainSelect.selectedIndex];
                             const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                            if (opt.value) mainItemNamesArr.push(opt.value);
+                            let sName = opt.value || '';
+                            if (sName) {
+                                mainItemNamesArr.push(sName);
+                                mainItemPriceRangesArr.push(`${sName} ($${priceRaw})`);
+                                
+                                // 老闆扣卡邏輯：大美容/全身手剪扣 2 次，洗澡扣 1 次
+                                if (sName.includes('大美容') || sName.includes('全身手剪')) {
+                                    requiredCardDeductCount += 2;
+                                } else {
+                                    requiredCardDeductCount += 1;
+                                }
+                            }
                             
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
@@ -845,7 +889,10 @@
                         card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
                             const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
                             let cleanVal = cb.value.split('(')[0].trim();
-                            if (cb.value) mainItemNamesArr.push(cleanVal);
+                            if (cb.value) {
+                                mainItemNamesArr.push(cleanVal);
+                                mainItemPriceRangesArr.push(`${cleanVal} ($${priceRaw})`);
+                            }
                             if (priceRaw.includes('起')) {
                                 displayMin += parseInt(priceRaw.replace('起','')) || 0;
                             } else if (priceRaw.includes('-')) {
@@ -863,23 +910,21 @@
                         let priceRaw = (cb.getAttribute('data-price') || '0').toString();
                         if (priceRaw.includes('起')) {
                             let p = parseInt(priceRaw.replace('起','')) || 0;
-                            addonMin += p; displayMin += p;
+                            addonMin += p;
                         } else if (priceRaw.includes('-')) {
                             let parts = priceRaw.split('-');
                             let minP = parseInt(parts[0]) || 0;
                             let maxP = parseInt(parts[1]) || 0;
                             addonMin += minP; addonMax += maxP;
-                            displayMin += minP;
-                            if (displayMax > 0) displayMax += maxP;
                         } else {
                             let p = parseInt(priceRaw) || 0;
                             addonMin += p; addonMax += p;
-                            displayMin += p;
-                            if (displayMax > 0) displayMax += p;
                         }
                     });
                 }
             }
+
+            // 退宿洗澡處理
             const bathSelect = document.getElementById('hotelBathMainService');
             const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
             if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
@@ -895,9 +940,27 @@
                     let p = parseInt(priceRaw) || 0;
                     hotelBathPriceMin = p; hotelBathPriceMax = p;
                 }
-                displayMin += hotelBathPriceMin;
-                if (displayMax > 0) displayMax += (hotelBathPriceMax || hotelBathPriceMin);
             }
+
+            // 1. 施作主項目原價預估區間（僅顯示金額）
+            let origRangeStr = (displayMax > displayMin && displayMax > 0) 
+                ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
+                : `$${displayMin.toLocaleString()}`;
+            document.getElementById('summaryOriginalRange').innerText = origRangeStr;
+
+            // 🌟 依要求調整：主項目名稱與單價顯示在下一行 (格式同加購護理)
+            const mainDetailRow = document.getElementById('summaryMainItemDetailRow');
+            if (mainDetailRow) {
+                if (mainItemPriceRangesArr.length > 0) {
+                    mainDetailRow.classList.remove('hidden');
+                    document.getElementById('summaryMainItemNameText').innerText = `（主服務項目：${mainItemNamesArr.join(' · ')}）`;
+                    document.getElementById('summaryMainItemPriceText').innerText = mainItemPriceRangesArr.map(x => x.split('(')[1].replace(')','')).join(', ');
+                } else {
+                    mainDetailRow.classList.add('hidden');
+                }
+            }
+
+            // 加購護理細項顯示
             const addonRow = document.getElementById('summaryAddonDetailRow');
             if (addonRow) {
                 if (addonMin > 0) {
@@ -908,6 +971,8 @@
                     addonRow.classList.add('hidden');
                 }
             }
+
+            // 退宿洗澡細項顯示
             const hotelBathRow = document.getElementById('summaryHotelBathRow');
             if (hotelBathRow) {
                 if (isHotelBathNeed && hotelBathPriceMin > 0) {
@@ -918,25 +983,21 @@
                     hotelBathRow.classList.add('hidden');
                 }
             }
-            
-            // 🌟 修正點：施作主項目名稱與價格獨立乾淨呈現
-            let selectedItemTitleText = mainItemNamesArr.length > 0 ? ` (${mainItemNamesArr.join(' · ')})` : '';
-            document.getElementById('summaryOriginalRangeLabel').innerText = `1. 施作主項目原價預估${selectedItemTitleText}：`;
-            let origRangeStr = (displayMax > displayMin && displayMax > 0) 
-                ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
-                : `$${displayMin.toLocaleString()}`;
-            document.getElementById('summaryOriginalRange').innerText = origRangeStr;
 
+            // 現場加購方案（包卡/儲值金）
             const pkgSelect = document.getElementById('buyNewPackageSelect');
             const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
             const pkgPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
             const pkgBonus = pkgOpt ? parseInt(pkgOpt.getAttribute('data-bonus') || 0) : 0;
             const isBuyingNewPkg = pkgOpt && pkgSelect.value !== 'none';
+
             const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
             const depPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
             const depBonus = depOpt ? parseInt(depOpt.getAttribute('data-bonus') || 0) : 0;
+
             newBuyPrice = pkgPrice + depPrice;
             newBuyBonusTotal = pkgBonus + depBonus;
+
             const newBuyRow = document.getElementById('summaryNewBuyRow');
             if (newBuyRow) {
                 if (newBuyPrice > 0) {
@@ -947,29 +1008,44 @@
                     newBuyRow.classList.add('hidden');
                 }
             }
+
+            // 🌟 扣抵計算邏輯校正：主項目由包卡抵扣，加購與住宿另算
             let discText = "無折抵";
-            let finalCalculatedShow = "";
-            if (document.getElementById('useExistingCard')?.checked && userCardRemainCount > 0) {
-                discText = "套用已有包卡扣抵 1 次";
-                finalCalculatedShow = "$0 (包卡扣抵)";
-            } else if (isBuyingNewPkg) {
-                discText = "套用新購包卡扣抵 1 次 (剩餘 5 次記錄於帳戶)";
-                finalCalculatedShow = "$0 (新購包卡扣抵)";
+            let payableMin = displayMin + addonMin + hotelBathPriceMin;
+            let payableMax = (displayMax > 0 ? displayMax : displayMin) + (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
+
+            let isUsingCard = document.getElementById('useExistingCard')?.checked && userCardRemainCount >= requiredCardDeductCount;
+
+            if (isUsingCard || isBuyingNewPkg) {
+                // 主項目完全抵扣（$0），僅保留加購與住宿費用
+                payableMin = addonMin + hotelBathPriceMin;
+                payableMax = (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
+
+                if (isUsingCard) {
+                    discText = `套用包卡扣抵 ${requiredCardDeductCount} 次 (主項目 $0)`;
+                } else {
+                    discText = `新購包卡當場扣抵 ${requiredCardDeductCount} 次 (主項目 $0)`;
+                }
             } else if (discountRate < 1) {
-                let discMin = Math.round(displayMin * discountRate);
-                let discMax = Math.round(displayMax * discountRate);
+                payableMin = Math.round(payableMin * discountRate);
+                payableMax = Math.round(payableMax * discountRate);
                 discText = `享 ${(discountRate * 10).toFixed(1)} 折優惠`;
-                finalCalculatedShow = (discMax > discMin && discMax > 0) 
-                    ? `$${discMin.toLocaleString()} ~ $${discMax.toLocaleString()}` 
-                    : `$${discMin.toLocaleString()}`;
-            } else {
-                finalCalculatedShow = origRangeStr;
             }
+
             document.getElementById('summaryDiscountText').innerText = discText;
-            if (newBuyPrice > 0) {
-                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalCalculatedShow} (+加購方案 $${newBuyPrice.toLocaleString()})`;
+
+            // 最終應付金額計算
+            let finalShowStr = "";
+            if (payableMax > payableMin && payableMax > 0) {
+                finalShowStr = `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}`;
             } else {
-                document.getElementById('bookingTotalPriceDisplay').innerText = finalCalculatedShow;
+                finalShowStr = `$${payableMin.toLocaleString()}`;
+            }
+
+            if (newBuyPrice > 0) {
+                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalShowStr} (+新購方案 $${newBuyPrice.toLocaleString()})`;
+            } else {
+                document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
             }
         }
 
@@ -979,7 +1055,6 @@
             appendNewPetFormCard();
         }
 
-        // 🌟 核心：分頁分離 (美容分頁只抓美容主項目與美容加購；住宿分頁只抓住宿主項目與住宿加購)
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
