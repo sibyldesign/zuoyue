@@ -32,7 +32,16 @@
         .addon-card { background-color: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; padding: 12px 14px; transition: all 0.2s ease; display: flex; align-items: center; }
         .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
-        .day-dimmed-light-brown { background-color: #F2ECE4 !important; color: #CBB39C !important; border: 1px solid #E6DDD2 !important; border-radius: 12px; cursor: not-allowed !important; pointer-events: none !important; opacity: 0.45 !important; }
+        /* 🌟 日曆過期、公休、無時段淺色樣式 */
+        .day-dimmed-light-brown { 
+            background-color: #F2ECE4 !important; 
+            color: #CBB39C !important; 
+            border: 1px solid #E6DDD2 !important; 
+            border-radius: 12px; 
+            cursor: not-allowed !important; 
+            pointer-events: none !important; 
+            opacity: 0.55 !important; 
+        }
     </style>
 </head>
 <body class="w-full overflow-x-hidden" onload="initPage()">
@@ -70,7 +79,7 @@
             </div>
         </div>
 
-        <!-- 動態輪播圖（4:5 比例與手機左右滑動） -->
+        <!-- 動態輪播圖 -->
         <div class="app-card p-4 bg-white relative">
             <div class="relative overflow-hidden rounded-2xl w-full aspect-[4/5] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
                 <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"></div>
@@ -115,32 +124,61 @@
             </div>
         </div>
 
-        <!-- 🌟 住宿時間卡片（改為上下排列） -->
-        <div id="boardingTimeCard" class="app-card p-6 hidden">
+        <!-- 🌟 住宿時間與行事曆選時卡片 (重構為手風琴收合式介面) -->
+        <div id="boardingTimeCard" class="app-card p-6 hidden space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
-            <h3 class="font-bold text-textBrown mb-4 flex items-center gap-2 text-[15px]"><i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 住宿日期與供餐試算</h3>
+            <h3 class="font-bold text-textBrown mb-2 flex items-center gap-2 text-[15px]"><i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 選擇住宿入住與退房行事曆時段</h3>
             
-            <!-- 上下排列區塊，手機端極致清晰 -->
-            <div class="grid grid-cols-1 gap-3.5 mb-4">
-                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">入住日期/時間 *</label><input type="datetime-local" id="checkInTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()"></div>
-                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">退房日期/時間 *</label><input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()"></div>
+            <!-- 手風琴 1: 入住日期與時段 -->
+            <div class="border border-[#EFE8DE] rounded-2xl overflow-hidden bg-white shadow-xs">
+                <button type="button" onclick="toggleAccordionWindow('checkInAccordion')" class="w-full p-4 bg-[#FAF7F2] flex justify-between items-center text-xs font-black text-textBrown border-b border-[#EFE8DE]">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-to-bracket text-[#B2977D]"></i> 1. 選擇【入住日期與進場時段】*</span>
+                    <span id="checkInSummaryBadge" class="text-[#B2977D] font-bold">尚未選擇 <i class="fas fa-chevron-down ml-1"></i></span>
+                </button>
+                <div id="checkInAccordion" class="p-4 space-y-3 bg-white">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(-1, 'in')"></i>
+                        <span class="font-extrabold text-textBrown text-[14px]" id="hotel_in_cal_year_month">載入中...</span>
+                        <i class="fas fa-chevron-right text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(1, 'in')"></i>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[11px] text-gray-400 font-bold mb-2 pb-1 border-b border-gray-100">
+                        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-[12px] text-textBrown font-bold mb-3" id="hotelInCalGrid"></div>
+                    <div class="font-bold text-textBrown text-[12px] mb-1">入住進場時段：</div>
+                    <div class="bg-[#FAF8F5] p-3 rounded-2xl border border-[#EFE8DE]" id="hotelInTimeSlotContainer"><div class="text-xs text-gray-400 text-center py-2">請先點選上方入住日期</div></div>
+                </div>
             </div>
 
-            <!-- 動態撈取『供餐』類別選項 -->
-            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3 mb-4">
-                <div class="flex items-center justify-between border-b border-[#EFE8DE] pb-2">
-                    <label class="text-xs font-black text-textBrown">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
+            <!-- 手風琴 2: 退房日期與時段 -->
+            <div class="border border-[#EFE8DE] rounded-2xl overflow-hidden bg-white shadow-xs">
+                <button type="button" onclick="toggleAccordionWindow('checkOutAccordion')" class="w-full p-4 bg-[#FAF7F2] flex justify-between items-center text-xs font-black text-textBrown border-b border-[#EFE8DE]">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-from-bracket text-[#B2977D]"></i> 2. 選擇【退房日期與接回時段】*</span>
+                    <span id="checkOutSummaryBadge" class="text-[#B2977D] font-bold">尚未選擇 <i class="fas fa-chevron-down ml-1"></i></span>
+                </button>
+                <div id="checkOutAccordion" class="p-4 space-y-3 bg-white hidden">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(-1, 'out')"></i>
+                        <span class="font-extrabold text-textBrown text-[14px]" id="hotel_out_cal_year_month">載入中...</span>
+                        <i class="fas fa-chevron-right text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(1, 'out')"></i>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[11px] text-gray-400 font-bold mb-2 pb-1 border-b border-gray-100">
+                        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-[12px] text-textBrown font-bold mb-3" id="hotelOutCalGrid"></div>
+                    <div class="font-bold text-textBrown text-[12px] mb-1">退房接回時段：</div>
+                    <div class="bg-[#FAF8F5] p-3 rounded-2xl border border-[#EFE8DE]" id="hotelOutTimeSlotContainer"><div class="text-xs text-gray-400 text-center py-2">請先點選上方退房日期</div></div>
                 </div>
-                <div class="grid grid-cols-1 gap-2" id="dynamicMealOptionsContainer">
-                    <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
-                        <input type="radio" name="mealPlanOption" value="NONE" data-price="0" checked onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
-                        <span>自備飼料 / 不需要供餐 ($0)</span>
-                    </label>
-                </div>
+            </div>
+
+            <!-- 動態供餐選擇 -->
+            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
+                <label class="text-xs font-black text-textBrown block">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
+                <div class="grid grid-cols-1 gap-2" id="dynamicMealOptionsContainer"></div>
                 <div id="mealCalculationBadge" class="text-[11px] text-amber-800 font-bold bg-amber-50 p-2 rounded-xl border border-amber-200/60 hidden"></div>
             </div>
             
-            <!-- 退宿當天洗澡需求選擇 -->
+            <!-- 退宿當天洗澡服務選擇 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -197,7 +235,7 @@
             </div>
         </div>
 
-        <!-- 日期與時段 -->
+        <!-- 美容進場日期與時段選擇 -->
         <div class="app-card p-6" id="dateTimeCard">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
             <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]" id="dateTimeCardTitle"><i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段</h3>
@@ -216,7 +254,7 @@
             <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs" id="timeSlotContainer"><div class="text-xs text-gray-400 text-center py-4">請先點選上方日期</div></div>
         </div>
 
-        <!-- 活動方案與折抵（試算表動態讀取 B16 包卡規則） -->
+        <!-- 活動方案與折抵 -->
         <div class="app-card p-6 space-y-4 bg-[#FAF7F2]">
             <h3 class="font-bold text-[#5C5043] flex items-center gap-2 text-sm"><i class="fa-solid fa-tags text-[#CBB39C]"></i> 本月活動方案與折抵/加購選擇</h3>
             
@@ -285,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- 扣除後剩餘包卡次數顯示 -->
             <div id="cardRemainDeductNotice" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 p-2 rounded-xl border border-emerald-200/60 hidden text-right">
                 扣除本次預約後，剩餘包卡：<span id="afterDeductCardCountShow" class="font-black text-emerald-900">0</span> 次
             </div>
@@ -336,23 +373,30 @@
         </button>
     </div>
 
-    <!-- Lightbox 放大檢視 Modal -->
+    <!-- Lightbox Modal -->
     <div id="imageLightboxModal" class="fixed inset-0 z-[10000] hidden bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onclick="closeImageLightboxModal()">
         <img id="lightboxImageEl" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
         <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
     </div>
-
+    <!-- JS 完整邏輯引擎 (支援手風琴摺疊、行事曆動態時段與精確天數試算) -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec";
         let activeServiceType = 'grooming'; let systemBufferHours = 1; 
         let currentOffDatesList = []; let allServices = []; let groomerList = []; let allPhotos = [];
         let selectedDateStr = ''; let selectedTimeStr = ''; 
+        let selectedHotelCheckInDateStr = ''; let selectedHotelCheckInTimeStr = '';
+        let selectedHotelCheckOutDateStr = ''; let selectedHotelCheckOutTimeStr = '';
+        
         let currentCalDate = new Date(), calYear = currentCalDate.getFullYear(), calMonth = currentCalDate.getMonth();
+        let currentHotelInCalDate = new Date(), hotelInCalYear = currentHotelInCalDate.getFullYear(), hotelInCalMonth = currentHotelInCalDate.getMonth();
+        let currentHotelOutCalDate = new Date(), hotelOutCalYear = currentHotelOutCalDate.getFullYear(), hotelOutCalMonth = currentHotelOutCalDate.getMonth();
+
         let mainRead = false, riskRead = false, currentTermType = 'main', isCheckedFinal = false, drawingState = false;
         let cachedContracts = { mainContract: "雲端服務契約...", riskContract: "高風險告知..." };
         let petCount = 0; let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
-        let userCardRemainCount = 0; let userDepositBalance = 0; let globalFrontShiftsCache = {};
+        let userCardRemainCount = 0; let userDepositBalance = 0; 
+        let globalFrontShiftsCache = {}; let globalHotelShiftsCache = {};
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
         const PRICE_RANGE_MAP = { "洗澡_小型犬": "450起", "大美容_小型犬": "900-1200", "全身手剪_小型犬": "1300-1600" };
 
@@ -379,14 +423,16 @@
                         if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
                         if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
                         if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
+                        if (bundle.fullHotelShiftsMap) globalHotelShiftsCache = bundle.fullHotelShiftsMap;
                         if (bundle.packageRule) document.getElementById('packageRuleContentText').innerHTML = bundle.packageRule.replace(/\n/g, '<br>');
                     }
                     renderFrontCalendarFast();
+                    renderHotelInCalendarFast();
+                    renderHotelOutCalendarFast();
                 });
             }, 50);
         }
 
-        // 🌟 動態渲染供餐選項
         function setupServiceDropdownsAndData(data) {
             allServices = Array.isArray(data) ? data : []; 
             const pkgSelect = document.getElementById('buyNewPackageSelect');
@@ -461,21 +507,226 @@
             } 
         }
 
+        // 🌟 折疊手风琴展開/關閉控制
+        function toggleAccordionWindow(targetId) {
+            const el = document.getElementById(targetId);
+            if (el) {
+                if (el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            }
+        }
+
+        // 🌟 美容進場日曆渲染 (過期/公休/無時段淺色樣式)
         function renderFrontCalendarFast() {
             const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
             const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
             const firstDay = new Date(calYear, calMonth, 1).getDay(); const numDays = new Date(calYear, calMonth + 1, 0).getDate();
             let today = new Date(); today.setHours(0,0,0,0); let html = '';
             for(let i=0; i<firstDay; i++) html += `<div class="py-2.5"></div>`;
-            
+
+            let groomerSelect = document.getElementById('selectedGroomer');
+            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
+            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
+
             for(let day=1; day<=numDays; day++) {
+                let cellDate = new Date(calYear, calMonth, day); 
                 let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
+                const isPast = cellDate < today;
+                let isClosed = currentOffDatesList.includes(dateString);
+                let hasOpenSlot = false;
+
+                if (!isClosed && !isPast) {
+                    let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
+                    for (let s = 0; s < slots.length; s++) {
+                        let t = slots[s];
+                        if (groomerVal === '不指定' || groomerId === 'ALL') {
+                            for (let gKey in globalFrontShiftsCache) {
+                                if (gKey.includes(`_${dateString}_${t}`) && globalFrontShiftsCache[gKey] === true) {
+                                    hasOpenSlot = true; break;
+                                }
+                            }
+                        } else {
+                            let keyById = `${groomerId}_${dateString}_${t}`;
+                            let keyByName = `${groomerVal}_${dateString}_${t}`;
+                            if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) {
+                                hasOpenSlot = true; break;
+                            }
+                        }
+                        if (hasOpenSlot) break;
+                    }
+                }
+
+                if (isPast || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : '';
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                } else if (dateString === selectedDateStr) {
+                    html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
+                } else {
+                    html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
+                }
             }
             grid.innerHTML = html;
         }
 
-        // 🌟 修正 bug：型別完美轉換，帶入資料後「儲值金方塊」立刻解除鎖定！
+        // 🌟 住宿「入住」日曆渲染
+        function renderHotelInCalendarFast() {
+            const monthTitle = document.getElementById('hotel_in_cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${hotelInCalYear} 年 ${hotelInCalMonth + 1} 月`;
+            const grid = document.getElementById('hotelInCalGrid'); if(!grid) return; grid.innerHTML = '';
+            const firstDay = new Date(hotelInCalYear, hotelInCalMonth, 1).getDay(); const numDays = new Date(hotelInCalYear, hotelInCalMonth + 1, 0).getDate();
+            let today = new Date(); today.setHours(0,0,0,0); let html = '';
+            for(let i=0; i<firstDay; i++) html += `<div class="py-2"></div>`;
+
+            for(let day=1; day<=numDays; day++) {
+                let cellDate = new Date(hotelInCalYear, hotelInCalMonth, day); 
+                let dateString = `${hotelInCalYear}-${String(hotelInCalMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const isPast = cellDate < today;
+                let isClosed = currentOffDatesList.includes(dateString);
+                let hasOpenSlot = false;
+
+                if (!isClosed && !isPast) {
+                    let slots = ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+                    for (let s = 0; s < slots.length; s++) {
+                        let t = slots[s];
+                        if (globalHotelShiftsCache[`HOTEL_${dateString}_${t}`] === true) {
+                            hasOpenSlot = true; break;
+                        }
+                    }
+                }
+
+                if (isPast || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : '';
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                } else if (dateString === selectedHotelCheckInDateStr) {
+                    html += `<div class="py-2 bg-[#B2977D] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectHotelDate('${dateString}', 'in')">${day}</div>`;
+                } else {
+                    html += `<div class="py-2 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectHotelDate('${dateString}', 'in')">${day}</div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        // 🌟 住宿「退房」日曆渲染
+        function renderHotelOutCalendarFast() {
+            const monthTitle = document.getElementById('hotel_out_cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${hotelOutCalYear} 年 ${hotelOutCalMonth + 1} 月`;
+            const grid = document.getElementById('hotelOutCalGrid'); if(!grid) return; grid.innerHTML = '';
+            const firstDay = new Date(hotelOutCalYear, hotelOutCalMonth, 1).getDay(); const numDays = new Date(hotelOutCalYear, hotelOutCalMonth + 1, 0).getDate();
+            let today = new Date(); today.setHours(0,0,0,0); let html = '';
+            for(let i=0; i<firstDay; i++) html += `<div class="py-2"></div>`;
+
+            for(let day=1; day<=numDays; day++) {
+                let cellDate = new Date(hotelOutCalYear, hotelOutCalMonth, day); 
+                let dateString = `${hotelOutCalYear}-${String(hotelOutCalMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                
+                // 退房日期必須大於等於已選擇的入住日期
+                let inDateObj = selectedHotelCheckInDateStr ? new Date(selectedHotelCheckInDateStr) : today;
+                const isBeforeInDate = cellDate < inDateObj;
+                let isClosed = currentOffDatesList.includes(dateString);
+                let hasOpenSlot = false;
+
+                if (!isClosed && !isBeforeInDate) {
+                    let slots = ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+                    for (let s = 0; s < slots.length; s++) {
+                        let t = slots[s];
+                        if (globalHotelShiftsCache[`HOTEL_${dateString}_${t}`] === true) {
+                            hasOpenSlot = true; break;
+                        }
+                    }
+                }
+
+                if (isBeforeInDate || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : '';
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                } else if (dateString === selectedHotelCheckOutDateStr) {
+                    html += `<div class="py-2 bg-[#B2977D] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectHotelDate('${dateString}', 'out')">${day}</div>`;
+                } else {
+                    html += `<div class="py-2 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectHotelDate('${dateString}', 'out')">${day}</div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        function changeHotelMonth(dir, type) {
+            if (type === 'in') {
+                hotelInCalMonth += dir;
+                if(hotelInCalMonth > 11) { hotelInCalMonth = 0; hotelInCalYear++; }
+                if(hotelInCalMonth < 0) { hotelInCalMonth = 11; hotelInCalYear--; }
+                renderHotelInCalendarFast();
+            } else {
+                hotelOutCalMonth += dir;
+                if(hotelOutCalMonth > 11) { hotelOutCalMonth = 0; hotelOutCalYear++; }
+                if(hotelOutCalMonth < 0) { hotelOutCalMonth = 11; hotelOutCalYear--; }
+                renderHotelOutCalendarFast();
+            }
+        }
+
+        function selectHotelDate(dateStr, type) {
+            if (type === 'in') {
+                selectedHotelCheckInDateStr = dateStr;
+                selectedHotelCheckInTimeStr = '';
+                renderHotelInCalendarFast();
+                renderHotelOutCalendarFast(); // 連動刷新退房日曆範疇
+                renderHotelTimeSlots(dateStr, 'in');
+            } else {
+                selectedHotelCheckOutDateStr = dateStr;
+                selectedHotelCheckOutTimeStr = '';
+                renderHotelOutCalendarFast();
+                renderHotelTimeSlots(dateStr, 'out');
+            }
+        }
+
+        function renderHotelTimeSlots(dateStr, type) {
+            const container = document.getElementById(type === 'in' ? 'hotelInTimeSlotContainer' : 'hotelOutTimeSlotContainer');
+            if(!container) return;
+            let slots = ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+            let availableSlots = [];
+            slots.forEach(time => {
+                if (globalHotelShiftsCache[`HOTEL_${dateStr}_${time}`] === true) {
+                    availableSlots.push(time);
+                }
+            });
+
+            if (availableSlots.length === 0) {
+                container.innerHTML = `<div class="text-center py-3 text-xs font-bold text-gray-400">本日無可預約進出時段 🐾</div>`;
+                return;
+            }
+            let html = '<div class="grid grid-cols-3 gap-2">';
+            availableSlots.forEach(time => {
+                html += `<button type="button" onclick="selectHotelTime('${time}', this, '${type}')" class="hotel-time-btn-${type} py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function selectHotelTime(timeStr, btnEl, type) {
+            if (type === 'in') {
+                selectedHotelCheckInTimeStr = timeStr;
+                document.querySelectorAll('.hotel-time-btn-in').forEach(b => b.className = "hotel-time-btn-in py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white");
+                if (btnEl) btnEl.className = "hotel-time-btn-in py-2 border border-[#B2977D] bg-[#FAF7F2] text-[#B2977D] font-black text-xs rounded-xl shadow-xs";
+                document.getElementById('checkInSummaryBadge').innerHTML = `✓ ${selectedHotelCheckInDateStr} ${timeStr}`;
+                // 自動開啟退房手風琴
+                document.getElementById('checkOutAccordion').classList.remove('hidden');
+            } else {
+                selectedHotelCheckOutDateStr = timeStr;
+                document.querySelectorAll('.hotel-time-btn-out').forEach(b => b.className = "hotel-time-btn-out py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white");
+                if (btnEl) btnEl.className = "hotel-time-btn-out py-2 border border-[#B2977D] bg-[#FAF7F2] text-[#B2977D] font-black text-xs rounded-xl shadow-xs";
+                document.getElementById('checkOutSummaryBadge').innerHTML = `✓ ${selectedHotelCheckOutDateStr} ${timeStr}`;
+            }
+
+            // 同步寫入入住/退房 datetime-local 隱藏連動值
+            if (selectedHotelCheckInDateStr && selectedHotelCheckInTimeStr) {
+                document.getElementById('checkInTime').value = `${selectedHotelCheckInDateStr}T${selectedHotelCheckInTimeStr}`;
+            }
+            if (selectedHotelCheckOutDateStr && selectedHotelCheckOutTimeStr) {
+                document.getElementById('checkOutTime').value = `${selectedHotelCheckOutDateStr}T${selectedHotelCheckOutTimeStr}`;
+            }
+
+            calculateBookingTotalPriceEngine();
+        }
+
         function triggerHistorySearch() {
             let phone = document.getElementById('phone').value.trim();
             if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
@@ -509,7 +760,6 @@
                         document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (無可用額度)`;
                     }
 
-                    // 🌟 儲值金即時解鎖
                     if (userDepositBalance > 0) {
                         depCb.disabled = false;
                         document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (額度 $${userDepositBalance.toLocaleString()})`;
@@ -577,7 +827,6 @@
             if (val === '需要接送') block.classList.remove('hidden'); else { block.classList.add('hidden'); document.getElementById('pickupAddress').value = ''; }
         }
 
-        // 🌟 住宿退宿洗澡動態展開控制
         function toggleHotelBathPanel(show) {
             const panel = document.getElementById('hotelBathSubPanel');
             const dtCard = document.getElementById('dateTimeCard');
@@ -664,7 +913,6 @@
             return Math.max(1, nights);
         }
 
-        // 🌟 預算即時算式乘算天數與扣卡次數
         function calculateBookingTotalPriceEngine() {
             let displayMin = 0, displayMax = 0;
             let addonMin = 0, addonMax = 0;
@@ -1289,10 +1537,22 @@
             if (!phone || !ownerName || !email || !lineName) { return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); }
             if (pickupVal === '需要接送' && !pickupAddr) { return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); }
             
-            const dtCard = document.getElementById('dateTimeCard');
-            if (dtCard && !dtCard.classList.contains('hidden')) {
-                if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請點選上方日曆選擇預約日期與進場時段！', 'warning'); }
+            let finalBookingDate = selectedDateStr;
+            let finalBookingTime = selectedTimeStr;
+
+            if (activeServiceType === 'boarding') {
+                if (!selectedHotelCheckInDateStr || !selectedHotelCheckInTimeStr || !selectedHotelCheckOutDateStr || !selectedHotelCheckOutTimeStr) {
+                    return Swal.fire('漏填提醒', '請完整選擇住宿入住與退房的日期與時段！', 'warning');
+                }
+                finalBookingDate = `${selectedHotelCheckInDateStr} 至 ${selectedHotelCheckOutDateStr}`;
+                finalBookingTime = `入住:${selectedHotelCheckInTimeStr} / 退房:${selectedHotelCheckOutTimeStr}`;
+            } else {
+                const dtCard = document.getElementById('dateTimeCard');
+                if (dtCard && !dtCard.classList.contains('hidden')) {
+                    if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請點選上方日曆選擇美容預約日期與進場時段！', 'warning'); }
+                }
             }
+
             if (!mainRead || !riskRead || !isCheckedFinal) { return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); }
             if (!validateCanvasIsSigned()) { return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); }
             
@@ -1304,7 +1564,7 @@
             let payload = {
                 serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
                 phone: phone, ownerName: ownerName, email: email, lineName: lineName,
-                date: selectedDateStr, time: selectedTimeStr,
+                date: finalBookingDate, time: finalBookingTime,
                 groomer: groomerVal,
                 pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
                 referrerOwner: document.getElementById('referrerOwner').value,
