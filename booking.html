@@ -349,6 +349,61 @@
                 </div>
             </div>
         </div>
+
+        <!-- 社群按鈕與營業時間區塊 -->
+        <div class="flex justify-center gap-6 pt-4">
+            <a href="https://lin.ee/q19SMMx5" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
+                <i class="fab fa-line text-[26px]"></i>
+            </a>
+            <a href="https://www.instagram.com/zuoyue439?igsh=YzFoOWkwZzdxamw3" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
+                <i class="fab fa-instagram text-[24px]"></i>
+            </a>
+            <a href="https://maps.app.goo.gl/FbAXrTmoWhUDsLgn7" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
+                <i class="fas fa-map-marker-alt text-[22px]"></i>
+            </a>
+        </div>
+        <div class="text-center text-[12px] text-textBrown font-bold tracking-wider pt-1">
+            <i class="fas fa-location-dot mr-1 text-[#CBB39C]"></i> 高雄市鳳山區南京路439號
+        </div>
+        <div class="text-center mb-4 text-[12px] text-gray-500 font-bold tracking-widest">
+            <i class="far fa-clock mr-1"></i> 營業時間 9:00-19:00 (最晚進場 17:00)
+        </div>
+
+        <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl transition duration-300 text-sm shadow-md text-center block font-black">
+            送出預約申請
+        </button>
+
+        <!-- 現場臨櫃家長專區 -->
+        <div class="max-w-md mx-auto px-4 pt-4 pb-2">
+            <div class="bg-[#FAF7F2] border border-dashed border-[#CBB39C] rounded-2xl p-4 text-center shadow-sm max-w-[90%] mx-auto scale-95">
+                <h4 class="text-[12px] font-black text-[#5C5043] mb-0.5">
+                    <i class="fa-solid fa-file-signature text-[#CBB39C]"></i> 現場臨櫃家長專區
+                </h4>
+                <p class="text-[10px] text-gray-400 mb-2">代客建檔之家長由此進入完成數位簽署</p>
+                <a href="https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec?page=signature"
+                   target="_blank"
+                   class="w-full bg-[#CBB39C] text-white py-2.5 rounded-xl text-[12px] font-black tracking-widest shadow-sm active:scale-95 transition block text-center select-none cursor-pointer">
+                    ⚡ 點此補簽數位合約
+                </a>
+            </div>
+        </div>
+
+        <!-- 條款 Modal -->
+        <div id="termsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-md bg-black/50 transition-all">
+            <div class="bg-white w-full max-w-md h-[80vh] rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl border border-[#EFE8DE]/50" id="modalContainer">
+                <div id="modalTitle" class="p-5 font-bold text-center border-b border-gray-100 text-[15px] text-[#211c1b]"> 📜 合約條款與審閱細則 </div>
+                <div id="modalBody" class="p-6 flex-1 overflow-y-auto text-xs leading-relaxed text-gray-500 whitespace-pre-line bg-gray-50/50"> 載入中... </div>
+                <div class="p-5 border-t border-gray-100 bg-white">
+                    <button type="button" id="modalCloseBtn" disabled onclick="closeTermsModalWindow()" class="w-full bg-gray-200 text-gray-400 p-4 rounded-2xl text-xs font-bold uppercase"> 請向下滑動閱讀完整條款 </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-10 mb-4 text-sibylLight text-[11px] tracking-widest uppercase">
+        Designed by <a href="https://www.heysibyl.com/" target="_blank" class="font-bold hover:underline">Sibyl | 數位管家</a>
+    </div>
+    
         <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl text-sm shadow-md block font-black">
             送出預約申請
         </button>
@@ -651,26 +706,33 @@ allServices.forEach(s => {
         }
 
         function renderHotelTimeSlots(dateStr, type) {
-            const container = document.getElementById(type === 'in' ? 'hotelInTimeSlotContainer' : 'hotelOutTimeSlotContainer');
-            if(!container) return;
-            let slots = ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
-            let availableSlots = [];
-            slots.forEach(time => {
-                if (globalHotelShiftsCache[`HOTEL_${dateStr}_${time}`] === true) {
-                    availableSlots.push(time);
-                }
-            });
-            if (availableSlots.length === 0) {
-                container.innerHTML = `<div class="text-center py-3 text-xs font-bold text-gray-400">本日無可預約進出時段 🐾</div>`;
-                return;
+    const container = document.getElementById(type === 'in' ? 'hotelInTimeSlotContainer' : 'hotelOutTimeSlotContainer');
+    if (!container) return;
+    
+    // 從住宿班表快取 (globalHotelShiftsCache) 中篩選出該日期開放的時段
+    let availableSlots = [];
+    for (let key in globalHotelShiftsCache) {
+        if (globalHotelShiftsCache[key] === true) {
+            let parts = key.split('_'); // 格式: HOTEL_YYYY-MM-DD_HH:mm
+            if (parts.length >= 3 && parts[1] === dateStr) {
+                let tStr = parts[2];
+                if (!availableSlots.includes(tStr)) availableSlots.push(tStr);
             }
-            let html = '<div class="grid grid-cols-3 gap-2">';
-            availableSlots.forEach(time => {
-                html += `<button type="button" onclick="selectHotelTime('${time}', this, '${type}')" class="hotel-time-btn-${type} py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
-            });
-            html += '</div>';
-            container.innerHTML = html;
         }
+    }
+    availableSlots.sort();
+    
+    if (availableSlots.length === 0) {
+        container.innerHTML = `<div class="text-center py-3 text-xs font-bold text-gray-400">本日無可預約進出時段 🐾</div>`;
+        return;
+    }
+    let html = '<div class="grid grid-cols-3 gap-2">';
+    availableSlots.forEach(time => {
+        html += `<button type="button" onclick="selectHotelTime('${time}', this, '${type}')" class="hotel-time-btn-${type} py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
 
         // 🌟 需求修復：修正退房時間摘要顯示為 ✓ 2026-08-08 19:00
         function selectHotelTime(timeStr, btnEl, type) {
@@ -1311,33 +1373,33 @@ function calculateBookingTotalPriceEngine() {
         }
 
         function selectDate(dateStr) {
-            selectedDateStr = dateStr; selectedTimeStr = ''; 
-            renderFrontCalendarFast();
-            const container = document.getElementById('timeSlotContainer'); if(!container) return;
-            
-            let groomerSelect = document.getElementById('selectedGroomer');
-            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
-            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
-            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
-            let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
-            let availableSlots = [];
-            slots.forEach(time => {
-                if (groomerVal === '不指定' || groomerId === 'ALL') {
-                    for (let gKey in globalFrontShiftsCache) {
-                        if (gKey.includes(`_${dateStr}_${time}`) && globalFrontShiftsCache[gKey] === true) {
-                            if (!availableSlots.includes(time)) availableSlots.push(time);
-                        }
-                    }
-                } else {
-                    let keyById = `${groomerId}_${dateStr}_${time}`;
-                    let keyByName = `${groomerVal}_${dateStr}_${time}`;
-                    if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) {
-                        availableSlots.push(time);
+    selectedDateStr = dateStr; selectedTimeStr = ''; 
+    renderFrontCalendarFast();
+    const container = document.getElementById('timeSlotContainer'); if(!container) return;
+    
+    let groomerSelect = document.getElementById('selectedGroomer');
+    let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+    let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
+    let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
+    
+    // 從雲端班表快取 (globalFrontShiftsCache) 中篩選出該日期開放的時段
+    let availableSlots = [];
+    for (let key in globalFrontShiftsCache) {
+        if (globalFrontShiftsCache[key] === true) {
+            let parts = key.split('_'); // 格式: 美容師ID_YYYY-MM-DD_HH:mm
+            if (parts.length >= 3) {
+                let gId = parts[0], dStr = parts[1], tStr = parts[2];
+                if (dStr === dateStr) {
+                    if (groomerVal === '不指定' || groomerId === 'ALL' || gId === groomerId || gId === groomerVal) {
+                        if (!availableSlots.includes(tStr)) availableSlots.push(tStr);
                     }
                 }
-            });
-            renderTimeSlots({ availableSlots: availableSlots });
+            }
         }
+    }
+    availableSlots.sort(); // 依時間排序
+    renderTimeSlots({ availableSlots: availableSlots });
+}
 
         function renderTimeSlots(res) {
             const container = document.getElementById('timeSlotContainer'); if(!container) return;
