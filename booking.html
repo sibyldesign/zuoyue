@@ -362,13 +362,16 @@
                 <i class="fas fa-map-marker-alt text-[22px]"></i>
             </a>
         </div>
+
         <div class="text-center text-[12px] text-textBrown font-bold tracking-wider pt-1">
             <i class="fas fa-location-dot mr-1 text-[#CBB39C]"></i> 高雄市鳳山區南京路439號
         </div>
+        
         <div class="text-center mb-4 text-[12px] text-gray-500 font-bold tracking-widest">
             <i class="far fa-clock mr-1"></i> 營業時間 9:00-19:00 (最晚進場 17:00)
         </div>
 
+        <!-- 送出預約申請按鈕 -->
         <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl transition duration-300 text-sm shadow-md text-center block font-black">
             送出預約申請
         </button>
@@ -398,29 +401,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Lightbox Modal (圖片放大彈窗) -->
+        <div id="imageLightboxModal" class="fixed inset-0 z-[10000] hidden bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onclick="closeImageLightboxModal()">
+            <img id="lightboxImageEl" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
+            <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
+        </div>
     </div>
 
+    <!-- 頁尾署名 -->
     <div class="text-center mt-10 mb-4 text-sibylLight text-[11px] tracking-widest uppercase">
         Designed by <a href="https://www.heysibyl.com/" target="_blank" class="font-bold hover:underline">Sibyl | 數位管家</a>
     </div>
-    
-        <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl text-sm shadow-md block font-black">
-            送出預約申請
-        </button>
-    </div>
-    <!-- 條款 Modal -->
-    <div id="termsModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-[9999]">
-        <div class="bg-white rounded-2xl w-full max-w-sm p-5 space-y-3 max-h-[80vh] flex flex-col">
-            <h3 class="font-black text-textBrown text-base" id="modalTitle">條款說明</h3>
-            <div class="overflow-y-auto text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-xl flex-1 whitespace-pre-wrap" id="modalBody"></div>
-            <button id="modalCloseBtn" disabled onclick="closeTermsModalWindow()" class="w-full bg-gray-300 text-gray-400 p-3 rounded-xl text-xs font-bold">請滑到底閱讀完畢</button>
-        </div>
-    </div>
-    <!-- Lightbox Modal -->
-    <div id="imageLightboxModal" class="fixed inset-0 z-[10000] hidden bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onclick="closeImageLightboxModal()">
-        <img id="lightboxImageEl" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
-        <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
-    </div>
+
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec";
         let activeServiceType = 'grooming'; let systemBufferHours = 1; 
