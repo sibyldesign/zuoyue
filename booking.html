@@ -822,7 +822,6 @@
                         petDropdown.innerHTML = dropdownHtml;
                         petBlock.classList.remove('hidden');
                         
-                        // 預設帶入第一隻毛孩的資料與額度
                         userCardRemainCount = parseInt(cachedCustomerPetsData[0].cardRemain) || 0;
                         userDepositBalance = parseFloat(cachedCustomerPetsData[0].depositBalance) || 0;
                         applyPetDataToCard(1, cachedCustomerPetsData[0]);
@@ -862,7 +861,6 @@
             document.getElementById('displayCardRemain').innerText = `${userCardRemainCount} 次`;
             document.getElementById('displayDepositRemain').innerText = `$${userDepositBalance.toLocaleString()}`;
             
-            // 單一毛孩包卡驗證
             if (userCardRemainCount > 0) {
                 cardCb.disabled = false;
                 document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩剩餘 ${userCardRemainCount} 次)`;
@@ -871,7 +869,6 @@
                 document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩無可用包卡)`;
             }
             
-            // 單一毛孩儲值金驗證
             if (userDepositBalance > 0) {
                 depCb.disabled = false;
                 document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (該毛孩儲值額度 $${userDepositBalance.toLocaleString()})`;
@@ -975,53 +972,49 @@
             renderFrontCalendarFast();
         }
 
-        // 精確供餐點計算：依據入住/退房時間與餐點模式判斷
-        // 🛠️ 1. 精確放飯點計算（08/08 09:00 ~ 08/10 19:00：一日一餐=3餐，一日兩餐=6餐）
-function calculateBoardingMealsCount(checkInStr, checkOutStr, isOneMealPerDay) {
-    if (!checkInStr || !checkOutStr) return 0;
-    let checkIn = new Date(checkInStr);
-    let checkOut = new Date(checkOutStr);
-    if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 0;
+        // 精確放飯點計算：08/08 09:00 ~ 08/10 19:00 -> 一日一餐=3餐，一日兩餐=6餐
+        function calculateBoardingMealsCount(checkInStr, checkOutStr, isOneMealPerDay) {
+            if (!checkInStr || !checkOutStr) return 0;
+            let checkIn = new Date(checkInStr);
+            let checkOut = new Date(checkOutStr);
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 0;
 
-    let totalMealSlotsCount = 0; // 經過的所有放飯點 (早09:00 / 晚18:00)
-    let dailyMealSlotsMap = {}; // 紀錄每一天經過了哪些放飯點
-    
-    let cur = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate());
-    let endDate = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate());
+            let totalMealSlotsCount = 0;
+            let dailyMealSlotsMap = {};
+            
+            let cur = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate());
+            let endDate = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate());
 
-    while (cur <= endDate) {
-        let year = cur.getFullYear(), month = cur.getMonth(), date = cur.getDate();
-        let dateKey = `${year}-${month + 1}-${date}`;
-        dailyMealSlotsMap[dateKey] = 0;
+            while (cur <= endDate) {
+                let year = cur.getFullYear(), month = cur.getMonth(), date = cur.getDate();
+                let dateKey = `${year}-${month + 1}-${date}`;
+                dailyMealSlotsMap[dateKey] = 0;
 
-        let breakfastTime = new Date(year, month, date, 9, 0, 0);
-        let dinnerTime = new Date(year, month, date, 18, 0, 0);
+                let breakfastTime = new Date(year, month, date, 9, 0, 0);
+                let dinnerTime = new Date(year, month, date, 18, 0, 0);
 
-        // 判斷放飯點是否落於入住與退房時間內 (入住時間 <= 放飯時間 <= 退房時間)
-        if (breakfastTime >= checkIn && breakfastTime <= checkOut) {
-            totalMealSlotsCount++;
-            dailyMealSlotsMap[dateKey]++;
+                if (breakfastTime >= checkIn && breakfastTime <= checkOut) {
+                    totalMealSlotsCount++;
+                    dailyMealSlotsMap[dateKey]++;
+                }
+                if (dinnerTime >= checkIn && dinnerTime <= checkOut) {
+                    totalMealSlotsCount++;
+                    dailyMealSlotsMap[dateKey]++;
+                }
+
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            if (isOneMealPerDay) {
+                let activeDaysWithMeals = 0;
+                for (let d in dailyMealSlotsMap) {
+                    if (dailyMealSlotsMap[d] > 0) activeDaysWithMeals++;
+                }
+                return activeDaysWithMeals;
+            } else {
+                return totalMealSlotsCount;
+            }
         }
-        if (dinnerTime >= checkIn && dinnerTime <= checkOut) {
-            totalMealSlotsCount++;
-            dailyMealSlotsMap[dateKey]++;
-        }
-
-        cur.setDate(cur.getDate() + 1);
-    }
-
-    if (isOneMealPerDay) {
-        // 選「一日一餐」：計算有經過放飯點的天數（每天採計 1 餐）
-        let activeDaysWithMeals = 0;
-        for (let d in dailyMealSlotsMap) {
-            if (dailyMealSlotsMap[d] > 0) activeDaysWithMeals++;
-        }
-        return activeDaysWithMeals; // 08/08~08/10 有經過放飯點的天數為 3 天 = 3 餐
-    } else {
-        // 選「一日兩餐」：直接傳回實際經歷的所有放飯點數量 = 6 餐
-        return totalMealSlotsCount;
-    }
-}
 
         function calculateBoardingDaysCount(checkInStr, checkOutStr) {
             if (!checkInStr || !checkOutStr) return 1;
@@ -1037,268 +1030,264 @@ function calculateBoardingMealsCount(checkInStr, checkOutStr, isOneMealPerDay) {
             return Math.max(1, nights);
         }
 
-        // 🛠️ 1. 全新重構：預算計價即時試算（精確加總 $2,200 ~ $3,700，連動包卡扣抵與新購儲值）
-function calculateBookingTotalPriceEngine() {
-    let boardingMin = 0, boardingMax = 0;           // 1. 住宿房型費用
-    let mainServiceMin = 0, mainServiceMax = 0;     // 2. 主服務(洗澡/大美容)費用
-    let addonMin = 0, addonMax = 0;                 // 3. 專屬加購護理
-    let hotelBathPriceMin = 0, hotelBathPriceMax = 0; // 4. 退宿加做洗澡美容
-    let boardingMealPriceTotal = 0;                 // 5. 供餐餐費小計
-    
-    let mainItemNamesArr = [];
-    let requiredCardDeductCount = 0;
-    
-    document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
-    
-    // 組合精確日期時間字串 (YYYY-MM-DDTHH:mm)
-    let checkInCombinedStr = (selectedHotelCheckInDateStr && selectedHotelCheckInTimeStr) ? `${selectedHotelCheckInDateStr}T${selectedHotelCheckInTimeStr}` : '';
-    let checkOutCombinedStr = (selectedHotelCheckOutDateStr && selectedHotelCheckOutTimeStr) ? `${selectedHotelCheckOutDateStr}T${selectedHotelCheckOutTimeStr}` : '';
-    
-    let boardingDaysMultiplier = 1;
-    if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
-        boardingDaysMultiplier = calculateBoardingDaysCount(checkInCombinedStr, checkOutCombinedStr);
-    }
-    
-    // A. 遍歷毛孩卡片計算各細項金額
-    const container = document.getElementById('dynamicPetContainer');
-    if (container) {
-        for (let i = 0; i < container.children.length; i++) {
-            const card = container.children[i];
+        // 預算計價即時試算（精確加總 $2,200 ~ $3,700，正確連動包卡扣抵與新購儲值）
+        function calculateBookingTotalPriceEngine() {
+            let boardingMin = 0, boardingMax = 0;           // 1. 住宿房型費用
+            let mainServiceMin = 0, mainServiceMax = 0;     // 2. 主服務(洗澡/大美容)費用
+            let addonMin = 0, addonMax = 0;                 // 3. 專屬加購護理
+            let hotelBathPriceMin = 0, hotelBathPriceMax = 0; // 4. 退宿加做洗澡美容
+            let boardingMealPriceTotal = 0;                 // 5. 供餐餐費小計
             
-            if (activeServiceType === 'grooming') {
-                const mainSelect = card.querySelector('.p-main-service');
-                if (mainSelect && mainSelect.selectedIndex >= 0) {
-                    const opt = mainSelect.options[mainSelect.selectedIndex];
-                    const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                    let sName = opt.value || '';
-                    if (sName) {
-                        mainItemNamesArr.push(sName);
-                        if (sName.includes('全身手剪')) requiredCardDeductCount += 3;
-                        else if (sName.includes('大美容')) requiredCardDeductCount += 2;
-                        else requiredCardDeductCount += 1;
-                    }
-                    if (priceRaw.includes('起')) {
-                        mainServiceMin += parseInt(priceRaw.replace('起','')) || 0;
-                    } else if (priceRaw.includes('-')) {
-                        let parts = priceRaw.split('-');
-                        mainServiceMin += parseInt(parts[0]) || 0;
-                        mainServiceMax += parseInt(parts[1]) || 0;
-                    } else {
-                        let p = parseInt(priceRaw) || 0;
-                        mainServiceMin += p; mainServiceMax += p;
-                    }
-                }
-            } else {
-                // 住宿模式：區分「房型」與「房型內勾選的洗澡/美容」
-                card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
-                    const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
-                    let cleanVal = cb.value.split('(')[0].trim();
-                    if (cb.value) mainItemNamesArr.push(cleanVal);
-                    
-                    let pMin = 0, pMax = 0;
-                    if (priceRaw.includes('起')) {
-                        pMin = parseInt(priceRaw.replace('起','')) || 0;
-                    } else if (priceRaw.includes('-')) {
-                        let parts = priceRaw.split('-');
-                        pMin = parseInt(parts[0]) || 0;
-                        pMax = parseInt(parts[1]) || 0;
-                    } else {
-                        let p = parseInt(priceRaw) || 0;
-                        pMin = p; pMax = p;
-                    }
-                    
-                    if (cleanVal.includes('住宿') && !cleanVal.includes('洗澡') && !cleanVal.includes('美容') && !cleanVal.includes('手剪')) {
-                        // 純住宿房型：乘以晚數
-                        boardingMin += pMin * boardingDaysMultiplier;
-                        boardingMax += (pMax > 0 ? pMax : pMin) * boardingDaysMultiplier;
-                    } else {
-                        // 住宿專區內勾選的洗澡/美容主服務
-                        mainServiceMin += pMin;
-                        mainServiceMax += (pMax > 0 ? pMax : pMin);
-                        if (cleanVal.includes('全身手剪')) requiredCardDeductCount += 3;
-                        else if (cleanVal.includes('大美容')) requiredCardDeductCount += 2;
-                        else requiredCardDeductCount += 1;
-                    }
-                });
+            let mainItemNamesArr = [];
+            let requiredCardDeductCount = 0;
+            
+            document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
+            
+            let checkInCombinedStr = (selectedHotelCheckInDateStr && selectedHotelCheckInTimeStr) ? `${selectedHotelCheckInDateStr}T${selectedHotelCheckInTimeStr}` : '';
+            let checkOutCombinedStr = (selectedHotelCheckOutDateStr && selectedHotelCheckOutTimeStr) ? `${selectedHotelCheckOutDateStr}T${selectedHotelCheckOutTimeStr}` : '';
+            
+            let boardingDaysMultiplier = 1;
+            if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
+                boardingDaysMultiplier = calculateBoardingDaysCount(checkInCombinedStr, checkOutCombinedStr);
             }
             
-            // 專屬加購護理
-            card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-                let priceRaw = (cb.getAttribute('data-price') || '0').toString();
+            // A. 遍歷毛孩卡片計算金額
+            const container = document.getElementById('dynamicPetContainer');
+            if (container) {
+                for (let i = 0; i < container.children.length; i++) {
+                    const card = container.children[i];
+                    
+                    if (activeServiceType === 'grooming') {
+                        const mainSelect = card.querySelector('.p-main-service');
+                        if (mainSelect && mainSelect.selectedIndex >= 0) {
+                            const opt = mainSelect.options[mainSelect.selectedIndex];
+                            const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
+                            let sName = opt.value || '';
+                            if (sName) {
+                                mainItemNamesArr.push(sName);
+                                if (sName.includes('全身手剪')) requiredCardDeductCount += 3;
+                                else if (sName.includes('大美容')) requiredCardDeductCount += 2;
+                                else requiredCardDeductCount += 1;
+                            }
+                            if (priceRaw.includes('起')) {
+                                mainServiceMin += parseInt(priceRaw.replace('起','')) || 0;
+                            } else if (priceRaw.includes('-')) {
+                                let parts = priceRaw.split('-');
+                                mainServiceMin += parseInt(parts[0]) || 0;
+                                mainServiceMax += parseInt(parts[1]) || 0;
+                            } else {
+                                let p = parseInt(priceRaw) || 0;
+                                mainServiceMin += p; mainServiceMax += p;
+                            }
+                        }
+                    } else {
+                        // 住宿模式：正確區分房型與房型內勾選的洗澡/美容
+                        card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
+                            const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
+                            let cleanVal = cb.value.split('(')[0].trim();
+                            if (cb.value) mainItemNamesArr.push(cleanVal);
+                            
+                            let pMin = 0, pMax = 0;
+                            if (priceRaw.includes('起')) {
+                                pMin = parseInt(priceRaw.replace('起','')) || 0;
+                            } else if (priceRaw.includes('-')) {
+                                let parts = priceRaw.split('-');
+                                pMin = parseInt(parts[0]) || 0;
+                                pMax = parseInt(parts[1]) || 0;
+                            } else {
+                                let p = parseInt(priceRaw) || 0;
+                                pMin = p; pMax = p;
+                            }
+                            
+                            if (cleanVal.includes('住宿') && !cleanVal.includes('洗澡') && !cleanVal.includes('美容') && !cleanVal.includes('手剪')) {
+                                boardingMin += pMin * boardingDaysMultiplier;
+                                boardingMax += (pMax > 0 ? pMax : pMin) * boardingDaysMultiplier;
+                            } else {
+                                mainServiceMin += pMin;
+                                mainServiceMax += (pMax > 0 ? pMax : pMin);
+                                if (cleanVal.includes('全身手剪')) requiredCardDeductCount += 3;
+                                else if (cleanVal.includes('大美容')) requiredCardDeductCount += 2;
+                                else requiredCardDeductCount += 1;
+                            }
+                        });
+                    }
+                    
+                    // 專屬加購護理
+                    card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                        let priceRaw = (cb.getAttribute('data-price') || '0').toString();
+                        if (priceRaw.includes('起')) {
+                            addonMin += parseInt(priceRaw.replace('起','')) || 0;
+                        } else if (priceRaw.includes('-')) {
+                            let parts = priceRaw.split('-');
+                            addonMin += parseInt(parts[0]) || 0;
+                            addonMax += parseInt(parts[1]) || 0;
+                        } else {
+                            let p = parseInt(priceRaw) || 0;
+                            addonMin += p; addonMax += p;
+                        }
+                    });
+                }
+            }
+            
+            // B. 計算供餐費
+            let calculatedMealCount = 0;
+            if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
+                let mealRadio = document.querySelector('input[name="mealPlanOption"]:checked');
+                let unitMealPrice = mealRadio ? parseInt(mealRadio.getAttribute('data-price') || 0) : 0;
+                let selectedMealType = mealRadio ? mealRadio.value : '';
+                let isOneMeal = selectedMealType.includes('一日一餐');
+                
+                calculatedMealCount = calculateBoardingMealsCount(checkInCombinedStr, checkOutCombinedStr, isOneMeal);
+                
+                const badgeEl = document.getElementById('mealCalculationBadge');
+                if (unitMealPrice > 0 && calculatedMealCount > 0) {
+                    boardingMealPriceTotal = calculatedMealCount * unitMealPrice;
+                    if (badgeEl) {
+                        badgeEl.classList.remove('hidden');
+                        badgeEl.innerHTML = `🥣 依據【${selectedMealType}】，共計 <strong>${calculatedMealCount} 餐</strong>（單餐 $${unitMealPrice}），餐費小計：$${boardingMealPriceTotal}`;
+                    }
+                } else {
+                    if (badgeEl) badgeEl.classList.add('hidden');
+                }
+            }
+            
+            // C. 計算退宿當天加做洗澡美容
+            const bathSelect = document.getElementById('hotelBathMainService');
+            const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
+            if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
+                const opt = bathSelect.options[bathSelect.selectedIndex];
+                const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
                 if (priceRaw.includes('起')) {
-                    addonMin += parseInt(priceRaw.replace('起','')) || 0;
+                    hotelBathPriceMin = parseInt(priceRaw.replace('起','')) || 0;
                 } else if (priceRaw.includes('-')) {
                     let parts = priceRaw.split('-');
-                    addonMin += parseInt(parts[0]) || 0;
-                    addonMax += parseInt(parts[1]) || 0;
+                    hotelBathPriceMin = parseInt(parts[0]) || 0;
+                    hotelBathPriceMax = parseInt(parts[1]) || 0;
                 } else {
                     let p = parseInt(priceRaw) || 0;
-                    addonMin += p; addonMax += p;
+                    hotelBathPriceMin = p; hotelBathPriceMax = p;
                 }
-            });
-        }
-    }
-    
-    // B. 計算供餐費
-    let calculatedMealCount = 0;
-    if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
-        let mealRadio = document.querySelector('input[name="mealPlanOption"]:checked');
-        let unitMealPrice = mealRadio ? parseInt(mealRadio.getAttribute('data-price') || 0) : 0;
-        let selectedMealType = mealRadio ? mealRadio.value : '';
-        let isOneMeal = selectedMealType.includes('一日一餐');
-        
-        calculatedMealCount = calculateBoardingMealsCount(checkInCombinedStr, checkOutCombinedStr, isOneMeal);
-        
-        const badgeEl = document.getElementById('mealCalculationBadge');
-        if (unitMealPrice > 0 && calculatedMealCount > 0) {
-            boardingMealPriceTotal = calculatedMealCount * unitMealPrice;
-            if (badgeEl) {
-                badgeEl.classList.remove('hidden');
-                badgeEl.innerHTML = `🥣 依據【${selectedMealType}】，共計 <strong>${calculatedMealCount} 餐</strong>（單餐 $${unitMealPrice}），餐費小計：$${boardingMealPriceTotal}`;
             }
-        } else {
-            if (badgeEl) badgeEl.classList.add('hidden');
-        }
-    }
-    
-    // C. 計算退宿當天加做洗澡美容
-    const bathSelect = document.getElementById('hotelBathMainService');
-    const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
-    if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
-        const opt = bathSelect.options[bathSelect.selectedIndex];
-        const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-        if (priceRaw.includes('起')) {
-            hotelBathPriceMin = parseInt(priceRaw.replace('起','')) || 0;
-        } else if (priceRaw.includes('-')) {
-            let parts = priceRaw.split('-');
-            hotelBathPriceMin = parseInt(parts[0]) || 0;
-            hotelBathPriceMax = parseInt(parts[1]) || 0;
-        } else {
-            let p = parseInt(priceRaw) || 0;
-            hotelBathPriceMin = p; hotelBathPriceMax = p;
-        }
-    }
-    
-    // D. 1. 施作主項目原價預估區間（房型 + 房型內洗澡/主服務 + 專屬加購 + 供餐費 + 退宿洗澡美容）
-    let totalMainMin = boardingMin + mainServiceMin + addonMin + boardingMealPriceTotal + hotelBathPriceMin;
-    let totalMainMax = (boardingMax > 0 ? boardingMax : boardingMin) + (mainServiceMax > 0 ? mainServiceMax : mainServiceMin) + (addonMax > 0 ? addonMax : addonMin) + boardingMealPriceTotal + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
-    
-    let origRangeStr = (totalMainMax > totalMainMin) 
-        ? `$${totalMainMin.toLocaleString()} ~ $${totalMainMax.toLocaleString()}` 
-        : `$${totalMainMin.toLocaleString()}`;
-    document.getElementById('summaryOriginalRange').innerText = origRangeStr;
-    
-    // E. 住宿摘要標籤（天數與餐費）
-    const boardingSubRow = document.getElementById('summaryBoardingDetailSubRow');
-    if (boardingSubRow) {
-        if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
-            boardingSubRow.classList.remove('hidden');
-            let mealTxt = boardingMealPriceTotal > 0 ? `與 ${calculatedMealCount} 餐（餐費 $${boardingMealPriceTotal}）` : `與 0 餐（自備飼料）`;
-            document.getElementById('summaryBoardingDetailText').innerText = `🐾 住宿共 ${boardingDaysMultiplier} 晚 ${mealTxt}`;
-        } else {
-            boardingSubRow.classList.add('hidden');
-        }
-    }
+            
+            // D. 施作主項目原價預估區間（房型 + 房型內洗澡 + 專屬加購 + 供餐 + 退宿洗澡）
+            let totalMainMin = boardingMin + mainServiceMin + addonMin + boardingMealPriceTotal + hotelBathPriceMin;
+            let totalMainMax = (boardingMax > 0 ? boardingMax : boardingMin) + (mainServiceMax > 0 ? mainServiceMax : mainServiceMin) + (addonMax > 0 ? addonMax : addonMin) + boardingMealPriceTotal + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
+            
+            let origRangeStr = (totalMainMax > totalMainMin) 
+                ? `$${totalMainMin.toLocaleString()} ~ $${totalMainMax.toLocaleString()}` 
+                : `$${totalMainMin.toLocaleString()}`;
+            document.getElementById('summaryOriginalRange').innerText = origRangeStr;
+            
+            // E. 住宿摘要標籤
+            const boardingSubRow = document.getElementById('summaryBoardingDetailSubRow');
+            if (boardingSubRow) {
+                if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
+                    boardingSubRow.classList.remove('hidden');
+                    let mealTxt = boardingMealPriceTotal > 0 ? `與 ${calculatedMealCount} 餐（餐費 $${boardingMealPriceTotal}）` : `與 0 餐（自備飼料）`;
+                    document.getElementById('summaryBoardingDetailText').innerText = `🐾 住宿共 ${boardingDaysMultiplier} 晚 ${mealTxt}`;
+                } else {
+                    boardingSubRow.classList.add('hidden');
+                }
+            }
 
-    // F. 明細拆解顯示
-    const mainDetailRow = document.getElementById('summaryMainItemDetailRow');
-    if (mainDetailRow) {
-        let roomPriceMin = boardingMin + mainServiceMin;
-        let roomPriceMax = (boardingMax > 0 ? boardingMax : boardingMin) + (mainServiceMax > 0 ? mainServiceMax : mainServiceMin);
-        let showMainPrice = (roomPriceMax > roomPriceMin) ? `$${roomPriceMin.toLocaleString()} ~ $${roomPriceMax.toLocaleString()}` : `$${roomPriceMin.toLocaleString()}`;
-        if (mainItemNamesArr.length > 0) {
-            mainDetailRow.classList.remove('hidden');
-            document.getElementById('summaryMainItemNameText').innerText = `• 房型/主服務金額 (${mainItemNamesArr.join(' · ')}):`;
-            document.getElementById('summaryMainItemPriceText').innerText = showMainPrice;
-        } else {
-            mainDetailRow.classList.add('hidden');
-        }
-    }
-    
-    const addonDetailRow = document.getElementById('summaryAddonDetailRow');
-    if (addonDetailRow) {
-        if (addonMin > 0) {
-            addonDetailRow.classList.remove('hidden');
-            let showAddonPrice = (addonMax > addonMin) ? `$${addonMin.toLocaleString()} ~ $${addonMax.toLocaleString()}` : `$${addonMin.toLocaleString()}`;
-            document.getElementById('summaryAddonPriceText').innerText = `+${showAddonPrice}`;
-        } else {
-            addonDetailRow.classList.add('hidden');
-        }
-    }
-    
-    const hotelBathRow = document.getElementById('summaryHotelBathRow');
-    if (hotelBathRow) {
-        if (isHotelBathNeed && hotelBathPriceMin > 0) {
-            hotelBathRow.classList.remove('hidden');
-            let showBathPrice = (hotelBathPriceMax > hotelBathPriceMin) ? `$${hotelBathPriceMin.toLocaleString()} ~ $${hotelBathPriceMax.toLocaleString()}` : `$${hotelBathPriceMin.toLocaleString()}`;
-            document.getElementById('summaryHotelBathPriceText').innerText = `+${showBathPrice}`;
-        } else {
-            hotelBathRow.classList.add('hidden');
-        }
-    }
-    
-    // G. 計算現場新購方案（包卡/儲值方案費用）
-    const pkgSelect = document.getElementById('buyNewPackageSelect');
-    const depSelect = document.getElementById('buyNewDepositSelect');
-    const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
-    const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
-    
-    let pkgBuyPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
-    let depBuyPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
-    let totalNewBuyPrice = pkgBuyPrice + depBuyPrice;
-    
-    const newBuyRow = document.getElementById('summaryNewBuyRow');
-    if (newBuyRow) {
-        if (totalNewBuyPrice > 0) {
-            newBuyRow.classList.remove('hidden');
-            document.getElementById('summaryNewBuyPrice').innerText = `+$${totalNewBuyPrice.toLocaleString()}`;
-        } else {
-            newBuyRow.classList.add('hidden');
-        }
-    }
+            // F. 拆解明細
+            const mainDetailRow = document.getElementById('summaryMainItemDetailRow');
+            if (mainDetailRow) {
+                let roomPriceMin = boardingMin + mainServiceMin;
+                let roomPriceMax = (boardingMax > 0 ? boardingMax : boardingMin) + (mainServiceMax > 0 ? mainServiceMax : mainServiceMin);
+                let showMainPrice = (roomPriceMax > roomPriceMin) ? `$${roomPriceMin.toLocaleString()} ~ $${roomPriceMax.toLocaleString()}` : `$${roomPriceMin.toLocaleString()}`;
+                if (mainItemNamesArr.length > 0) {
+                    mainDetailRow.classList.remove('hidden');
+                    document.getElementById('summaryMainItemNameText').innerText = `• 房型/主服務金額 (${mainItemNamesArr.join(' · ')}):`;
+                    document.getElementById('summaryMainItemPriceText').innerText = showMainPrice;
+                } else {
+                    mainDetailRow.classList.add('hidden');
+                }
+            }
+            
+            const addonDetailRow = document.getElementById('summaryAddonDetailRow');
+            if (addonDetailRow) {
+                if (addonMin > 0) {
+                    addonDetailRow.classList.remove('hidden');
+                    let showAddonPrice = (addonMax > addonMin) ? `$${addonMin.toLocaleString()} ~ $${addonMax.toLocaleString()}` : `$${addonMin.toLocaleString()}`;
+                    document.getElementById('summaryAddonPriceText').innerText = `+${showAddonPrice}`;
+                } else {
+                    addonDetailRow.classList.add('hidden');
+                }
+            }
+            
+            const hotelBathRow = document.getElementById('summaryHotelBathRow');
+            if (hotelBathRow) {
+                if (isHotelBathNeed && hotelBathPriceMin > 0) {
+                    hotelBathRow.classList.remove('hidden');
+                    let showBathPrice = (hotelBathPriceMax > hotelBathPriceMin) ? `$${hotelBathPriceMin.toLocaleString()} ~ $${hotelBathPriceMax.toLocaleString()}` : `$${hotelBathPriceMin.toLocaleString()}`;
+                    document.getElementById('summaryHotelBathPriceText').innerText = `+${showBathPrice}`;
+                } else {
+                    hotelBathRow.classList.add('hidden');
+                }
+            }
+            
+            // G. 計算現場新購方案（包卡/儲值方案費用）
+            const pkgSelect = document.getElementById('buyNewPackageSelect');
+            const depSelect = document.getElementById('buyNewDepositSelect');
+            const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
+            const depOpt = depSelect ? depSelect.options[depSelect.selectedIndex] : null;
+            
+            let pkgBuyPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
+            let depBuyPrice = depOpt ? parseInt(depOpt.getAttribute('data-price') || 0) : 0;
+            let totalNewBuyPrice = pkgBuyPrice + depBuyPrice;
+            
+            const newBuyRow = document.getElementById('summaryNewBuyRow');
+            if (newBuyRow) {
+                if (totalNewBuyPrice > 0) {
+                    newBuyRow.classList.remove('hidden');
+                    document.getElementById('summaryNewBuyPrice').innerText = `+$${totalNewBuyPrice.toLocaleString()}`;
+                } else {
+                    newBuyRow.classList.add('hidden');
+                }
+            }
 
-    // H. 連動新購包卡解鎖「當場扣抵第一次」的選擇
-    let isBuyingNewPkg = pkgPrice > 0;
-    let effectiveAvailableCards = userCardRemainCount + (isBuyingNewPkg ? 6 : 0);
-    let cardCb = document.getElementById('useExistingCard');
-    
-    if (cardCb) {
-        if (effectiveAvailableCards > 0) {
-            cardCb.disabled = false;
-            let noteTxt = isBuyingNewPkg ? ` (含新購包卡，當場扣抵第 1 次)` : ` (該毛孩剩餘 ${userCardRemainCount} 次)`;
-            document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵${noteTxt}`;
-        } else {
-            cardCb.disabled = true; cardCb.checked = false;
-            document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩無可用包卡)`;
-        }
-    }
+            // H. 連動新購包卡解鎖「當場扣抵第一次」的選擇
+            let isBuyingNewPkg = pkgBuyPrice > 0;
+            let effectiveAvailableCards = userCardRemainCount + (isBuyingNewPkg ? 6 : 0);
+            let cardCb = document.getElementById('useExistingCard');
+            
+            if (cardCb) {
+                if (effectiveAvailableCards > 0) {
+                    cardCb.disabled = false;
+                    let noteTxt = isBuyingNewPkg ? ` (含新購包卡，當場扣抵第 1 次)` : ` (該毛孩剩餘 ${userCardRemainCount} 次)`;
+                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵${noteTxt}`;
+                } else {
+                    cardCb.disabled = true; cardCb.checked = false;
+                    document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩無可用包卡)`;
+                }
+            }
 
-    // I. 折抵與最終預估應付金額精算
-    let payableMin = totalMainMin + totalNewBuyPrice;
-    let payableMax = totalMainMax + totalNewBuyPrice;
-    
-    let isUsingCard = cardCb?.checked && effectiveAvailableCards > 0;
+            // I. 折抵與最終預估應付金額精算
+            let payableMin = totalMainMin + totalNewBuyPrice;
+            let payableMax = totalMainMax + totalNewBuyPrice;
+            
+            let isUsingCard = cardCb?.checked && effectiveAvailableCards > 0;
 
-    if (isUsingCard) {
-        let actualDeductCount = requiredCardDeductCount > 0 ? requiredCardDeductCount : 1;
-        if (effectiveAvailableCards >= actualDeductCount) {
-            // 包卡正確扣除「主美容洗澡」金額部分
-            payableMin = Math.max(0, totalMainMin - mainServiceMin) + totalNewBuyPrice;
-            payableMax = Math.max(0, totalMainMax - (mainServiceMax > 0 ? mainServiceMax : mainServiceMin)) + totalNewBuyPrice;
-            document.getElementById('summaryDiscountText').innerText = `套用包卡扣抵 ${actualDeductCount} 次 (主服務 $0)`;
-        } else {
-            cardCb.checked = false;
-            document.getElementById('summaryDiscountText').innerText = "無折抵 (包卡餘額不足)";
+            if (isUsingCard) {
+                let actualDeductCount = requiredCardDeductCount > 0 ? requiredCardDeductCount : 1;
+                if (effectiveAvailableCards >= actualDeductCount) {
+                    payableMin = Math.max(0, totalMainMin - mainServiceMin) + totalNewBuyPrice;
+                    payableMax = Math.max(0, totalMainMax - (mainServiceMax > 0 ? mainServiceMax : mainServiceMin)) + totalNewBuyPrice;
+                    document.getElementById('summaryDiscountText').innerText = `套用包卡扣抵 ${actualDeductCount} 次 (主服務 $0)`;
+                } else {
+                    cardCb.checked = false;
+                    document.getElementById('summaryDiscountText').innerText = "無折抵 (包卡餘額不足)";
+                }
+            } else {
+                document.getElementById('summaryDiscountText').innerText = "無折抵";
+            }
+            
+            let finalShowStr = (payableMax > payableMin && payableMax > 0) 
+                ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` 
+                : `$${payableMin.toLocaleString()}`;
+            document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
         }
-    } else {
-        document.getElementById('summaryDiscountText').innerText = "無折抵";
-    }
-    
-    let finalShowStr = (payableMax > payableMin && payableMax > 0) 
-        ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` 
-        : `$${payableMin.toLocaleString()}`;
-    document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
-}
 
         function renderPetFormCards() {
             document.getElementById('dynamicPetContainer').innerHTML = '';
