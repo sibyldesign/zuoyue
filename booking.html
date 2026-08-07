@@ -929,7 +929,7 @@ allServices.forEach(s => {
         let breakfastTime = new Date(year, month, date, 9, 0, 0);
         let dinnerTime = new Date(year, month, date, 18, 0, 0);
         
-        // 入住時間點 <= 放飯時間點 <= 退房時間點
+        // 嚴格比對：進場時間 <= 放飯時間 <= 退房時間
         if (breakfastTime >= checkIn && breakfastTime <= checkOut) mealCount++;
         if (dinnerTime >= checkIn && dinnerTime <= checkOut) mealCount++;
         
@@ -1395,38 +1395,37 @@ function calculateBookingTotalPriceEngine() {
 }
 
         function renderTimeSlots(res) {
-            const container = document.getElementById('timeSlotContainer'); if(!container) return;
-            if(res && res.isClosed) { container.innerHTML = `<div class="text-red-500 font-bold text-center py-3 text-xs">${res.message}</div>`; return; }
-            let now = new Date();
-            let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-            
-            let baseSlots = (res && res.availableSlots && res.availableSlots.length > 0) ? res.availableSlots : [];
-            if (baseSlots.length === 0) {
-                container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日該美容師未排班或不可預約 🐾</div>`;
-                return;
-            }
-            let html = '<div class="grid grid-cols-3 gap-2.5">';
-            let availableCount = 0;
-            baseSlots.forEach(time => {
-                let isPastOrLocked = false;
-                if (selectedDateStr === todayStr) {
-                    let parts = time.split(':');
-                    let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
-                    let bufferTimeThreshold = new Date(now.getTime() + (systemBufferHours * 60 * 60 * 1000));
-                    if (slotTime < bufferTimeThreshold) { isPastOrLocked = true; }
-                }
-                if (!isPastOrLocked) {
-                    availableCount++;
-                    html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
-                }
-            });
-            if (availableCount === 0) {
-                html = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日該美容師時段已額滿或已逾禁約時間 🐾</div>`;
-            } else {
-                html += '</div>';
-            }
-            container.innerHTML = html;
+    const container = document.getElementById('timeSlotContainer'); if(!container) return;
+    let now = new Date();
+    let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    let baseSlots = (res && res.availableSlots) ? res.availableSlots : [];
+    
+    if (baseSlots.length === 0) {
+        container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日未開班或不可預約 🐾</div>`;
+        return;
+    }
+    
+    let html = '<div class="grid grid-cols-3 gap-2.5">';
+    baseSlots.forEach(time => {
+        let isPastOrLocked = false;
+        // 如果選擇的是今天，過期時段自動鎖定
+        if (selectedDateStr === todayStr) {
+            let parts = time.split(':');
+            let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
+            if (slotTime <= now) isPastOrLocked = true;
+        } else if (selectedDateStr < todayStr) {
+            isPastOrLocked = true;
         }
+        
+        if (isPastOrLocked) {
+            html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed">${time} (已過期)</button>`;
+        } else {
+            html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+        }
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
 
         function selectTime(timeStr, btnEl) {
             selectedTimeStr = timeStr;
@@ -1564,75 +1563,87 @@ function calculateBookingTotalPriceEngine() {
         }
 
         function processBooking() {
-            let phone = document.getElementById('phone').value.trim();
-            let ownerName = document.getElementById('ownerName').value.trim();
-            let email = document.getElementById('email').value.trim();
-            let lineName = document.getElementById('lineName').value.trim();
-            let pickupVal = document.getElementById('pickupService').value;
-            let pickupAddr = document.getElementById('pickupAddress') ? document.getElementById('pickupAddress').value.trim() : '';
-            
-            if (!phone || !ownerName || !email || !lineName) { return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); }
-            if (pickupVal === '需要接送' && !pickupAddr) { return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); }
-            
-            let finalBookingDate = selectedDateStr;
-            let finalBookingTime = selectedTimeStr;
-            if (activeServiceType === 'boarding') {
-                if (!selectedHotelCheckInDateStr || !selectedHotelCheckInTimeStr || !selectedHotelCheckOutDateStr || !selectedHotelCheckOutTimeStr) {
-                    return Swal.fire('漏填提醒', '請完整選擇住宿入住與退房的日期與時段！', 'warning');
-                }
-                finalBookingDate = `${selectedHotelCheckInDateStr} 至 ${selectedHotelCheckOutDateStr}`;
-                finalBookingTime = `入住:${selectedHotelCheckInTimeStr} / 退房:${selectedHotelCheckOutTimeStr}`;
-            } else {
-                const dtCard = document.getElementById('dateTimeCard');
-                if (dtCard && !dtCard.classList.contains('hidden')) {
-                    if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請點選上方日曆選擇美容預約日期與進場時段！', 'warning'); }
-                }
-            }
-            if (!mainRead || !riskRead || !isCheckedFinal) { return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); }
-            if (!validateCanvasIsSigned()) { return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); }
-            
-            let petsPayload = packDynamicPetsJsonPayload();
-            if(petsPayload.length === 0) { return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); }
-            
-            let groomerSelect = document.getElementById('selectedGroomer');
-            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
-            let payload = {
-                serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
-                phone: phone, ownerName: ownerName, email: email, lineName: lineName,
-                date: finalBookingDate, time: finalBookingTime,
-                groomer: groomerVal,
-                pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
-                referrerOwner: document.getElementById('referrerOwner').value,
-                petsJsonString: JSON.stringify(petsPayload),
-                signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
-            };
-            Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            fetch(API_URL, {
-                method: "POST", headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify({ action: "submitBooking", payload: payload })
-            }).then(() => {
-                Swal.close();
-                Swal.fire({
-                    title: '🎉 預約成功！',
-                    html: `
-                        <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
-                            <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
-                            <p>系統已同步發送「預約確認信件」至您的 Email 郵箱。</p>
-                            <div class="bg-amber-50 p-3 rounded-lg border border-amber-200/80 text-amber-900 font-bold">
-                                📧 <strong class="text-amber-800">貼心提醒：</strong><br>
-                                若您在收件匣沒有看到確認信，<strong class="text-rose-600">信件可能被誤判並跑去「垃圾信件匣」</strong>，再麻煩幫忙點擊查看並標示為「非垃圾郵件」唷！
-                            </div>
-                        </div>
-                    `,
-                    icon: 'success',
-                    confirmButtonColor: '#CBB39C',
-                    confirmButtonText: '點此加 LINE 官方帳號確認'
-                }).then(() => {
-                    window.location.href = "https://lin.ee/q19SMMx5";
-                });
-            });
+    let phone = document.getElementById('phone').value.trim();
+    let ownerName = document.getElementById('ownerName').value.trim();
+    let email = document.getElementById('email').value.trim();
+    let lineName = document.getElementById('lineName').value.trim();
+    let pickupVal = document.getElementById('pickupService').value;
+    let pickupAddr = document.getElementById('pickupAddress') ? document.getElementById('pickupAddress').value.trim() : '';
+    
+    if (!phone || !ownerName || !email || !lineName) { return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); }
+    if (pickupVal === '需要接送' && !pickupAddr) { return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); }
+    
+    let finalBookingDate = selectedDateStr;
+    let finalBookingTime = selectedTimeStr;
+    if (activeServiceType === 'boarding') {
+        if (!selectedHotelCheckInDateStr || !selectedHotelCheckInTimeStr || !selectedHotelCheckOutDateStr || !selectedHotelCheckOutTimeStr) {
+            return Swal.fire('漏填提醒', '請完整選擇住宿入住與退房的日期與時段！', 'warning');
         }
-
+        finalBookingDate = `${selectedHotelCheckInDateStr} 至 ${selectedHotelCheckOutDateStr}`;
+        finalBookingTime = `入住:${selectedHotelCheckInTimeStr} / 退房:${selectedHotelCheckOutTimeStr}`;
+    } else {
+        const dtCard = document.getElementById('dateTimeCard');
+        if (dtCard && !dtCard.classList.contains('hidden')) {
+            if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請點選上方日曆選擇美容預約日期與進場時段！', 'warning'); }
+        }
+    }
+    if (!mainRead || !riskRead || !isCheckedFinal) { return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); }
+    if (!validateCanvasIsSigned()) { return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); }
+    
+    let petsPayload = packDynamicPetsJsonPayload();
+    if(petsPayload.length === 0) { return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); }
+    
+    // 從前台「預算計價即時試算」區域精確解析估算原價與實收金額
+    let rawOrigText = document.getElementById('summaryOriginalRange') ? document.getElementById('summaryOriginalRange').innerText : "$0";
+    let rawFinalText = document.getElementById('bookingTotalPriceDisplay') ? document.getElementById('bookingTotalPriceDisplay').innerText : "$0";
+    
+    let parsedOrigPrice = parseInt(rawOrigText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
+    let parsedFinalPrice = parseInt(rawFinalText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
+    
+    let groomerSelect = document.getElementById('selectedGroomer');
+    let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+    
+    let payload = {
+        serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
+        phone: phone, ownerName: ownerName, email: email, lineName: lineName,
+        date: finalBookingDate, time: finalBookingTime,
+        groomer: groomerVal,
+        originalPrice: parsedOrigPrice, // 傳送試算原價
+        discountPrice: 0,
+        finalPrice: parsedFinalPrice,   // 傳送試算實收
+        price: parsedFinalPrice,
+        pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
+        referrerOwner: document.getElementById('referrerOwner').value,
+        petsJsonString: JSON.stringify(petsPayload),
+        signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
+    };
+    
+    Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    fetch(API_URL, {
+        method: "POST", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "submitBooking", payload: payload })
+    }).then(() => {
+        Swal.close();
+        Swal.fire({
+            title: '🎉 預約成功！',
+            html: `
+                <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
+                    <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
+                    <p>系統已同步發送「預約確認信件」至您的 Email 郵箱。</p>
+                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-200/80 text-amber-900 font-bold">
+                        📧 <strong class="text-amber-800">貼心提醒：</strong><br>
+                        若您在收件匣沒有看到確認信，<strong class="text-rose-600">信件可能被誤判並跑去「垃圾信件匣」</strong>，再麻煩幫忙點擊查看並標示為「非垃圾郵件」唷！
+                    </div>
+                </div>
+            `,
+            icon: 'success',
+            confirmButtonColor: '#CBB39C',
+            confirmButtonText: '點此加 LINE 官方帳號確認'
+        }).then(() => {
+            window.location.href = "https://lin.ee/q19SMMx5";
+        });
+    });
+}
         function openTermsModalWindow(type) {
             currentTermType = type;
             const modal = document.getElementById('termsModal');
