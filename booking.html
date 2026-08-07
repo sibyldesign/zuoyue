@@ -1169,7 +1169,7 @@
                 }
             }
             
-            // D. 施作主項目原價預估區間（房型 + 房型內洗澡 + 專屬加購 + 供餐 + 退宿洗澡）
+            // D. 1. 施作主項目原價預估區間（房型 + 房型內洗澡/主服務 + 專屬加購 + 供餐費 + 退宿洗澡美容）
             let totalMainMin = boardingMin + mainServiceMin + addonMin + boardingMealPriceTotal + hotelBathPriceMin;
             let totalMainMax = (boardingMax > 0 ? boardingMax : boardingMin) + (mainServiceMax > 0 ? mainServiceMax : mainServiceMin) + (addonMax > 0 ? addonMax : addonMin) + boardingMealPriceTotal + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
             
@@ -1178,7 +1178,7 @@
                 : `$${totalMainMin.toLocaleString()}`;
             document.getElementById('summaryOriginalRange').innerText = origRangeStr;
             
-            // E. 住宿摘要標籤
+            // E. 住宿摘要標籤（天數與餐費）
             const boardingSubRow = document.getElementById('summaryBoardingDetailSubRow');
             if (boardingSubRow) {
                 if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
@@ -1190,7 +1190,7 @@
                 }
             }
 
-            // F. 拆解明細
+            // F. 明細拆解顯示
             const mainDetailRow = document.getElementById('summaryMainItemDetailRow');
             if (mainDetailRow) {
                 let roomPriceMin = boardingMin + mainServiceMin;
@@ -1227,7 +1227,7 @@
                 }
             }
             
-            // G. 計算現場新購方案（包卡/儲值方案費用）
+            // G. 計算現場新購方案（包卡/儲值方案費用）與即時連動解鎖
             const pkgSelect = document.getElementById('buyNewPackageSelect');
             const depSelect = document.getElementById('buyNewDepositSelect');
             const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
@@ -1247,10 +1247,13 @@
                 }
             }
 
-            // H. 連動新購包卡解鎖「當場扣抵第一次」的選擇
+            // H. 新購包卡與新購儲值動態解鎖「當場折抵」
             let isBuyingNewPkg = pkgBuyPrice > 0;
+            let isBuyingNewDep = depBuyPrice > 0;
             let effectiveAvailableCards = userCardRemainCount + (isBuyingNewPkg ? 6 : 0);
+            
             let cardCb = document.getElementById('useExistingCard');
+            let depCb = document.getElementById('useExistingDeposit');
             
             if (cardCb) {
                 if (effectiveAvailableCards > 0) {
@@ -1260,6 +1263,17 @@
                 } else {
                     cardCb.disabled = true; cardCb.checked = false;
                     document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩無可用包卡)`;
+                }
+            }
+
+            if (depCb) {
+                if (userDepositBalance > 0 || isBuyingNewDep) {
+                    depCb.disabled = false;
+                    let depNote = isBuyingNewDep ? ` (含新購儲值金，待現場結算扣款)` : ` (該毛孩儲值額度 $${userDepositBalance.toLocaleString()})`;
+                    document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費${depNote}`;
+                } else {
+                    depCb.disabled = true; depCb.checked = false;
+                    document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (該毛孩無可用儲值金)`;
                 }
             }
 
@@ -1611,6 +1625,7 @@
             for(let i=0; i<totalSliderImagesCount; i++) { const dot = document.getElementById(`sliderDot_${i}`); if(dot) dot.className = `w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${i===currentSliderIndex?'!bg-[#CBB39C]':''}`; }
         }
 
+        // 🛠️ 打包多毛孩照片 Base64 資料
         function packDynamicPetsJsonPayload() {
             const container = document.getElementById('dynamicPetContainer');
             const packedArray = [];
@@ -1676,6 +1691,7 @@
             return canvas.toDataURL() !== blank.toDataURL();
         }
 
+        // 🛠️ 預約送出：包含照片 Base64 Mapping、試算金額與新購折抵標記
         function processBooking() {
             let phone = document.getElementById('phone').value.trim();
             let ownerName = document.getElementById('ownerName').value.trim();
@@ -1707,6 +1723,12 @@
             let petsPayload = packDynamicPetsJsonPayload();
             if(petsPayload.length === 0) { return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); }
             
+            // 建立多毛孩照片對應 Mapping
+            let multiPhotosMap = {};
+            petsPayload.forEach((pet, index) => {
+                if (pet.petPhotoBase64) multiPhotosMap[index + 1] = pet.petPhotoBase64;
+            });
+
             let rawOrigText = document.getElementById('summaryOriginalRange') ? document.getElementById('summaryOriginalRange').innerText : "$0";
             let rawFinalText = document.getElementById('bookingTotalPriceDisplay') ? document.getElementById('bookingTotalPriceDisplay').innerText : "$0";
             
@@ -1725,9 +1747,14 @@
                 discountPrice: 0,
                 finalPrice: parsedFinalPrice,
                 price: parsedFinalPrice,
+                useCard: document.getElementById('useExistingCard')?.checked || false,       // 標記是否扣包卡
+                useDeposit: document.getElementById('useExistingDeposit')?.checked || false, // 標記是否扣儲值金
+                buyPackage: document.getElementById('buyNewPackageSelect')?.value || 'none',
+                buyDeposit: document.getElementById('buyNewDepositSelect')?.value || 'none',
                 pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
                 referrerOwner: document.getElementById('referrerOwner').value,
                 petsJsonString: JSON.stringify(petsPayload),
+                multiPhotosJson: JSON.stringify(multiPhotosMap),                             // 傳遞照片 Mapping
                 signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
             };
             
