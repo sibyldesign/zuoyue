@@ -898,14 +898,15 @@
         }
 
         function applyPetDataToCard(cardId, petData) {
-            const cardEl = document.getElementById(`petCardRoot_${cardId}`);
-            if (!cardEl || !petData) return;
-            if(cardEl.querySelector('.p-name')) cardEl.querySelector('.p-name').value = petData.name || '';
-            if(cardEl.querySelector('.p-breed')) cardEl.querySelector('.p-breed').value = petData.breed || '';
-            if(cardEl.querySelector('.p-size')) cardEl.querySelector('.p-size').value = petData.petSize || '';
-            if(cardEl.querySelector('.p-age')) cardEl.querySelector('.p-age').value = petData.age || '';
-            if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '短毛';
-        }
+    const cardEl = document.getElementById(`petCardRoot_${cardId}`);
+    if (!cardEl || !petData) return;
+    if(cardEl.querySelector('.p-name')) cardEl.querySelector('.p-name').value = petData.name || '';
+    if(cardEl.querySelector('.p-breed')) cardEl.querySelector('.p-breed').value = petData.breed || '';
+    if(cardEl.querySelector('.p-size')) cardEl.querySelector('.p-size').value = petData.petSize || '';
+    if(cardEl.querySelector('.p-age')) cardEl.querySelector('.p-age').value = petData.age || '';
+    if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '短毛';
+    if(cardEl.querySelector('.p-birthday')) cardEl.querySelector('.p-birthday').value = petData.birthday || ''; // 自動帶入歷史生日
+}
 
         function clearPetCardInputs(cardId) {
             const cardEl = document.getElementById(`petCardRoot_${cardId}`);
@@ -1283,24 +1284,25 @@
             
             let isUsingCard = cardCb?.checked && effectiveAvailableCards > 0;
 
-            if (isUsingCard) {
-                let actualDeductCount = requiredCardDeductCount > 0 ? requiredCardDeductCount : 1;
-                if (effectiveAvailableCards >= actualDeductCount) {
-                    payableMin = Math.max(0, totalMainMin - mainServiceMin) + totalNewBuyPrice;
-                    payableMax = Math.max(0, totalMainMax - (mainServiceMax > 0 ? mainServiceMax : mainServiceMin)) + totalNewBuyPrice;
-                    document.getElementById('summaryDiscountText').innerText = `套用包卡扣抵 ${actualDeductCount} 次 (主服務 $0)`;
-                } else {
-                    cardCb.checked = false;
-                    document.getElementById('summaryDiscountText').innerText = "無折抵 (包卡餘額不足)";
-                }
-            } else {
-                document.getElementById('summaryDiscountText').innerText = "無折抵";
-            }
-            
-            let finalShowStr = (payableMax > payableMin && payableMax > 0) 
-                ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` 
-                : `$${payableMin.toLocaleString()}`;
-            document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
+if (isUsingCard) {
+    let actualDeductCount = requiredCardDeductCount > 0 ? requiredCardDeductCount : 1;
+    if (effectiveAvailableCards >= actualDeductCount) {
+        // 僅減去美容主服務價格 (mainServiceMin)，保留加購護理 (addonMin) 與餐費 (boardingMealPriceTotal)
+        payableMin = (totalMainMin - mainServiceMin) + totalNewBuyPrice;
+        payableMax = (totalMainMax - (mainServiceMax > 0 ? mainServiceMax : mainServiceMin)) + totalNewBuyPrice;
+        document.getElementById('summaryDiscountText').innerText = `套用包卡扣抵 ${actualDeductCount} 次 (主服務 $0，加購/餐費另計)`;
+    } else {
+        cardCb.checked = false;
+        document.getElementById('summaryDiscountText').innerText = "無折抵 (包卡餘額不足)";
+    }
+} else {
+    document.getElementById('summaryDiscountText').innerText = "無折抵";
+}
+
+let finalShowStr = (payableMax > payableMin && payableMax > 0) 
+    ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` 
+    : `$${payableMin.toLocaleString()}`;
+document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
         }
 
         function renderPetFormCards() {
@@ -1403,10 +1405,10 @@
                     </div>
                 </div>`;
             let extraFieldsGrooming = `
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
-                    <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">生日 (選填)</label><input type="date" class="text-input p-birthday text-xs font-bold"></div>
-                </div>`;
+    <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
+        <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">生日 (選填)</label><input type="text" class="text-input p-birthday text-xs font-bold" placeholder="如: 05/12 或 5月"></div>
+    </div>`;
             let extraFieldsBoarding = `
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性別 *</label><select class="text-input p-gender text-xs font-bold"><option value="公">公</option><option value="母">母</option></select></div>
