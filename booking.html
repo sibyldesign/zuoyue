@@ -606,6 +606,90 @@
             if (el) el.classList.toggle('hidden');
         }
 
+        // 計算包卡扣除次數
+function getCardDeductionCount(serviceName) {
+  if (!serviceName) return 0;
+  if (serviceName.includes('全身手剪')) return 3;
+  if (serviceName.includes('大美容')) return 2;
+  if (serviceName.includes('洗澡')) return 1;
+  return 0; // 住宿、餐食、加購項目不扣卡
+}
+
+// 結算計算與動態 UI 預覽
+function calculateSettlementUI() {
+  let originalPrice = Number(document.getElementById('basePriceInput').value || 0);
+  let selectedPlan = document.getElementById('cardPlanSelect').value; // 選取的包卡或舊方案
+  let serviceName = document.getElementById('serviceNameHidden').value;
+  let currentCardCount = Number(document.getElementById('currentCardCountHidden').value || 0);
+  let currentDeposit = Number(document.getElementById('currentDepositHidden').value || 0);
+
+  let cardDeductCount = 0;
+  let discountAmount = 0;
+
+  if (selectedPlan && selectedPlan.includes('包卡')) {
+    cardDeductCount = getCardDeductionCount(serviceName);
+    discountAmount = originalPrice; // 主服務全額折抵
+  }
+
+  let remainingCard = Math.max(0, currentCardCount - cardDeductCount);
+  let remainingDeposit = currentDeposit; // 若有使用儲值金再扣除
+
+  // 即時渲染剩餘數值預估明細
+  document.getElementById('previewRemainingCard').innerText = remainingCard + " 次";
+  document.getElementById('previewRemainingDeposit').innerText = "$" + remainingDeposit.toLocaleString();
+}
+
+        function submitBookingFromFrontend() {
+  // 取得 canvas 簽名與圖片 Base64
+  let signatureCanvas = document.getElementById('signatureCanvas');
+  let signatureBase64 = signatureCanvas ? signatureCanvas.toDataURL('image/png') : '';
+
+  let petPhotoInput = document.getElementById('petPhotoFileInput');
+  let photoBase64 = '';
+
+  if (petPhotoInput && petPhotoInput.files[0]) {
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      photoBase64 = e.target.result;
+      sendBookingPayload(photoBase64, signatureBase64);
+    };
+    reader.readAsDataURL(petPhotoInput.files[0]);
+  } else {
+    sendBookingPayload('', signatureBase64);
+  }
+}
+
+function sendBookingPayload(photoBase64, signatureBase64) {
+  let payload = {
+    date: document.getElementById('bookingDate').value,
+    time: document.getElementById('bookingTime').value,
+    parentName: document.getElementById('parentName').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    petName: document.getElementById('petName').value,
+    serviceName: document.getElementById('serviceName').value,
+    photoBase64: photoBase64,
+    signatureBase64: signatureBase64
+  };
+
+  Swal.fire({ title: '處理中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+  google.script.run
+    .withSuccessHandler(res => {
+      if (res.status === 'success') {
+        Swal.fire('預約成功', res.message, 'success');
+      } else if (res.status === 'full') {
+        Swal.fire('時段已滿', res.message, 'warning');
+      } else {
+        Swal.fire('錯誤', res.message, 'error');
+      }
+    })
+    .withFailureHandler(err => {
+      Swal.fire('系統錯誤', err.message, 'error');
+    })
+    .submitBookingWithLimitCheck(payload);
+}
+
         function renderFrontCalendarFast() {
             const monthTitle = document.getElementById('cal_year_month'); 
             if(!monthTitle) return; 
