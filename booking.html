@@ -1462,44 +1462,58 @@
             renderFrontCalendarFast(); 
         }
         function selectDate(dateStr) {
-            selectedDateStr = dateStr; selectedTimeStr = ''; 
-            renderFrontCalendarFast();
-            const container = document.getElementById('timeSlotContainer'); if(!container) return;
-            
-            let groomerSelect = document.getElementById('selectedGroomer');
-            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
-            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
-            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
-            
-            let availableSlots = [];
+    selectedDateStr = dateStr; 
+    selectedTimeStr = ''; 
+    renderFrontCalendarFast(); // 刷新日曆選取狀態
+    
+    const container = document.getElementById('timeSlotContainer'); 
+    if(!container) return;
+    
+    // 顯示載入中動畫，提升使用者體驗
+    container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-[#B2977D]"><i class="fas fa-spinner fa-spin mr-1"></i> ⏳ 正在即時計算該日預約名額...</div>`;
+    
+    let groomerSelect = document.getElementById('selectedGroomer');
+    let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+    let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
+    let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
+    
+    // 🎯 核心關鍵：點擊日期即時呼叫 getDailySlots 獲取最新佔用與滿額資訊
+    callGasGet('getDailySlots', { dateStr: dateStr, groomerId: groomerId }, 8000).then(res => {
+        if (res && !res.isClosed) {
+            renderTimeSlots(res);
+        } else if (res && res.isClosed) {
+            container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-rose-500">${res.message || '本日店休不可預約 🐾'}</div>`;
+        } else {
+            // 備用機制：若網路逾時，使用快取班表降級渲染
+            let fallbackAvailable = [];
             for (let key in globalFrontShiftsCache) {
-                if (globalFrontShiftsCache[key] === true) {
+                if (globalFrontShiftsCache[key] === true && key.includes(`_${dateStr}_`)) {
                     let parts = key.split('_');
-                    if (parts.length >= 3) {
-                        let gId = parts[0], dStr = parts[1], tStr = parts[2];
-                        if (dStr === dateStr) {
-                            if (groomerVal === '不指定' || groomerId === 'ALL' || gId === groomerId || gId === groomerVal) {
-                                if (!availableSlots.includes(tStr)) availableSlots.push(tStr);
-                            }
-                        }
+                    if (parts.length >= 3 && !fallbackAvailable.includes(parts[2])) {
+                        fallbackAvailable.push(parts[2]);
                     }
                 }
             }
-            availableSlots.sort();
-            renderTimeSlots({ availableSlots: availableSlots });
+            fallbackAvailable.sort();
+            renderTimeSlots({ availableSlots: fallbackAvailable, fullSlots: [] });
         }
+    });
+}
         function renderTimeSlots(res) {
-    const container = document.getElementById('timeSlotContainer'); if(!container) return;
+    const container = document.getElementById('timeSlotContainer'); 
+    if(!container) return;
+    
     let now = new Date();
     let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    
     let baseSlots = (res && res.availableSlots) ? res.availableSlots : [];
     let fullSlots = (res && res.fullSlots) ? res.fullSlots : [];
     
-    // 合併可用與已滿時段
+    // 合併可用時段與滿額時段，並進行時間排序
     let allSlots = Array.from(new Set([...baseSlots, ...fullSlots])).sort();
     
     if (allSlots.length === 0) {
-        container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日未開班或不可預約 🐾</div>`;
+        container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日未開班或已無可預約時段 🐾</div>`;
         return;
     }
     
@@ -1508,6 +1522,7 @@
         let isFull = fullSlots.includes(time);
         let isPastOrLocked = false;
         
+        // 判斷今日過期時段與緩衝禁約時間
         if (selectedDateStr === todayStr) {
             let parts = time.split(':');
             let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
@@ -1517,11 +1532,12 @@
             isPastOrLocked = true;
         }
         
-        // 🎯 只要已滿 (isFull) 或過期 (isPastOrLocked)，立刻顯示灰底 (disabled) 並標記 (已滿)
+        // 🎯 核心渲染邏輯：當該時段已滿 5 人 (isFull) 或已過期 (isPastOrLocked)
         if (isPastOrLocked || isFull) {
             let labelText = isFull ? `${time} (已滿)` : time;
-            html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed opacity-60 flex items-center justify-center">${labelText}</button>`;
+            html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-400 font-bold text-xs bg-gray-100/90 cursor-not-allowed opacity-60 flex items-center justify-center select-none" style="pointer-events: none;">${labelText}</button>`;
         } else {
+            // 可正常預約之時段按鈕
             html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition flex items-center justify-center">${time}</button>`;
         }
     });
