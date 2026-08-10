@@ -1478,37 +1478,44 @@
             renderTimeSlots({ availableSlots: availableSlots });
         }
         function renderTimeSlots(res) {
-            const container = document.getElementById('timeSlotContainer'); if(!container) return;
-            let now = new Date();
-            let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-            let baseSlots = (res && res.availableSlots) ? res.availableSlots : [];
-            
-            if (baseSlots.length === 0) {
-                container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日未開班或不可預約 🐾</div>`;
-                return;
-            }
-            
-            let html = '<div class="grid grid-cols-3 gap-2.5">';
-            baseSlots.forEach(time => {
-                let isPastOrLocked = false;
-                if (selectedDateStr === todayStr) {
-                    let parts = time.split(':');
-                    let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
-                    let bufferTimeThreshold = new Date(now.getTime() + (systemBufferHours * 60 * 60 * 1000));
-                    if (slotTime < bufferTimeThreshold) isPastOrLocked = true;
-                } else if (selectedDateStr < todayStr) {
-                    isPastOrLocked = true;
-                }
-                
-                if (isPastOrLocked) {
-                    html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed opacity-60">${time}</button>`;
-                } else {
-                    html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
-                }
-            });
-            html += '</div>';
-            container.innerHTML = html;
+    const container = document.getElementById('timeSlotContainer'); if(!container) return;
+    let now = new Date();
+    let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    let baseSlots = (res && res.availableSlots) ? res.availableSlots : [];
+    let fullSlots = (res && res.fullSlots) ? res.fullSlots : [];
+    
+    // 合併可用與已滿時段進行排序
+    let allSlots = Array.from(new Set([...baseSlots, ...fullSlots])).sort();
+    
+    if (allSlots.length === 0) {
+        container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日未開班或不可預約 🐾</div>`;
+        return;
+    }
+    
+    let html = '<div class="grid grid-cols-3 gap-2.5">';
+    allSlots.forEach(time => {
+        let isFull = fullSlots.includes(time);
+        let isPastOrLocked = false;
+        
+        if (selectedDateStr === todayStr) {
+            let parts = time.split(':');
+            let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
+            let bufferTimeThreshold = new Date(now.getTime() + (systemBufferHours * 60 * 60 * 1000));
+            if (slotTime < bufferTimeThreshold) isPastOrLocked = true;
+        } else if (selectedDateStr < todayStr) {
+            isPastOrLocked = true;
         }
+        
+        if (isPastOrLocked || isFull) {
+            let labelText = isFull ? `${time} (已滿)` : time;
+            html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed opacity-60">${labelText}</button>`;
+        } else {
+            html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+        }
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
         function selectTime(timeStr, btnEl) {
             selectedTimeStr = timeStr;
             document.querySelectorAll('.time-btn').forEach(btn => btn.className = "time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2]");
