@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>琢悅寵物SPA會館｜美容與住宿預約系統</title>
     
-    <!-- ⚡ 1. 網路連線超強加速：DNS 預解析與 preconnect -->
-    <link rel="dns-prefetch" href="https://script.google.com">
+    <!-- ⚡ 1. 超強連線預解析：優先與圖片與 script 伺服器建立握手 -->
+    <link rel="preconnect" href="https://script.google.com" crossorigin>
+    <link rel="preconnect" href="https://i.postimg.cc" crossorigin>
+    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://script.google.com" crossorigin>
-    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+
+    <!-- ⚡ 2. 關鍵 Logo 圖片優先預加載 -->
+    <link rel="preload" as="image" href="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
@@ -54,7 +57,7 @@
 <body class="w-full overflow-x-hidden" onload="initPageFast()">
     <!-- 頂部 Header -->
     <div class="w-full bg-white flex flex-col items-center pt-7 pb-5 shadow-sm border-b border-[#EFE8DE]">
-        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" loading="eager" decoding="async" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
+        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" fetchpriority="high" decoding="async" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
         <h2 class="text-[20px] font-extrabold text-textBrown tracking-widest"> 琢悅寵物SPA會館 </h2>
         <p class="text-[11px] text-[#A39585] tracking-wider mt-0.5">Pet Grooming & Luxury Boarding</p>
     </div>
@@ -77,7 +80,7 @@
         <div class="app-card p-6 bg-[#FAF8F5]">
             <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
             <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer"><div class="text-xs text-gray-400">載入中...</div></div>
-            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid"></div>
+            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid"><div class="col-span-2 text-center text-xs text-gray-400 py-4">作品集載入中...</div></div>
             <div class="text-center mt-4">
                 <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
                     查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
@@ -87,7 +90,7 @@
         <!-- 動態輪播圖 -->
         <div class="app-card p-4 bg-white relative">
             <div class="relative overflow-hidden rounded-2xl w-full aspect-[4/5] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
-                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"></div>
+                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"><div class="w-full h-full flex items-center justify-center text-xs text-gray-400 font-bold">輪播圖片載入中...</div></div>
                 <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
                 <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
             </div>
@@ -442,59 +445,67 @@
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
         const PRICE_RANGE_MAP = { "洗澡_小型犬": "450起", "大美容_小型犬": "900-1200", "全身手剪_小型犬": "1300-1600" };
 
-        // ⚡ JSONP 非同步連線發送器
-        function callGasGet(action, params = {}) {
-            return new Promise((resolve, reject) => {
+        // ⚡ 連線請求
+        // ⚡ 連線請求：延長超時容錯至 12 秒，確保 100% 穩定抓取試算表
+        function callGasGet(action, params = {}, timeoutMs = 12000) {
+            return new Promise((resolve) => {
                 let callbackName = 'gasCallback_' + Math.round(100000 * Math.random());
-                window[callbackName] = function(data) { resolve(data); let el = document.getElementById(callbackName); if(el) el.remove(); delete window[callbackName]; };
-                let url = `${API_URL}?action=${action}&callback=${callbackName}`;
+                let timer = setTimeout(() => {
+                    let el = document.getElementById(callbackName); if(el) el.remove();
+                    delete window[callbackName];
+                    resolve(null);
+                }, timeoutMs);
+
+                window[callbackName] = function(data) {
+                    clearTimeout(timer);
+                    resolve(data);
+                    let el = document.getElementById(callbackName); if(el) el.remove();
+                    delete window[callbackName];
+                };
+
+                let url = `${API_URL}?action=${action}&callback=${callbackName}&_t=${new Date().getTime()}`;
                 for (let key in params) { url += `&${key}=${encodeURIComponent(params[key])}`; }
                 let script = document.createElement('script'); script.src = url; script.id = callbackName; script.async = true;
-                script.onerror = () => reject(new Error("連線超時"));
+                script.onerror = () => { clearTimeout(timer); resolve(null); };
                 document.body.appendChild(script);
             });
         }
 
-        // ⚡ 本地快取（LocalStorage）存取模組，加速二次訪問
+        // ⚡ 本地快取機制：開啟立刻顯示上一次備份，同時背景連線試算表更新
         const CacheStore = {
-            set: (key, val, ttlMinutes = 30) => {
-                try {
-                    const item = { val: val, expiry: Date.now() + (ttlMinutes * 60 * 1000) };
-                    localStorage.setItem('zy_cache_' + key, JSON.stringify(item));
-                } catch(e) {}
-            },
-            get: (key) => {
-                try {
-                    const itemStr = localStorage.getItem('zy_cache_' + key);
-                    if (!itemStr) return null;
-                    const item = JSON.parse(itemStr);
-                    if (Date.now() > item.expiry) {
-                        localStorage.removeItem('zy_cache_' + key);
-                        return null;
-                    }
-                    return item.val;
-                } catch(e) { return null; }
-            }
+            set: (key, val) => { try { localStorage.setItem('zy_cache_' + key, JSON.stringify(val)); } catch(e) {} },
+            get: (key) => { try { return JSON.parse(localStorage.getItem('zy_cache_' + key)); } catch(e) { return null; } }
         };
 
-        // ⚡ 超強加速頁面初始化流程（極速並行載入 + LocalStorage 秒開）
+        // ⚡ 畫面載入即刻初始化
         function initPageFast() {
-            // 1. 優先使用 LocalStorage 讀取歷史 Bundle 渲染畫面，達到秒開效果
+            // 1. 初始化預設骨架卡片 (確保畫面立刻有欄位)
+            renderPetFormCards();
+
+            // 2. 若有暫存檔，0.1 秒秒出畫面
             const cachedBundle = CacheStore.get('initialBundle');
             if (cachedBundle) {
                 applyBundleDataUI(cachedBundle);
             }
 
-            // 2. 背景同步並行調用最新 bundle 數據
-            callGasGet('getFrontInitialBundle').then(bundle => {
-                if (bundle) {
-                    CacheStore.set('initialBundle', bundle, 30); // 快取 30 分鐘
+            // 3. 連線試算表拉取最新數據
+            callGasGet('getFrontInitialBundle', {}, 12000).then(bundle => {
+                if (bundle && !bundle.error) {
+                    CacheStore.set('initialBundle', bundle);
                     applyBundleDataUI(bundle);
+                } else if (!cachedBundle) {
+                    // 若初次開啟且網路慢，進行第二次重試
+                    setTimeout(() => {
+                        callGasGet('getFrontInitialBundle', {}, 12000).then(retryBundle => {
+                            if (retryBundle) applyBundleDataUI(retryBundle);
+                        });
+                    }, 1000);
                 }
-            }).catch(err => console.log('非同步背景同步提示:', err));
+            });
         }
 
         function applyBundleDataUI(bundle) {
+            if (!bundle) return;
             if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
             if (bundle.services) setupServiceDropdownsAndData(bundle.services);
             if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
@@ -553,7 +564,9 @@
             if (depSelect) depSelect.innerHTML = depHtml;
             if (bathSelect) bathSelect.innerHTML = bathHtml;
             if (dynamicMealBox) dynamicMealBox.innerHTML = mealOptionsHtml;
-            if (petCount === 0) renderPetFormCards();
+            
+            // 重新刷新卡片內的下拉選單
+            updatePetCardServiceDropdowns();
         }
 
         function setupGroomerDropdown(list) {
@@ -573,7 +586,7 @@
         }
 
         function setupPortfolioData(data) {
-            if (data) { 
+            if (data && data.length > 0) { 
                 allPhotos = data; 
                 let categorySet = new Set(); 
                 categorySet.add("全部");
@@ -839,7 +852,7 @@
             if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
             Swal.fire({title: '正在查核專屬會員履歷...', didOpen: () => Swal.showLoading()});
             
-            callGasGet('checkCustomerHistory', { phone: phone }).then(res => {
+            callGasGet('checkCustomerHistory', { phone: phone }, 5000).then(res => {
                 Swal.close();
                 if(res && res.found) {
                     document.getElementById('ownerName').value = res.ownerName || '';
@@ -1334,6 +1347,40 @@
             appendNewPetFormCard();
         }
 
+        // 動態更新毛孩卡片內的下拉選單
+        function updatePetCardServiceDropdowns() {
+            const container = document.getElementById('dynamicPetContainer');
+            if (!container) return;
+            
+            let categorySet = new Set();
+            allServices.forEach(s => { 
+                let cat = s.category || '';
+                if(cat && !cat.includes('加購') && !cat.includes('包卡') && !cat.includes('儲值') && !cat.includes('供餐')) {
+                    if (activeServiceType === 'grooming' && !cat.includes('住宿')) categorySet.add(cat);
+                } 
+            });
+
+            if (activeServiceType === 'grooming') {
+                let serviceOptions = `<option value="" disabled selected>請選擇美容主服務項目</option>`;
+                Array.from(categorySet).forEach(cat => {
+                    serviceOptions += `<optgroup label="【 ${cat} 】">`;
+                    allServices.filter(s => s.category === cat).forEach(item => { 
+                        let priceRaw = (item.price || '0').toString();
+                        let mapKey = `${item.service}_${cat}`;
+                        if (PRICE_RANGE_MAP[mapKey] && !priceRaw.includes('-') && !priceRaw.includes('起')) priceRaw = PRICE_RANGE_MAP[mapKey];
+                        serviceOptions += `<option value="${item.service}" data-raw-price="${priceRaw}">${item.service} ($${priceRaw})</option>`; 
+                    });
+                    serviceOptions += `</optgroup>`;
+                });
+
+                container.querySelectorAll('.p-main-service').forEach(sel => {
+                    let curVal = sel.value;
+                    sel.innerHTML = serviceOptions;
+                    if (curVal) sel.value = curVal;
+                });
+            }
+        }
+
         function appendNewPetFormCard() {
             petCount++; const id = petCount; const wrapper = document.getElementById('dynamicPetContainer'); if(!wrapper) return;
             const card = document.createElement('div'); 
@@ -1520,6 +1567,7 @@
             renderFrontCalendarFast(); 
         }
 
+        // ⚡ 點擊日期秒開時段 (從全域 ShiftCache 記憶體瞬間篩選)
         function selectDate(dateStr) {
             selectedDateStr = dateStr; selectedTimeStr = ''; 
             renderFrontCalendarFast();
