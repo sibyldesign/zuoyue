@@ -1194,15 +1194,26 @@
             }
         }
         function applyPetDataToCard(cardId, petData) {
-            const cardEl = document.getElementById(`petCardRoot_${cardId}`);
-            if (!cardEl || !petData) return;
-            if(cardEl.querySelector('.p-name')) cardEl.querySelector('.p-name').value = petData.name || '';
-            if(cardEl.querySelector('.p-breed')) cardEl.querySelector('.p-breed').value = petData.breed || '';
-            if(cardEl.querySelector('.p-size')) cardEl.querySelector('.p-size').value = petData.petSize || '';
-            if(cardEl.querySelector('.p-age')) cardEl.querySelector('.p-age').value = petData.age || '';
-            if(cardEl.querySelector('.p-birthday')) cardEl.querySelector('.p-birthday').value = petData.birthday || '';
-            if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '短毛';
+    const cardEl = document.getElementById(`petCardRoot_${cardId}`);
+    if (!cardEl || !petData) return;
+    if(cardEl.querySelector('.p-name')) cardEl.querySelector('.p-name').value = petData.name || '';
+    if(cardEl.querySelector('.p-breed')) cardEl.querySelector('.p-breed').value = petData.breed || '';
+    if(cardEl.querySelector('.p-size')) cardEl.querySelector('.p-size').value = petData.petSize || '';
+    if(cardEl.querySelector('.p-age')) cardEl.querySelector('.p-age').value = petData.age || '';
+    
+    // 🎯 確保生日帶入時轉為西元年/月/日 (YYYY/MM/DD)
+    if(cardEl.querySelector('.p-birthday')) {
+        let bDay = petData.birthday || '';
+        if (bDay.includes('GMT') || bDay.includes('00:00:00')) {
+            let d = new Date(bDay);
+            if (!isNaN(d.getTime())) {
+                bDay = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+            }
         }
+        cardEl.querySelector('.p-birthday').value = bDay;
+    }
+    if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '短毛';
+}
         function clearPetCardInputs(cardId) {
             const cardEl = document.getElementById(`petCardRoot_${cardId}`);
             if (!cardEl) return;
@@ -1484,7 +1495,7 @@
     let baseSlots = (res && res.availableSlots) ? res.availableSlots : [];
     let fullSlots = (res && res.fullSlots) ? res.fullSlots : [];
     
-    // 合併可用與已滿時段並進行時間排序
+    // 合併可用與已滿時段
     let allSlots = Array.from(new Set([...baseSlots, ...fullSlots])).sort();
     
     if (allSlots.length === 0) {
@@ -1506,12 +1517,12 @@
             isPastOrLocked = true;
         }
         
-        // 若該時段已滿額或過期，顯示灰底、標記 (已滿) 且 disabled 禁止點擊
+        // 🎯 只要已滿 (isFull) 或過期 (isPastOrLocked)，立刻顯示灰底 (disabled) 並標記 (已滿)
         if (isPastOrLocked || isFull) {
             let labelText = isFull ? `${time} (已滿)` : time;
-            html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed opacity-60">${labelText}</button>`;
+            html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed opacity-60 flex items-center justify-center">${labelText}</button>`;
         } else {
-            html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+            html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition flex items-center justify-center">${time}</button>`;
         }
     });
     html += '</div>';
