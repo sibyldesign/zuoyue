@@ -4,17 +4,20 @@
     <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>琢悅寵物SPA會館｜線上預約系統</title>
+    <title>琢悅寵物SPA會館｜美容與住宿預約系統</title>
     
     <!-- 連線預解析與預加載 -->
     <link rel="preconnect" href="https://script.google.com" crossorigin>
     <link rel="preconnect" href="https://i.postimg.cc" crossorigin>
     <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" as="image" href="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- 🟢【LINE LIFF SDK 核心引入】 -->
+    <!-- 🟢【LINE LIFF 核心 SDK 段落 1/2】 -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <script>
@@ -23,7 +26,6 @@
                 extend: {
                     colors: {
                         beigeBase: '#F9F6F0', milkTea: '#CBB39C', milkTeaDark: '#B2977D',
-                        accentYellow: '#F3E8D3', optionBg: '#FAF7F2', calActive: '#CBB39C',
                         textMain: '#4A4238', textBrown: '#5C5043', sibylLight: '#bca085'
                     }
                 }
@@ -32,16 +34,9 @@
     </script>
     
     <style>
-        :root {
-            --bg-butter: #FAF8F5; --card-bg: #FFFFFF; --primary-green: #CBB39C;
-            --text-main: #4A4238; --text-light: #9E9388; --border-color: #EFE8DE; --alert-color: #E07A5F;
-        }
-        body { 
-            background-color: #F9F6F0; font-family: 'Helvetica Neue', Arial, '微軟正黑體', sans-serif; 
-            -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; color: #4A4238;
-        }
-        .app-card { background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(203, 179, 156, 0.08); position: relative; overflow: hidden; border: 1px solid #EFE8DE; }
-        .text-input { width: 100%; padding: 12px 16px; background: white; border: 1.5px solid #EFE8DE; border-radius: 16px; font-size: 13px; font-weight: 600; outline: none; transition: all 0.25s ease; display: block; box-sizing: border-box; color: #4A4238; }
+        body { background-color: #F9F6F0; font-family: 'Helvetica Neue', Arial, '微軟正黑體', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; color: #4A4238; }
+        .app-card { background: white; border-radius: 24px; box-shadow: 0 4px 20px rgba(203, 179, 156, 0.08); position: relative; overflow: hidden; border: 1px solid #EFE8DE; contain: content; }
+        .text-input { width: 100%; padding: 12px 16px; background: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; font-size: 13px; font-weight: 600; color: #4A4238; outline: none; transition: all 0.25s ease; display: block; box-sizing: border-box; }
         .text-input:focus { border-color: #CBB39C; box-shadow: 0 0 0 3.5px rgba(203, 179, 156, 0.15); }
         .tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.3s; }
         .tab-btn.active { background-color: #CBB39C; color: white; border-radius: 18px; box-shadow: 0 3px 10px rgba(203, 179, 156, 0.35); }
@@ -49,15 +44,20 @@
         .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
         .day-dimmed-light-brown { 
-            background-color: #F2ECE4 !important; color: #CBB39C !important; border: 1px solid #E6DDD2 !important; 
-            border-radius: 12px; cursor: not-allowed !important; pointer-events: none !important; opacity: 0.55 !important; 
+            background-color: #F2ECE4 !important; 
+            color: #CBB39C !important; 
+            border: 1px solid #E6DDD2 !important; 
+            border-radius: 12px; 
+            cursor: not-allowed !important; 
+            pointer-events: none !important; 
+            opacity: 0.55 !important; 
         }
     </style>
 </head>
-<body class="w-full overflow-x-hidden" onload="initPage()">
+<body class="w-full overflow-x-hidden" onload="initPageFast()">
     <!-- 頂部 Header -->
     <div class="w-full bg-white flex flex-col items-center pt-7 pb-5 shadow-sm border-b border-[#EFE8DE]">
-        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
+        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" fetchpriority="high" decoding="async" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
         <h2 class="text-[20px] font-extrabold text-textBrown tracking-widest"> 琢悅寵物SPA會館 </h2>
         <p class="text-[11px] text-[#A39585] tracking-wider mt-0.5">Pet Grooming & Luxury Boarding</p>
     </div>
@@ -67,7 +67,7 @@
         <div class="font-bold mb-1 flex items-center justify-center gap-2 text-[14px] tracking-wide">
             <i class="fas fa-bullhorn"></i> 店家最新公告
         </div>
-        <div id="announcement"> 公告載入中... </div>
+        <div id="announcement"> 載入中... </div>
     </div>
     
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
@@ -76,29 +76,34 @@
             <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active"><i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約</div>
             <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]"><i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約</div>
         </div>
-        
         <!-- 美容作品集相簿 -->
         <div class="app-card p-6 bg-[#FAF8F5]">
             <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
-            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer"><div class="text-xs text-gray-400">分類載入中...</div></div>
-            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid"><div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div></div>
+            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer"><div class="text-xs text-gray-400">載入中...</div></div>
+            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid"><div class="col-span-2 text-center text-xs text-gray-400 py-4">作品集載入中...</div></div>
             <div class="text-center mt-4">
                 <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
                     查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
                 </button>
             </div>
         </div>
-
         <!-- 動態輪播圖 -->
         <div class="app-card p-4 bg-white relative">
             <div class="relative overflow-hidden rounded-2xl w-full aspect-[4/5] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
-                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"><div class="w-full h-full flex items-center justify-center text-xs text-gray-400 font-bold">系統說明圖載入中...</div></div>
+                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"><div class="w-full h-full flex items-center justify-center text-xs text-gray-400 font-bold">輪播圖片載入中...</div></div>
                 <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
                 <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
             </div>
             <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
-
+        <!-- 住宿提醒 Banner -->
+        <div id="boardingNoticeBanner" class="hidden bg-amber-50/80 border border-amber-200 text-amber-900 p-4 rounded-2xl text-xs font-bold leading-relaxed flex items-start gap-3">
+            <i class="fa-solid fa-paw text-amber-600 text-lg flex-shrink-0 mt-0.5"></i>
+            <div>
+                <div class="font-black text-amber-900 text-sm mb-0.5">🐾 住宿小提醒</div>
+                <span id="boardingNoticeText">為了讓毛孩住得更安心、更舒適，建議您攜帶毛孩平時食用的飼料，避免因更換飲食造成腸胃不適。</span>
+            </div>
+        </div>
         <!-- 家長聯絡資訊卡片 -->
         <div class="app-card p-6">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
@@ -124,12 +129,12 @@
                 <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">LINE 暱稱/名稱 *</label><input type="text" id="lineName" placeholder="方便我們聯繫您" class="text-input text-xs font-bold"></div>
             </div>
         </div>
-
         <!-- 住宿時間與行事曆選時卡片 -->
         <div id="boardingTimeCard" class="app-card p-6 hidden space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown mb-2 flex items-center gap-2 text-[15px]"><i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 選擇住宿入住與退房行事曆時段</h3>
             
+            <!-- 手風琴 1: 入住日期與時段 -->
             <div class="border border-[#EFE8DE] rounded-2xl overflow-hidden bg-white shadow-xs">
                 <button type="button" onclick="toggleAccordionWindow('checkInAccordion')" class="w-full p-4 bg-[#FAF7F2] flex justify-between items-center text-xs font-black text-textBrown border-b border-[#EFE8DE]">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-to-bracket text-[#B2977D]"></i> 1. 選擇【入住日期與進場時段】*</span>
@@ -149,7 +154,7 @@
                     <div class="bg-[#FAF8F5] p-3 rounded-2xl border border-[#EFE8DE]" id="hotelInTimeSlotContainer"><div class="text-xs text-gray-400 text-center py-2">請先點選上方入住日期</div></div>
                 </div>
             </div>
-
+            <!-- 手風琴 2: 退房日期與時段 -->
             <div class="border border-[#EFE8DE] rounded-2xl overflow-hidden bg-white shadow-xs">
                 <button type="button" onclick="toggleAccordionWindow('checkOutAccordion')" class="w-full p-4 bg-[#FAF7F2] flex justify-between items-center text-xs font-black text-textBrown border-b border-[#EFE8DE]">
                     <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-from-bracket text-[#B2977D]"></i> 2. 選擇【退房日期與接回時段】*</span>
@@ -169,13 +174,14 @@
                     <div class="bg-[#FAF8F5] p-3 rounded-2xl border border-[#EFE8DE]" id="hotelOutTimeSlotContainer"><div class="text-xs text-gray-400 text-center py-2">請先點選上方退房日期</div></div>
                 </div>
             </div>
-
+            <!-- 動態供餐選擇 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
                 <div class="grid grid-cols-1 gap-2" id="dynamicMealOptionsContainer"></div>
                 <div id="mealCalculationBadge" class="text-[11px] text-amber-800 font-bold bg-amber-50 p-2 rounded-xl border border-amber-200/60 hidden"></div>
             </div>
             
+            <!-- 退宿當天洗澡服務選擇 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
@@ -466,56 +472,26 @@
             get: (key) => { try { return JSON.parse(localStorage.getItem('zy_cache_' + key)); } catch(e) { return null; } }
         };
 
-        // 🟢【修復版 LINE LIFF SDK 核心異步載入機制】
-        // 🟢【LIFF 核心初始化修復】強制同步等待 LIFF 鎖定 UID
-async function initPageFast() {
-    renderPetFormCards();
-    
-    const MY_LIFF_ID = "2010817366-ytcuCFKz";
-    
-    // 1. 強制優先執行 LIFF 初始化
-    if (typeof liff !== "undefined" && MY_LIFF_ID !== "") {
-        try {
-            await liff.init({ liffId: MY_LIFF_ID });
-            console.log("✅ LIFF SDK 初始化成功！");
+        // 🟢【LINE LIFF 核心 SDK 段落 2/2】靜默啟動與 UID 鎖定
+        function initPageFast() {
+            renderPetFormCards();
             
-            // 判斷是否登入
-            if (liff.isLoggedIn()) {
-                const profile = await liff.getProfile();
-                if (profile && profile.userId) {
-                    clientDetectedLineUID = profile.userId;
-                    console.log("🎯 成功取得 LINE_UID:", clientDetectedLineUID);
-                    
-                    // 自動將 LINE 暱稱帶入輸入框
-                    const lineNameInput = document.getElementById('lineName');
-                    if (lineNameInput && (!lineNameInput.value || lineNameInput.value.trim() === "")) {
-                        lineNameInput.value = profile.displayName || "";
+            const MY_LIFF_ID = "2010817366-ytcuCFKz";
+            if (typeof liff !== "undefined" && MY_LIFF_ID !== "") {
+                liff.init({ liffId: MY_LIFF_ID }).then(() => {
+                    if (liff.isLoggedIn()) {
+                        liff.getProfile().then(profile => {
+                            if (profile && profile.userId) {
+                                clientDetectedLineUID = profile.userId;
+                                const lineNameInput = document.getElementById('lineName');
+                                if (lineNameInput && lineNameInput.value.trim() === "") {
+                                    lineNameInput.value = profile.displayName || "";
+                                }
+                            }
+                        }).catch(err => console.error("Profile 撈取失敗", err));
                     }
-                }
-            } else {
-                // 若在 LINE App 內開啟但未登入，強制跳轉請求授權
-                if (liff.isInClient()) {
-                    liff.login({ redirectUri: window.location.href });
-                }
+                }).catch(err => console.error("LIFF 初始化失敗", err));
             }
-        } catch (err) {
-            console.error("❌ LIFF 初始化失敗，請檢查 LINE Developers 設定:", err);
-        }
-    } else {
-        console.warn("⚠️ 網頁未成功載入 LIFF SDK 或 LIFF ID 為空！");
-    }
-
-    // 2. 完成 LIFF 讀取後，載入頁面試算表資料
-    const cachedBundle = CacheStore.get('initialBundle');
-    if (cachedBundle) applyBundleDataUI(cachedBundle);
-    
-    callGasGet('getFrontInitialBundle', {}, 12000).then(bundle => {
-        if (bundle && !bundle.error) {
-            CacheStore.set('initialBundle', bundle);
-            applyBundleDataUI(bundle);
-        }
-    });
-}
 
             const cachedBundle = CacheStore.get('initialBundle');
             if (cachedBundle) applyBundleDataUI(cachedBundle);
@@ -1759,117 +1735,116 @@ async function initPageFast() {
         }
 
         function processBooking() {
-    let phone = document.getElementById('phone').value.trim();
-    let ownerName = document.getElementById('ownerName').value.trim();
-    let email = document.getElementById('email').value.trim();
-    let lineName = document.getElementById('lineName').value.trim();
-    let pickupVal = document.getElementById('pickupService').value;
-    let pickupAddr = document.getElementById('pickupAddress') ? document.getElementById('pickupAddress').value.trim() : '';
-    
-    if (!phone || !ownerName || !email || !lineName) { 
-        return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); 
-    }
-    if (pickupVal === '需要接送' && !pickupAddr) { 
-        return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); 
-    }
-    
-    let finalBookingDate = selectedDateStr;
-    let finalBookingTime = selectedTimeStr;
-    if (activeServiceType === 'boarding') {
-        if (!selectedHotelCheckInDateStr || !selectedHotelCheckInTimeStr || !selectedHotelCheckOutDateStr || !selectedHotelCheckOutTimeStr) {
-            return Swal.fire('漏填提醒', '請完整選擇住宿入住與退房的日期與時段！', 'warning');
-        }
-        finalBookingDate = `${selectedHotelCheckInDateStr} 至 ${selectedHotelCheckOutDateStr}`;
-        finalBookingTime = `入住:${selectedHotelCheckInTimeStr} / 退房:${selectedHotelCheckOutTimeStr}`;
-    } else {
-        const dtCard = document.getElementById('dateTimeCard');
-        if (dtCard && !dtCard.classList.contains('hidden')) {
-            if (!selectedDateStr || !selectedTimeStr) { 
-                return Swal.fire('漏填提醒', '請點選上方日曆選擇美容預約日期與進場時段！', 'warning'); 
+            let phone = document.getElementById('phone').value.trim();
+            let ownerName = document.getElementById('ownerName').value.trim();
+            let email = document.getElementById('email').value.trim();
+            let lineName = document.getElementById('lineName').value.trim();
+            let pickupVal = document.getElementById('pickupService').value;
+            let pickupAddr = document.getElementById('pickupAddress') ? document.getElementById('pickupAddress').value.trim() : '';
+            
+            if (!phone || !ownerName || !email || !lineName) { 
+                return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); 
             }
-        }
-    }
-    let petsPayload = packDynamicPetsJsonPayload();
-    if(petsPayload.length === 0) { 
-        return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); 
-    }
-    for (let i = 0; i < petsPayload.length; i++) {
-        if (!petsPayload[i].mainService || petsPayload[i].mainService === "預約項目" || petsPayload[i].mainService.trim() === "") {
-            return Swal.fire('漏填提醒', `請為【毛孩 NO. ${i + 1}：${petsPayload[i].name || '未命名'}】選取施作的主服務項目！`, 'warning');
-        }
-    }
-    if (!mainRead || !riskRead || !isCheckedFinal) { 
-        return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); 
-    }
-    if (!validateCanvasIsSigned()) { 
-        return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); 
-    }
-    let multiPhotosMap = {};
-    petsPayload.forEach((pet, index) => {
-        if (pet.petPhotoBase64) multiPhotosMap[index + 1] = pet.petPhotoBase64;
-    });
-    let rawOrigText = document.getElementById('summaryOriginalRange') ? document.getElementById('summaryOriginalRange').innerText : "$0";
-    let rawFinalText = document.getElementById('bookingTotalPriceDisplay') ? document.getElementById('bookingTotalPriceDisplay').innerText : "$0";
-    
-    let parsedOrigPrice = parseInt(rawOrigText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
-    let parsedFinalPrice = parseInt(rawFinalText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
-    let groomerSelect = document.getElementById('selectedGroomer');
-    let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
-    
-    // 🎯 核心封包：將鎖定到的 clientDetectedLineUID 精確寫入網路 Payload 中
-    let payload = {
-        lineUID: clientDetectedLineUID || '',
-        serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
-        phone: phone, ownerName: ownerName, email: email, lineName: lineName,
-        date: finalBookingDate, time: finalBookingTime,
-        groomer: groomerVal,
-        originalPrice: parsedOrigPrice,
-        discountPrice: 0,
-        finalPrice: parsedFinalPrice,
-        price: parsedFinalPrice,
-        useCard: document.getElementById('useExistingCard')?.checked || false,
-        useDeposit: document.getElementById('useExistingDeposit')?.checked || false,
-        buyPackage: document.getElementById('buyNewPackageSelect')?.value || 'none',
-        buyDeposit: document.getElementById('buyNewDepositSelect')?.value || 'none',
-        pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
-        referrerOwner: document.getElementById('referrerOwner').value,
-        petsJsonString: JSON.stringify(petsPayload),
-        multiPhotosJson: JSON.stringify(multiPhotosMap),
-        signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
-    };
-    
-    Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-    fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "submitBooking", payload: payload })
-    }).then(res => res.json()).then(resData => {
-        Swal.close();
-        if (resData.success) {
-            Swal.fire({
-                title: '🎉 預約成功！',
-                html: `
-                    <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
-                        <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
-                        <p>系統已同步發送「預約確認信件與數位合約」至您的 Email：<br><b>${email}</b></p>
-                    </div>
-                `,
-                icon: 'success',
-                confirmButtonColor: '#CBB39C',
-                confirmButtonText: '點此加 LINE 官方帳號確認'
-            }).then(() => {
-                window.location.href = "https://lin.ee/q19SMMx5";
+            if (pickupVal === '需要接送' && !pickupAddr) { 
+                return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); 
+            }
+            
+            let finalBookingDate = selectedDateStr;
+            let finalBookingTime = selectedTimeStr;
+            if (activeServiceType === 'boarding') {
+                if (!selectedHotelCheckInDateStr || !selectedHotelCheckInTimeStr || !selectedHotelCheckOutDateStr || !selectedHotelCheckOutTimeStr) {
+                    return Swal.fire('漏填提醒', '請完整選擇住宿入住與退房的日期與時段！', 'warning');
+                }
+                finalBookingDate = `${selectedHotelCheckInDateStr} 至 ${selectedHotelCheckOutDateStr}`;
+                finalBookingTime = `入住:${selectedHotelCheckInTimeStr} / 退房:${selectedHotelCheckOutTimeStr}`;
+            } else {
+                const dtCard = document.getElementById('dateTimeCard');
+                if (dtCard && !dtCard.classList.contains('hidden')) {
+                    if (!selectedDateStr || !selectedTimeStr) { 
+                        return Swal.fire('漏填提醒', '請點選上方日曆選擇美容預約日期與進場時段！', 'warning'); 
+                    }
+                }
+            }
+            let petsPayload = packDynamicPetsJsonPayload();
+            if(petsPayload.length === 0) { 
+                return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); 
+            }
+            for (let i = 0; i < petsPayload.length; i++) {
+                if (!petsPayload[i].mainService || petsPayload[i].mainService === "預約項目" || petsPayload[i].mainService.trim() === "") {
+                    return Swal.fire('漏填提醒', `請為【毛孩 NO. ${i + 1}：${petsPayload[i].name || '未命名'}】選取施作的主服務項目！`, 'warning');
+                }
+            }
+            if (!mainRead || !riskRead || !isCheckedFinal) { 
+                return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); 
+            }
+            if (!validateCanvasIsSigned()) { 
+                return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); 
+            }
+            let multiPhotosMap = {};
+            petsPayload.forEach((pet, index) => {
+                if (pet.petPhotoBase64) multiPhotosMap[index + 1] = pet.petPhotoBase64;
             });
-        } else if (resData.isFull) {
-            Swal.fire('時段已滿', resData.message, 'warning');
-        } else {
-            Swal.fire('預約失敗', resData.error || '系統寫入異常', 'error');
+            let rawOrigText = document.getElementById('summaryOriginalRange') ? document.getElementById('summaryOriginalRange').innerText : "$0";
+            let rawFinalText = document.getElementById('bookingTotalPriceDisplay') ? document.getElementById('bookingTotalPriceDisplay').innerText : "$0";
+            
+            let parsedOrigPrice = parseInt(rawOrigText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
+            let parsedFinalPrice = parseInt(rawFinalText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
+            let groomerSelect = document.getElementById('selectedGroomer');
+            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+            
+            let payload = {
+                lineUID: clientDetectedLineUID,
+                serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
+                phone: phone, ownerName: ownerName, email: email, lineName: lineName,
+                date: finalBookingDate, time: finalBookingTime,
+                groomer: groomerVal,
+                originalPrice: parsedOrigPrice,
+                discountPrice: 0,
+                finalPrice: parsedFinalPrice,
+                price: parsedFinalPrice,
+                useCard: document.getElementById('useExistingCard')?.checked || false,
+                useDeposit: document.getElementById('useExistingDeposit')?.checked || false,
+                buyPackage: document.getElementById('buyNewPackageSelect')?.value || 'none',
+                buyDeposit: document.getElementById('buyNewDepositSelect')?.value || 'none',
+                pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
+                referrerOwner: document.getElementById('referrerOwner').value,
+                petsJsonString: JSON.stringify(petsPayload),
+                multiPhotosJson: JSON.stringify(multiPhotosMap),
+                signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
+            };
+            
+            Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "submitBooking", payload: payload })
+            }).then(res => res.json()).then(resData => {
+                Swal.close();
+                if (resData.success) {
+                    Swal.fire({
+                        title: '🎉 預約成功！',
+                        html: `
+                            <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
+                                <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
+                                <p>系統已同步發送「預約確認信件與數位合約」至您的 Email：<br><b>${email}</b></p>
+                            </div>
+                        `,
+                        icon: 'success',
+                        confirmButtonColor: '#CBB39C',
+                        confirmButtonText: '點此加 LINE 官方帳號確認'
+                    }).then(() => {
+                        window.location.href = "https://lin.ee/q19SMMx5";
+                    });
+                } else if (resData.isFull) {
+                    Swal.fire('時段已滿', resData.message, 'warning');
+                } else {
+                    Swal.fire('預約失敗', resData.error || '系統寫入異常', 'error');
+                }
+            }).catch(err => {
+                Swal.close();
+                Swal.fire('連線失敗', '網路連線逾時，請再試一次', 'error');
+            });
         }
-    }).catch(err => {
-        Swal.close();
-        Swal.fire('連線失敗', '網路連線逾時，請再試一次', 'error');
-    });
-}
 
         function openTermsModalWindow(type) {
             currentTermType = type;
@@ -1896,3 +1871,4 @@ async function initPageFast() {
     </script>
 </body>
 </html>
+
