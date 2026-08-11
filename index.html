@@ -4,24 +4,29 @@
     <base target="_top">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>琢悅寵物SPA會館｜LINE官方預約系統</title>
-    <!-- 專屬 LINE LIFF SDK 引入 -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <title>琢悅寵物SPA會館｜美容與住宿預約系統</title>
+    
+    <!-- 連線預解析與預加載 -->
+    <link rel="preconnect" href="https://script.google.com" crossorigin>
+    <link rel="preconnect" href="https://i.postimg.cc" crossorigin>
+    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" as="image" href="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- 🟢【LINE LIFF 核心 SDK 段落 1/2】 -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        beigeBase: '#F9F6F0',
-                        milkTea: '#CBB39C',
-                        milkTeaDark: '#B2977D',
-                        textMain: '#4A4238',
-                        textBrown: '#5C5043',
-                        sibylLight: '#bca085'
+                        beigeBase: '#F9F6F0', milkTea: '#CBB39C', milkTeaDark: '#B2977D',
+                        textMain: '#4A4238', textBrown: '#5C5043', sibylLight: '#bca085'
                     }
                 }
             }
@@ -29,73 +34,36 @@
     </script>
     
     <style>
-        :root {
-            --bg-butter: #FAF8F5;
-            --card-bg: #FFFFFF;
-            --primary-green: #CBB39C;
-            --text-main: #4A4238;
-            --text-light: #9E9388;
-            --border-color: #EFE8DE;
-        }
-        body { 
-            background-color: #F9F6F0; 
-            font-family: 'Helvetica Neue', Arial, '微軟正黑體', sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-            margin: 0; 
-            padding: 0; 
-            color: #4A4238;
-        }
-        .app-card { background: white; border-radius: 24px; box-shadow: 0 4px 20px rgba(203, 179, 156, 0.08); position: relative; overflow: hidden; border: 1px solid #EFE8DE; }
-        .text-input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            background: #FFFFFF; 
-            border: 1.5px solid #EFE8DE; 
-            border-radius: 16px; 
-            font-size: 13px; 
-            font-weight: 600;
-            color: #4A4238;
-            outline: none; 
-            transition: all 0.25s ease; 
-            display: block; 
-            box-sizing: border-box; 
-        }
+        body { background-color: #F9F6F0; font-family: 'Helvetica Neue', Arial, '微軟正黑體', sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; color: #4A4238; }
+        .app-card { background: white; border-radius: 24px; box-shadow: 0 4px 20px rgba(203, 179, 156, 0.08); position: relative; overflow: hidden; border: 1px solid #EFE8DE; contain: content; }
+        .text-input { width: 100%; padding: 12px 16px; background: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; font-size: 13px; font-weight: 600; color: #4A4238; outline: none; transition: all 0.25s ease; display: block; box-sizing: border-box; }
         .text-input:focus { border-color: #CBB39C; box-shadow: 0 0 0 3.5px rgba(203, 179, 156, 0.15); }
         .tab-btn { flex: 1; text-align: center; padding: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.3s; }
         .tab-btn.active { background-color: #CBB39C; color: white; border-radius: 18px; box-shadow: 0 3px 10px rgba(203, 179, 156, 0.35); }
         .addon-card { background-color: #FFFFFF; border: 1.5px solid #EFE8DE; border-radius: 16px; padding: 12px 14px; transition: all 0.2s ease; display: flex; align-items: center; }
-        .addon-card:hover:not(.disabled) { border-color: #CBB39C; background-color: #FAF7F2; }
         .addon-card.disabled { opacity: 0.55; cursor: not-allowed; background-color: #FAF8F5; }
         .addon-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #CBB39C; border-radius: 4px; }
-        .day-dimmed-light-brown {
-            background-color: #F2ECE4 !important;
-            color: #CBB39C !important;
-            border: 1px solid #E6DDD2 !important;
-            border-radius: 12px;
-            cursor: not-allowed !important;
-            pointer-events: none !important;
-            opacity: 0.45 !important;
+        .day-dimmed-light-brown { 
+            background-color: #F2ECE4 !important; 
+            color: #CBB39C !important; 
+            border: 1px solid #E6DDD2 !important; 
+            border-radius: 12px; 
+            cursor: not-allowed !important; 
+            pointer-events: none !important; 
+            opacity: 0.55 !important; 
         }
     </style>
 </head>
-<body class="w-full overflow-x-hidden" onload="initPage()">
+<body class="w-full overflow-x-hidden" onload="initPageFast()">
     <!-- 頂部 Header -->
     <div class="w-full bg-white flex flex-col items-center pt-7 pb-5 shadow-sm border-b border-[#EFE8DE]">
-        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" loading="lazy" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
+        <img src="https://i.postimg.cc/fL25PQLs/jie-tu-2026-07-24-ling-chen12-52-03.png" alt="琢悅寵物SPA會館 Logo" fetchpriority="high" decoding="async" class="w-28 h-28 object-contain rounded-full border border-gray-100 mb-2 shadow-xs">
         <h2 class="text-[20px] font-extrabold text-textBrown tracking-widest"> 琢悅寵物SPA會館 </h2>
-        <p class="text-[11px] text-[#A39585] tracking-wider mt-0.5">LINE LIFF 線上即時預約</p>
-    </div>
-
-    <!-- LIFF 自動識別身份提示列 -->
-    <div id="liffBadgeInfo" class="max-w-md mx-auto px-4 pt-3 hidden">
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-2xl text-xs font-bold flex items-center justify-between shadow-xs">
-            <span class="flex items-center gap-1.5"><i class="fab fa-line text-emerald-600 text-base"></i> 已自動連結 LINE 帳號：</span>
-            <span id="liffUserNameShow" class="font-black text-emerald-900">連線中...</span>
-        </div>
+        <p class="text-[11px] text-[#A39585] tracking-wider mt-0.5">Pet Grooming & Luxury Boarding</p>
     </div>
     
     <!-- 店家最新公告 -->
-    <div class="w-full bg-[#CBB39C] text-white py-3.5 px-4 shadow-sm text-[13px] leading-relaxed text-center my-4">
+    <div class="w-full bg-[#CBB39C] text-white py-3.5 px-4 shadow-sm text-[13px] leading-relaxed text-center mb-6">
         <div class="font-bold mb-1 flex items-center justify-center gap-2 text-[14px] tracking-wide">
             <i class="fas fa-bullhorn"></i> 店家最新公告
         </div>
@@ -103,45 +71,31 @@
     </div>
     
     <div class="max-w-md mx-auto px-4 pb-8 space-y-6">
-        
         <!-- 服務類別切換 -->
         <div class="bg-white p-1.5 rounded-2xl border border-[#EFE8DE] flex shadow-sm">
-            <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active">
-                <i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約
-            </div>
-            <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]">
-                <i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約
-            </div>
+            <div id="tabGrooming" onclick="switchServiceType('grooming')" class="tab-btn active"><i class="fa-solid fa-scissors mr-1.5"></i> 寵物美容預約</div>
+            <div id="tabBoarding" onclick="switchServiceType('boarding')" class="tab-btn text-[#A39585]"><i class="fa-solid fa-hotel mr-1.5"></i> 寵物住宿預約</div>
         </div>
-
         <!-- 美容作品集相簿 -->
         <div class="app-card p-6 bg-[#FAF8F5]">
             <h3 class="text-center font-extrabold text-[17px] text-textBrown mb-4 tracking-widest flex items-center justify-center gap-1.5"> ✨ 毛孩變美日記 ✨ </h3>
-            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer">
-                <div class="text-xs text-gray-400">載入中...</div>
-            </div>
-            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid">
-                <div class="col-span-2 text-center text-xs text-gray-400 py-6"> 相簿載入中... </div>
-            </div>
+            <div class="flex justify-center flex-wrap gap-2 pb-2 mb-4" id="portfolioTabsContainer"><div class="text-xs text-gray-400">載入中...</div></div>
+            <div class="grid grid-cols-2 gap-3.5 overflow-hidden transition-all duration-500" id="portfolioGrid"><div class="col-span-2 text-center text-xs text-gray-400 py-4">作品集載入中...</div></div>
             <div class="text-center mt-4">
                 <button type="button" id="togglePortfolioBtn" onclick="togglePortfolioExpandState()" class="text-xs font-bold text-[#B2977D] bg-white border border-[#EFE8DE] px-4 py-2 rounded-xl shadow-sm">
                     查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>
                 </button>
             </div>
         </div>
-
-        <!-- 動態輪播圖（4:5 比例與手機左右手勢滑動） -->
+        <!-- 動態輪播圖 -->
         <div class="app-card p-4 bg-white relative">
             <div class="relative overflow-hidden rounded-2xl w-full aspect-[4/5] bg-gradient-to-b from-[#FAF7F2] to-[#EFE8DE] shadow-inner" id="sliderTrackWindow">
-                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer">
-                    <div class="w-full h-full flex-shrink-0 flex items-center justify-center text-xs text-gray-400">系統圖片載入中...</div>
-                </div>
+                <div class="flex transition-transform duration-500 h-full w-full" id="sliderImagesContainer"><div class="w-full h-full flex items-center justify-center text-xs text-gray-400 font-bold">輪播圖片載入中...</div></div>
                 <button type="button" onclick="moveSliderEngine(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-left"></i></button>
                 <button type="button" onclick="moveSliderEngine(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 text-white text-sm flex items-center justify-center z-10"><i class="fas fa-chevron-right"></i></button>
             </div>
             <div class="flex justify-center gap-2 mt-3" id="sliderDotsContainer"></div>
         </div>
-
         <!-- 住宿提醒 Banner -->
         <div id="boardingNoticeBanner" class="hidden bg-amber-50/80 border border-amber-200 text-amber-900 p-4 rounded-2xl text-xs font-bold leading-relaxed flex items-start gap-3">
             <i class="fa-solid fa-paw text-amber-600 text-lg flex-shrink-0 mt-0.5"></i>
@@ -150,104 +104,96 @@
                 <span id="boardingNoticeText">為了讓毛孩住得更安心、更舒適，建議您攜帶毛孩平時食用的飼料，避免因更換飲食造成腸胃不適。</span>
             </div>
         </div>
-
         <!-- 家長聯絡資訊卡片 -->
         <div class="app-card p-6">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
-            <h3 class="font-bold text-textBrown mb-4.5 flex items-center gap-2 text-[15px]">
-                <i class="fas fa-user-alt text-[#CBB39C]"></i> 家長聯絡資訊
-            </h3>
+            <h3 class="font-bold text-textBrown mb-4.5 flex items-center gap-2 text-[15px]"><i class="fas fa-user-alt text-[#CBB39C]"></i> 家長聯絡資訊</h3>
             <div class="space-y-4">
                 <div>
                     <label class="text-[11px] font-bold text-gray-400 mb-1 block">家長聯絡電話 *</label>
                     <div class="relative w-full">
                         <input type="tel" id="phone" placeholder="請輸入聯絡電話" class="text-input text-xs font-bold pl-4 pr-[130px]">
-                        <button type="button" onclick="triggerHistorySearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#CBB39C] text-white px-3.5 py-2 rounded-xl text-[11px] font-bold active:scale-95 transition shadow-xs">
-                            查詢/自動帶入
-                        </button>
+                        <button type="button" onclick="triggerHistorySearch()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-[#CBB39C] text-white px-3.5 py-2 rounded-xl text-[11px] font-bold active:scale-95 transition shadow-xs">查詢/自動帶入</button>
                     </div>
                 </div>
                 <div id="customerBalanceBadgeBlock" class="hidden bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3 text-xs font-bold text-emerald-900 space-y-1">
-                    <div class="flex items-center justify-between">
-                        <span>💳 包卡剩餘次數：</span>
-                        <span class="text-emerald-700 font-black text-sm" id="displayCardRemain">0 次</span>
-                    </div>
-                    <div class="flex items-center justify-between border-t border-emerald-200/60 pt-1">
-                        <span>💰 儲值金剩餘額度：</span>
-                        <span class="text-emerald-700 font-black text-sm" id="displayDepositRemain">$0</span>
-                    </div>
+                    <div class="flex items-center justify-between"><span>💳 該毛孩剩餘包卡：</span><span class="text-emerald-700 font-black text-sm" id="displayCardRemain">0 次</span></div>
+                    <div class="flex items-center justify-between border-t border-emerald-200/60 pt-1"><span>💰 該毛孩儲值金餘額：</span><span class="text-emerald-700 font-black text-sm" id="displayDepositRemain">$0</span></div>
                 </div>
                 <div id="multiPetSelectBlock" class="hidden border border-dashed border-[#CBB39C] rounded-2xl p-3.5 bg-[#FAF7F2]">
                     <label class="text-[11px] font-black text-[#B2977D] block mb-1.5">💡 系統查到您有多位毛孩歷史紀錄，請選擇：</label>
                     <select id="multiPetDropdown" onchange="switchSelectedPetInfo(this.value)" class="w-full p-2.5 bg-white border border-[#EFE8DE] rounded-xl text-xs font-bold text-textBrown outline-none"></select>
                 </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">家長姓名 *</label>
-                    <input type="text" id="ownerName" placeholder="請輸入姓名" class="text-input text-xs font-bold">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">電子信箱 * (自動寄送合約副本)</label>
-                    <input type="email" id="email" placeholder="example@gmail.com" class="text-input text-xs font-bold">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">LINE 暱稱/名稱 *</label>
-                    <input type="text" id="lineName" placeholder="方便我們聯繫您" class="text-input text-xs font-bold">
-                </div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">家長姓名 *</label><input type="text" id="ownerName" placeholder="請輸入姓名" class="text-input text-xs font-bold"></div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">電子信箱 * (自動寄送合約副本)</label><input type="email" id="email" placeholder="example@gmail.com" class="text-input text-xs font-bold"></div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">LINE 暱稱/名稱 *</label><input type="text" id="lineName" placeholder="方便我們聯繫您" class="text-input text-xs font-bold"></div>
             </div>
         </div>
-
-        <!-- 住宿時間與放飯供餐卡片 (上下排列) -->
-        <div id="boardingTimeCard" class="app-card p-6 hidden">
+        <!-- 住宿時間與行事曆選時卡片 -->
+        <div id="boardingTimeCard" class="app-card p-6 hidden space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
-            <h3 class="font-bold text-textBrown mb-4 flex items-center gap-2 text-[15px]">
-                <i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 住宿日期與供餐試算
-            </h3>
-            <div class="grid grid-cols-1 gap-3.5 mb-4">
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">入住日期/時間 *</label>
-                    <input type="datetime-local" id="checkInTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 mb-1 block">退房日期/時間 *</label>
-                    <input type="datetime-local" id="checkOutTime" class="text-input text-xs" onchange="calculateBookingTotalPriceEngine()">
+            <h3 class="font-bold text-textBrown mb-2 flex items-center gap-2 text-[15px]"><i class="fa-solid fa-calendar-days text-[#B2977D]"></i> 選擇住宿入住與退房行事曆時段</h3>
+            
+            <!-- 手風琴 1: 入住日期與時段 -->
+            <div class="border border-[#EFE8DE] rounded-2xl overflow-hidden bg-white shadow-xs">
+                <button type="button" onclick="toggleAccordionWindow('checkInAccordion')" class="w-full p-4 bg-[#FAF7F2] flex justify-between items-center text-xs font-black text-textBrown border-b border-[#EFE8DE]">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-to-bracket text-[#B2977D]"></i> 1. 選擇【入住日期與進場時段】*</span>
+                    <span id="checkInSummaryBadge" class="text-[#B2977D] font-bold">尚未選擇 <i class="fas fa-chevron-down ml-1"></i></span>
+                </button>
+                <div id="checkInAccordion" class="p-4 space-y-3 bg-white">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(-1, 'in')"></i>
+                        <span class="font-extrabold text-textBrown text-[14px]" id="hotel_in_cal_year_month">載入中...</span>
+                        <i class="fas fa-chevron-right text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(1, 'in')"></i>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[11px] text-gray-400 font-bold mb-2 pb-1 border-b border-gray-100">
+                        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-[12px] text-textBrown font-bold mb-3" id="hotelInCalGrid"></div>
+                    <div class="font-bold text-textBrown text-[12px] mb-1">入住進場時段：</div>
+                    <div class="bg-[#FAF8F5] p-3 rounded-2xl border border-[#EFE8DE]" id="hotelInTimeSlotContainer"><div class="text-xs text-gray-400 text-center py-2">請先點選上方入住日期</div></div>
                 </div>
             </div>
-
-            <!-- 動態供餐專區 -->
-            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3 mb-4">
-                <div class="flex items-center justify-between border-b border-[#EFE8DE] pb-2">
-                    <label class="text-xs font-black text-textBrown">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
+            <!-- 手風琴 2: 退房日期與時段 -->
+            <div class="border border-[#EFE8DE] rounded-2xl overflow-hidden bg-white shadow-xs">
+                <button type="button" onclick="toggleAccordionWindow('checkOutAccordion')" class="w-full p-4 bg-[#FAF7F2] flex justify-between items-center text-xs font-black text-textBrown border-b border-[#EFE8DE]">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-arrow-right-from-bracket text-[#B2977D]"></i> 2. 選擇【退房日期與接回時段】*</span>
+                    <span id="checkOutSummaryBadge" class="text-[#B2977D] font-bold">尚未選擇 <i class="fas fa-chevron-down ml-1"></i></span>
+                </button>
+                <div id="checkOutAccordion" class="p-4 space-y-3 bg-white hidden">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(-1, 'out')"></i>
+                        <span class="font-extrabold text-textBrown text-[14px]" id="hotel_out_cal_year_month">載入中...</span>
+                        <i class="fas fa-chevron-right text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeHotelMonth(1, 'out')"></i>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[11px] text-gray-400 font-bold mb-2 pb-1 border-b border-gray-100">
+                        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-y-2 gap-x-1 text-center text-[12px] text-textBrown font-bold mb-3" id="hotelOutCalGrid"></div>
+                    <div class="font-bold text-textBrown text-[12px] mb-1">退房接回時段：</div>
+                    <div class="bg-[#FAF8F5] p-3 rounded-2xl border border-[#EFE8DE]" id="hotelOutTimeSlotContainer"><div class="text-xs text-gray-400 text-center py-2">請先點選上方退房日期</div></div>
                 </div>
-                <div class="grid grid-cols-1 gap-2" id="dynamicMealOptionsContainer">
-                    <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
-                        <input type="radio" name="mealPlanOption" value="NONE" data-price="0" checked onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
-                        <span>自備飼料 / 不需要供餐 ($0)</span>
-                    </label>
-                </div>
+            </div>
+            <!-- 動態供餐選擇 -->
+            <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
+                <label class="text-xs font-black text-textBrown block">🥣 住宿供餐服務專區 (放飯時間：早09:00 / 晚18:00)</label>
+                <div class="grid grid-cols-1 gap-2" id="dynamicMealOptionsContainer"></div>
                 <div id="mealCalculationBadge" class="text-[11px] text-amber-800 font-bold bg-amber-50 p-2 rounded-xl border border-amber-200/60 hidden"></div>
             </div>
             
+            <!-- 退宿當天洗澡服務選擇 -->
             <div class="bg-[#FAF7F2] p-4 rounded-2xl border border-[#EFE8DE] space-y-3">
                 <label class="text-xs font-black text-textBrown block">🛎️ 退宿當天是否需要安排洗澡/美容服務？</label>
                 <div class="flex gap-4">
-                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                        <input type="radio" name="hotelBathNeed" value="NO" checked onchange="toggleHotelBathPanel(false)" class="accent-[#CBB39C]"> 否，僅需住宿
-                    </label>
-                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer">
-                        <input type="radio" name="hotelBathNeed" value="YES" onchange="toggleHotelBathPanel(true)" class="accent-[#CBB39C]"> 是，退宿當天加做洗澡美容
-                    </label>
+                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer"><input type="radio" name="hotelBathNeed" value="NO" checked onchange="toggleHotelBathPanel(false)" class="accent-[#CBB39C]"> 否，僅需住宿</label>
+                    <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer"><input type="radio" name="hotelBathNeed" value="YES" onchange="toggleHotelBathPanel(true)" class="accent-[#CBB39C]"> 是，退宿當天加做洗澡美容</label>
                 </div>
                 <div id="hotelBathSubPanel" class="hidden pt-3 border-t border-[#EFE8DE] space-y-3">
-                    <div>
-                        <label class="text-[11px] font-bold text-textBrown block mb-1">請選擇退宿美容/洗澡項目 *</label>
-                        <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700">
-                        </select>
-                    </div>
+                    <select id="hotelBathMainService" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700"></select>
                 </div>
             </div>
         </div>
-
-        <!-- 毛孩履歷卡片區塊 (含照片上傳) -->
+        <!-- 毛孩履歷卡片區塊 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 md:p-7 shadow-sm space-y-6">
             <div class="text-[12px] font-bold text-[#B2977D] tracking-widest uppercase flex justify-between items-center border-b border-[#EFE8DE] pb-3">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-paw text-[#CBB39C]"></i> PET PROFILE / 毛孩詳細履歷</span>
@@ -258,8 +204,7 @@
                 <i class="fa-solid fa-plus text-[10px]"></i> 新增下一隻毛孩資料與預約項目
             </button>
         </div>
-
-        <!-- 指定美容師與其他需求 -->
+        <!-- 指定美容師與需求 -->
         <div class="app-card p-6 space-y-4">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#B2977D]"></div>
             <h3 class="font-bold text-textBrown flex items-center gap-2 text-[15px]"><i class="fa-solid fa-user-check text-[#B2977D]"></i> 指定美容師與其他需求</h3>
@@ -290,13 +235,10 @@
                 </div>
             </div>
         </div>
-
-        <!-- 日期與時段選擇 -->
+        <!-- 美容進場日期與時段選擇 -->
         <div class="app-card p-6" id="dateTimeCard">
             <div class="absolute top-0 left-0 w-2 h-full bg-[#CBB39C]"></div>
-            <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]" id="dateTimeCardTitle">
-                <i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段
-            </h3>
+            <h3 class="font-bold text-textBrown mb-3.5 flex items-center gap-2 text-[15px]" id="dateTimeCardTitle"><i class="fas fa-calendar-alt text-[#CBB39C]"></i> 選擇進場日期與時段</h3>
             <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs mb-4">
                 <div class="flex justify-between items-center mb-3 px-2">
                     <i class="fas fa-chevron-left text-textBrown cursor-pointer font-bold p-1 hover:text-[#CBB39C]" onclick="changeFrontMonth(-1)"></i>
@@ -309,41 +251,39 @@
                 <div class="grid grid-cols-7 gap-y-2.5 gap-x-1.5 text-center text-[13px] text-textBrown font-bold" id="frontCalGrid"></div>
             </div>
             <h3 class="font-bold text-textBrown mb-2.5 text-[13px]" id="timeSlotSubTitle">選取進場時段</h3>
-            <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs" id="timeSlotContainer">
-                <div class="text-xs text-gray-400 text-center py-4">請先點選上方日期</div>
-            </div>
+            <div class="bg-white rounded-2xl p-3.5 border border-[#EFE8DE] shadow-xs" id="timeSlotContainer"><div class="text-xs text-gray-400 text-center py-4">請先點選上方日期</div></div>
         </div>
-
-        <!-- 活動方案與折抵（動態從試算表讀取 B16 規則） -->
+        <!-- 活動方案與折抵/加購選擇 -->
         <div class="app-card p-6 space-y-4 bg-[#FAF7F2]">
             <h3 class="font-bold text-[#5C5043] flex items-center gap-2 text-sm"><i class="fa-solid fa-tags text-[#CBB39C]"></i> 本月活動方案與折抵/加購選擇</h3>
             
             <div id="packageRulesDynamicBox" class="bg-amber-50/90 border border-amber-200/80 rounded-2xl p-3.5 text-xs text-amber-900 leading-relaxed space-y-1.5 font-medium">
-                <div class="font-black text-amber-900 text-xs flex items-center gap-1">
-                    <i class="fa-solid fa-circle-info text-amber-700"></i> 包卡規則與說明：
-                </div>
+                <div class="font-black text-amber-900 text-xs flex items-center gap-1"><i class="fa-solid fa-circle-info text-amber-700"></i> 包卡使用規則與說明：</div>
                 <p id="packageRuleContentText">讀取雲端規則中...</p>
             </div>
-
+            
             <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
-                <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">1. 使用已有卡額折抵本次預約：</label>
+                <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">1. 現場加購方案選擇：</label>
+                <div class="space-y-2">
+                    <select id="buyNewPackageSelect" onchange="onNewPackageSelectChange()" class="text-input text-xs font-bold text-gray-700"><option value="none" data-price="0">不加購包卡</option></select>
+                    <select id="buyNewDepositSelect" onchange="onNewDepositSelectChange()" class="text-input text-xs font-bold text-gray-700"><option value="none" data-price="0">不加購儲值</option></select>
+                </div>
+            </div>
+            <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
+                <label class="text-xs font-black text-textBrown block border-b pb-1.5 border-gray-100">2. 使用已購/當下加購之方案扣抵本次預約：</label>
                 <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
                     <input type="checkbox" id="useExistingCard" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
-                    <span id="useCardLabelText">使用已購包卡扣抵 (💡 請先於上方輸入電話並帶入)</span>
+                    <span id="useCardLabelText">使用包卡扣抵 (💡 請先帶入電話或選擇加購)</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-gray-700">
-                    <input type="checkbox" id="useExistingDeposit" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox">
-                    <span id="useDepositLabelText">使用已有儲值金扣抵本次消費 (💡 請先於上方輸入電話並帶入)</span>
+                <label class="flex items-start gap-2 cursor-pointer text-xs font-bold text-gray-700">
+                    <input type="checkbox" id="useExistingDeposit" disabled onchange="calculateBookingTotalPriceEngine()" class="addon-checkbox mt-0.5">
+                    <div>
+                        <span id="useDepositLabelText">使用儲值金扣抵 (💡 請先帶入電話或選擇加購)</span>
+                        <div class="text-[10px] text-amber-800 font-normal mt-0.5">※ 使用儲值金扣抵時，會以結單金額去折扣並折抵</div>
+                    </div>
                 </label>
-            </div>
-            <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
-                <select id="buyNewPackageSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700"><option value="none" data-price="0">不加購包卡</option></select>
-            </div>
-            <div class="bg-white p-3.5 rounded-2xl border border-[#EFE8DE] space-y-2">
-                <select id="buyNewDepositSelect" onchange="calculateBookingTotalPriceEngine()" class="text-input text-xs font-bold text-gray-700"><option value="none" data-price="0">不加購儲值</option></select>
             </div>
         </div>
-
         <!-- 預算計價即時試算 -->
         <div class="app-card p-6 bg-gradient-to-br from-[#FAF7F2] to-white border-2 border-[#CBB39C]/40 shadow-sm space-y-3">
             <h3 class="font-black text-textBrown flex items-center justify-between text-[15px] border-b border-[#EFE8DE] pb-2.5">
@@ -352,53 +292,51 @@
             </h3>
             
             <div class="space-y-2.5 text-xs text-gray-600">
-                <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1">
+                <div id="summaryMainServiceCard" class="bg-amber-100/70 p-3 rounded-2xl border border-amber-200/80 space-y-1.5">
                     <div class="flex justify-between items-center font-bold text-amber-900">
                         <span>1. 施作主項目原價預估區間：</span>
                         <span class="font-black text-sm text-amber-900" id="summaryOriginalRange">$0</span>
                     </div>
+                    <!-- 住宿天數與餐費細項 -->
+                    <div id="summaryBoardingDetailSubRow" class="hidden text-[11px] font-bold text-amber-900 bg-amber-50/90 p-2 rounded-xl border border-amber-200/80">
+                        <span id="summaryBoardingDetailText">--</span>
+                    </div>
+                    <!-- 主服務項目細項 -->
+                    <div id="summaryMainItemDetailRow" class="hidden flex justify-between items-center text-amber-900/90 font-bold text-[11px] pt-1 border-t border-amber-200/60">
+                        <span id="summaryMainItemNameText">（主服務項目：）</span>
+                        <span class="font-black" id="summaryMainItemPriceText">$0</span>
+                    </div>
+                    <!-- 專屬加購護理細項 -->
+                    <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-amber-800 font-bold text-[11px]">
+                        <span id="summaryAddonNameText">（專屬加購護理：）</span>
+                        <span class="font-black" id="summaryAddonPriceText">+$0</span>
+                    </div>
+                    <!-- 退宿加做洗澡美容項目 -->
+                    <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2 rounded-xl border border-amber-200 text-[11px]">
+                        <span id="summaryHotelBathNameText">（退宿加做美容洗澡：）</span>
+                        <span class="font-black" id="summaryHotelBathPriceText">+$0</span>
+                    </div>
                 </div>
-
-                <div id="summaryMainItemDetailRow" class="hidden flex justify-between items-center text-textBrown font-bold px-1">
-                    <span id="summaryMainItemNameText">（主服務項目：）</span>
-                    <span class="font-black" id="summaryMainItemPriceText">$0</span>
-                </div>
-
-                <div id="summaryAddonDetailRow" class="hidden flex justify-between items-center text-[#B2977D] font-bold px-1">
-                    <span>（包含專屬加購護理：）</span>
-                    <span class="font-black" id="summaryAddonPriceText">+$0</span>
-                </div>
-
-                <div id="summaryHotelBathRow" class="hidden flex justify-between items-center text-amber-900 font-bold bg-amber-50/80 p-2.5 rounded-xl border border-amber-200">
-                    <span>退宿加做洗澡美容項目：</span>
-                    <span id="summaryHotelBathPriceText">$0</span>
-                </div>
-
                 <div class="flex justify-between items-center text-rose-500 font-bold px-1">
                     <span>2. 本次折抵/優惠扣抵：</span>
                     <span class="font-black" id="summaryDiscountText">無折抵</span>
                 </div>
-
                 <div id="summaryNewBuyRow" class="hidden flex justify-between items-center text-amber-800 font-bold bg-amber-50 p-2.5 rounded-xl border border-amber-200/60">
                     <span>3. 現場加購方案費用：</span>
                     <span id="summaryNewBuyPrice">+$0</span>
                 </div>
             </div>
-
-            <!-- 扣除後剩餘包卡次數試算 -->
             <div id="cardRemainDeductNotice" class="text-[11px] font-bold text-emerald-800 bg-emerald-50 p-2 rounded-xl border border-emerald-200/60 hidden text-right">
                 扣除本次預約後，剩餘包卡：<span id="afterDeductCardCountShow" class="font-black text-emerald-900">0</span> 次
             </div>
-
             <div class="border-t border-[#EFE8DE] pt-3 flex justify-between items-center">
                 <span class="font-black text-sm text-textBrown">現場預估應付金額：</span>
-                <span class="text-xl font-black text-[#B2977D]" id="bookingTotalPriceDisplay">--</span>
+                <span class="text-xl font-black text-[#B2977D]" id="bookingTotalPriceDisplay">$0</span>
             </div>
         </div>
-
         <!-- 條款與簽名 -->
         <div class="bg-white border border-[#EFE8DE] rounded-[2rem] p-6 shadow-sm space-y-4">
-            <div class="text-[11px] font-bold text-[#B2977D] block tracking-widest uppercase"><i class="fa-solid fa-file-signature text-[#CBB39C] mr-1"></i> Verification / 法律條款與數位簽署</div>
+            <div class="text-[11px] font-bold text-[#B2977D] block tracking-widest uppercase"><i class="fa-solid fa-file-signature text-[#CBB39C] mr-1"></i> 法律條款與數位簽署</div>
             <div onclick="openTermsModalWindow('main')" class="p-4 border border-[#EFE8DE] rounded-2xl flex justify-between items-center cursor-pointer bg-white">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-xl bg-amber-50 text-[#B2977D] flex items-center justify-center"><i class="fa-regular fa-file-lines"></i></div>
@@ -418,7 +356,6 @@
                 <div class="border border-[#EFE8DE] rounded-2xl p-3.5 flex items-start gap-2.5 cursor-pointer" onclick="toggleFinalCheckUIEngine()">
                     <div id="finalCheckCircle" class="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-check"></i></div>
                     <span class="text-[11px] leading-relaxed text-gray-500 font-bold"> 本人已詳細閱讀、充分理解並同意上述所有契約條款。 * </span>
-                    <input type="checkbox" id="finalCheck" required class="hidden">
                 </div>
                 <div class="border border-[#EFE8DE] rounded-2xl p-4 space-y-2 bg-white">
                     <div class="flex justify-between items-center">
@@ -431,81 +368,157 @@
                 </div>
             </div>
         </div>
-
-        <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl text-sm shadow-md block font-black">
+        <!-- 社群按鈕與營業時間區塊 -->
+        <div class="flex justify-center gap-6 pt-4">
+            <a href="https://lin.ee/q19SMMx5" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
+                <i class="fab fa-line text-[26px]"></i>
+            </a>
+            <a href="https://www.instagram.com/zuoyue439?igsh=YzFoOWkwZzdxamw3" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
+                <i class="fab fa-instagram text-[24px]"></i>
+            </a>
+            <a href="https://maps.app.goo.gl/FbAXrTmoWhUDsLgn7" target="_blank" class="w-14 h-14 bg-[#FAF7F2] rounded-full flex items-center justify-center border-2 border-[#CBB39C] shadow-sm active:scale-95 transition text-[#5C5043] hover:bg-[#CBB39C] hover:text-white">
+                <i class="fas fa-map-marker-alt text-[22px]"></i>
+            </a>
+        </div>
+        <div class="text-center text-[12px] text-textBrown font-bold tracking-wider pt-1">
+            <i class="fas fa-location-dot mr-1 text-[#CBB39C]"></i> 高雄市鳳山區南京路439號
+        </div>
+        
+        <div class="text-center mb-4 text-[12px] text-gray-500 font-bold tracking-widest">
+            <i class="far fa-clock mr-1"></i> 營業時間 9:00-19:00 (最晚進場 17:00)
+        </div>
+        <!-- 送出預約申請按鈕 -->
+        <button id="submitBtn" onclick="processBooking()" class="w-full bg-[#CBB39C] hover:bg-[#B2977D] text-white font-bold py-4 rounded-xl transition duration-300 text-sm shadow-md text-center block font-black">
             送出預約申請
         </button>
+        <!-- 現場臨櫃家長專區 -->
+        <div class="max-w-md mx-auto px-4 pt-4 pb-2">
+            <div class="bg-[#FAF7F2] border border-dashed border-[#CBB39C] rounded-2xl p-4 text-center shadow-sm max-w-[90%] mx-auto scale-95">
+                <h4 class="text-[12px] font-black text-[#5C5043] mb-0.5">
+                    <i class="fa-solid fa-file-signature text-[#CBB39C]"></i> 現場臨櫃家長專區
+                </h4>
+                <p class="text-[10px] text-gray-400 mb-2">代客建檔之家長由此進入完成數位簽署</p>
+                <a href="https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec?page=signature"
+                   target="_blank"
+                   class="w-full bg-[#CBB39C] text-white py-2.5 rounded-xl text-[12px] font-black tracking-widest shadow-sm active:scale-95 transition block text-center select-none cursor-pointer">
+                    ⚡ 點此補簽數位合約
+                </a>
+            </div>
+        </div>
+        <!-- 條款 Modal -->
+        <div id="termsModal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-md bg-black/50 transition-all">
+            <div class="bg-white w-full max-w-md h-[80vh] rounded-[2.5rem] flex flex-col overflow-hidden shadow-2xl border border-[#EFE8DE]/50" id="modalContainer">
+                <div id="modalTitle" class="p-5 font-bold text-center border-b border-gray-100 text-[15px] text-[#211c1b]"> 📜 合約條款與審閱細則 </div>
+                <div id="modalBody" class="p-6 flex-1 overflow-y-auto text-xs leading-relaxed text-gray-500 whitespace-pre-line bg-gray-50/50"> 載入中... </div>
+                <div class="p-5 border-t border-gray-100 bg-white">
+                    <button type="button" id="modalCloseBtn" disabled onclick="closeTermsModalWindow()" class="w-full bg-gray-200 text-gray-400 p-4 rounded-2xl text-xs font-bold uppercase"> 請向下滑動閱讀完整條款 </button>
+                </div>
+            </div>
+        </div>
+        <!-- Lightbox Modal -->
+        <div id="imageLightboxModal" class="fixed inset-0 z-[10000] hidden bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onclick="closeImageLightboxModal()">
+            <img id="lightboxImageEl" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
+            <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
+        </div>
     </div>
-
-    <!-- Lightbox 放大檢視 Modal -->
-    <div id="imageLightboxModal" class="fixed inset-0 z-[10000] hidden bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm" onclick="closeImageLightboxModal()">
-        <img id="lightboxImageEl" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
-        <div id="lightboxTitleEl" class="text-white text-xs font-bold mt-3 text-center"></div>
+    <!-- 頁尾署名 -->
+    <div class="text-center mt-10 mb-4 text-sibylLight text-[11px] tracking-widest uppercase">
+        Designed by <a href="https://www.heysibyl.com/" target="_blank" class="font-bold hover:underline">Sibyl | 數位管家</a>
     </div>
-
-    <!-- JS LIFF 核心啟動與傳輸 -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwMuJLsScDH28Rre5W50dn4rpi65QyAJCf9ijCxZWQemjKiBhRTp-x3Kak80cByuaRyUg/exec";
-        const MY_LIFF_ID = "YOUR_LIFF_ID_HERE"; // 🌟 請替換您的 LIFF ID
-        let userLineUID = "";
         let activeServiceType = 'grooming'; let systemBufferHours = 1; 
-        let currentOffDatesList = []; allServices = []; groomerList = []; allPhotos = [];
+        let currentOffDatesList = []; let allServices = []; let groomerList = []; let allPhotos = [];
         let selectedDateStr = ''; let selectedTimeStr = ''; 
+        let selectedHotelCheckInDateStr = ''; let selectedHotelCheckInTimeStr = '';
+        let selectedHotelCheckOutDateStr = ''; let selectedHotelCheckOutTimeStr = '';
+        let clientDetectedLineUID = "";
+        
         let currentCalDate = new Date(), calYear = currentCalDate.getFullYear(), calMonth = currentCalDate.getMonth();
+        let currentHotelInCalDate = new Date(), hotelInCalYear = currentHotelInCalDate.getFullYear(), hotelInCalMonth = currentHotelInCalDate.getMonth();
+        let currentHotelOutCalDate = new Date(), hotelOutCalYear = currentHotelOutCalDate.getFullYear(), hotelOutCalMonth = currentHotelOutCalDate.getMonth();
         let mainRead = false, riskRead = false, currentTermType = 'main', isCheckedFinal = false, drawingState = false;
         let cachedContracts = { mainContract: "雲端服務契約...", riskContract: "高風險告知..." };
         let petCount = 0; let cachedCustomerPetsData = [];
         let isPortfolioExpanded = false; let currentSliderIndex = 0; let totalSliderImagesCount = 0;
-        let userCardRemainCount = 0; let userDepositBalance = 0; let globalFrontShiftsCache = {};
+        let userCardRemainCount = 0; let userDepositBalance = 0; 
+        let globalFrontShiftsCache = {}; let globalHotelShiftsCache = {};
         const canvas = document.getElementById('sigCanvas'); const ctx = canvas ? canvas.getContext('2d') : null;
         const PRICE_RANGE_MAP = { "洗澡_小型犬": "450起", "大美容_小型犬": "900-1200", "全身手剪_小型犬": "1300-1600" };
 
-        function initLineLiffEngine() {
-            if (typeof liff !== 'undefined' && MY_LIFF_ID && MY_LIFF_ID !== "YOUR_LIFF_ID_HERE") {
-                liff.init({ liffId: MY_LIFF_ID }).then(() => {
-                    if (liff.isLoggedIn()) {
-                        liff.getProfile().then(profile => {
-                            userLineUID = profile.userId;
-                            document.getElementById('liffBadgeInfo').classList.remove('hidden');
-                            document.getElementById('liffUserNameShow').innerText = profile.displayName;
-                            if (document.getElementById('lineName')) {
-                                document.getElementById('lineName').value = profile.displayName;
-                            }
-                        });
-                    } else { liff.login(); }
-                }).catch(err => console.log("LIFF Init Error:", err));
-            }
-        }
-
-        function callGasGet(action, params = {}) {
-            return new Promise((resolve, reject) => {
+        function callGasGet(action, params = {}, timeoutMs = 12000) {
+            return new Promise((resolve) => {
                 let callbackName = 'gasCallback_' + Math.round(100000 * Math.random());
-                window[callbackName] = function(data) { resolve(data); let el = document.getElementById(callbackName); if(el) el.remove(); delete window[callbackName]; };
-                let url = `${API_URL}?action=${action}&callback=${callbackName}`;
+                let timer = setTimeout(() => {
+                    let el = document.getElementById(callbackName); if(el) el.remove();
+                    delete window[callbackName];
+                    resolve(null);
+                }, timeoutMs);
+                window[callbackName] = function(data) {
+                    clearTimeout(timer);
+                    resolve(data);
+                    let el = document.getElementById(callbackName); if(el) el.remove();
+                    delete window[callbackName];
+                };
+                let url = `${API_URL}?action=${action}&callback=${callbackName}&_t=${new Date().getTime()}`;
                 for (let key in params) { url += `&${key}=${encodeURIComponent(params[key])}`; }
-                let script = document.createElement('script'); script.src = url; script.id = callbackName;
-                script.onerror = () => reject(new Error("連線超時"));
+                let script = document.createElement('script'); script.src = url; script.id = callbackName; script.async = true;
+                script.onerror = () => { clearTimeout(timer); resolve(null); };
                 document.body.appendChild(script);
             });
         }
+        const CacheStore = {
+            set: (key, val) => { try { localStorage.setItem('zy_cache_' + key, JSON.stringify(val)); } catch(e) {} },
+            get: (key) => { try { return JSON.parse(localStorage.getItem('zy_cache_' + key)); } catch(e) { return null; } }
+        };
 
-        function initPage() {
-            initLineLiffEngine();
-            setTimeout(() => {
-                callGasGet('getFrontInitialBundle').then(bundle => {
-                    if (bundle) {
-                        if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
-                        if (bundle.services) setupServiceDropdownsAndData(bundle.services);
-                        if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
-                        if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
-                        if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
-                        if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
-                        if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
-                        if (bundle.packageRule) document.getElementById('packageRuleContentText').innerHTML = bundle.packageRule.replace(/\n/g, '<br>');
+        // 🟢【LINE LIFF 核心 SDK 段落 2/2】靜默啟動與 UID 鎖定
+        function initPageFast() {
+            renderPetFormCards();
+            
+            const MY_LIFF_ID = "2010817366-ytcuCFKz";
+            if (typeof liff !== "undefined" && MY_LIFF_ID !== "") {
+                liff.init({ liffId: MY_LIFF_ID }).then(() => {
+                    if (liff.isLoggedIn()) {
+                        liff.getProfile().then(profile => {
+                            if (profile && profile.userId) {
+                                clientDetectedLineUID = profile.userId;
+                                const lineNameInput = document.getElementById('lineName');
+                                if (lineNameInput && lineNameInput.value.trim() === "") {
+                                    lineNameInput.value = profile.displayName || "";
+                                }
+                            }
+                        }).catch(err => console.error("Profile 撈取失敗", err));
                     }
-                    renderFrontCalendarFast();
-                });
-            }, 50);
+                }).catch(err => console.error("LIFF 初始化失敗", err));
+            }
+
+            const cachedBundle = CacheStore.get('initialBundle');
+            if (cachedBundle) applyBundleDataUI(cachedBundle);
+            callGasGet('getFrontInitialBundle', {}, 12000).then(bundle => {
+                if (bundle && !bundle.error) {
+                    CacheStore.set('initialBundle', bundle);
+                    applyBundleDataUI(bundle);
+                }
+            });
+        }
+
+        function applyBundleDataUI(bundle) {
+            if (!bundle) return;
+            if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
+            if (bundle.services) setupServiceDropdownsAndData(bundle.services);
+            if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
+            if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
+            if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
+            if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
+            if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
+            if (bundle.fullHotelShiftsMap) globalHotelShiftsCache = bundle.fullHotelShiftsMap;
+            if (bundle.packageRule) document.getElementById('packageRuleContentText').innerHTML = bundle.packageRule.replace(/\n/g, '<br>');
+            requestAnimationFrame(() => {
+                renderFrontCalendarFast();
+                renderHotelInCalendarFast();
+                renderHotelOutCalendarFast();
+            });
         }
 
         function setupServiceDropdownsAndData(data) {
@@ -519,11 +532,10 @@
             let depHtml = `<option value="none" data-price="0" data-discount="1" data-bonus="0">不加購儲值</option>`;
             let bathHtml = `<option value="" disabled selected>請選擇退宿加做之美容洗澡項目</option>`;
             let mealOptionsHtml = `
-                <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
-                    <input type="radio" name="mealPlanOption" value="NONE" data-price="0" checked onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
-                    <span>自備飼料 / 不需要供餐 ($0)</span>
-                </label>`;
-
+            <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
+                <input type="radio" name="mealPlanOption" value="NONE" data-price="0" checked onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
+                <span>自備飼料 / 不需要供餐 ($0)</span>
+            </label>`;
             allServices.forEach(s => {
                 let cat = (s.category || '').toString();
                 let name = (s.service || '').toString();
@@ -534,21 +546,318 @@
                 } else if (cat.includes('儲值') || name.includes('儲值')) {
                     depHtml += `<option value="${name}" data-price="${parseInt(priceRaw)||0}">${name}</option>`;
                 } else if (cat.includes('供餐')) {
+                    let isTwoMeals = name.includes('一日兩餐');
+                    let noteText = isTwoMeals ? '（早晚兩餐放飯）' : '（僅提供一餐）';
                     mealOptionsHtml += `
-                        <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
-                            <input type="radio" name="mealPlanOption" value="${name}" data-price="${parseInt(priceRaw)||0}" onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
-                            <span>${name} ($${priceRaw}/餐)</span>
-                        </label>`;
+                    <label class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-[#EFE8DE] text-xs font-bold cursor-pointer">
+                        <input type="radio" name="mealPlanOption" value="${name}" data-price="${parseInt(priceRaw)||0}" onchange="calculateBookingTotalPriceEngine()" class="accent-[#CBB39C]">
+                        <span>${name} ($${priceRaw}/單餐 ${noteText})</span>
+                    </label>`;
                 } else if (!cat.includes('加購') && !cat.includes('住宿')) {
                     bathHtml += `<option value="${name}" data-raw-price="${priceRaw}">${name} ($${priceRaw})</option>`;
                 }
             });
-
             if (pkgSelect) pkgSelect.innerHTML = pkgHtml;
             if (depSelect) depSelect.innerHTML = depHtml;
             if (bathSelect) bathSelect.innerHTML = bathHtml;
             if (dynamicMealBox) dynamicMealBox.innerHTML = mealOptionsHtml;
+            
             renderPetFormCards();
+        }
+
+        function onNewPackageSelectChange() {
+            let pkgSelect = document.getElementById('buyNewPackageSelect');
+            let price = pkgSelect ? parseInt(pkgSelect.options[pkgSelect.selectedIndex]?.getAttribute('data-price') || 0) : 0;
+            let cardCb = document.getElementById('useExistingCard');
+            
+            if (price > 0 || userCardRemainCount > 0) {
+                cardCb.disabled = false;
+                if (price > 0) cardCb.checked = true;
+            } else {
+                cardCb.disabled = true;
+                cardCb.checked = false;
+            }
+            calculateBookingTotalPriceEngine();
+        }
+
+        function onNewDepositSelectChange() {
+            let depSelect = document.getElementById('buyNewDepositSelect');
+            let price = depSelect ? parseInt(depSelect.options[depSelect.selectedIndex]?.getAttribute('data-price') || 0) : 0;
+            let depCb = document.getElementById('useExistingDeposit');
+            
+            if (price > 0 || userDepositBalance > 0) {
+                depCb.disabled = false;
+                if (price > 0) depCb.checked = true;
+            } else {
+                depCb.disabled = true;
+                depCb.checked = false;
+            }
+            calculateBookingTotalPriceEngine();
+        }
+
+        function calculateBoardingMealsCount(checkInStr, checkOutStr, isOneMealPerDay) {
+            if (!checkInStr || !checkOutStr) return 0;
+            let checkIn = new Date(checkInStr);
+            let checkOut = new Date(checkOutStr);
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 0;
+            let totalMealSlotsCount = 0;
+            let dailyMealSlotsMap = {};
+            
+            let cur = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate());
+            let endDate = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate());
+            while (cur <= endDate) {
+                let year = cur.getFullYear(), month = cur.getMonth(), date = cur.getDate();
+                let dateKey = `${year}-${month + 1}-${date}`;
+                dailyMealSlotsMap[dateKey] = 0;
+                let breakfastTime = new Date(year, month, date, 9, 0, 0);
+                let dinnerTime = new Date(year, month, date, 18, 0, 0);
+                if (breakfastTime >= checkIn && breakfastTime <= checkOut) {
+                    totalMealSlotsCount++;
+                    dailyMealSlotsMap[dateKey]++;
+                }
+                if (dinnerTime >= checkIn && dinnerTime <= checkOut) {
+                    totalMealSlotsCount++;
+                    dailyMealSlotsMap[dateKey]++;
+                }
+                cur.setDate(cur.getDate() + 1);
+            }
+            if (isOneMealPerDay) {
+                let activeDaysWithMeals = 0;
+                for (let d in dailyMealSlotsMap) {
+                    if (dailyMealSlotsMap[d] > 0) activeDaysWithMeals++;
+                }
+                return activeDaysWithMeals;
+            } else {
+                return totalMealSlotsCount;
+            }
+        }
+
+        function calculateBoardingDaysCount(checkInStr, checkOutStr) {
+            if (!checkInStr || !checkOutStr) return 1;
+            let checkIn = new Date(checkInStr);
+            let checkOut = new Date(checkOutStr);
+            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) return 1;
+            
+            let dIn = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate());
+            let dOut = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate());
+            
+            let diffMs = dOut.getTime() - dIn.getTime();
+            let nights = Math.round(diffMs / (1000 * 60 * 60 * 24));
+            return Math.max(1, nights);
+        }
+
+        function calculateBookingTotalPriceEngine() {
+            let boardingMin = 0, boardingMax = 0; 
+            let mainServiceMin = 0, mainServiceMax = 0; 
+            let addonMin = 0, addonMax = 0; 
+            let hotelBathPriceMin = 0, hotelBathPriceMax = 0; 
+            let boardingMealPriceTotal = 0; 
+            let mainItemNamesArr = [];
+            let addonNamesArr = [];
+            let requiredCardDeductCount = 0;
+            
+            document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
+            
+            let checkInCombinedStr = (selectedHotelCheckInDateStr && selectedHotelCheckInTimeStr) ? `${selectedHotelCheckInDateStr}T${selectedHotelCheckInTimeStr}` : '';
+            let checkOutCombinedStr = (selectedHotelCheckOutDateStr && selectedHotelCheckOutTimeStr) ? `${selectedHotelCheckOutDateStr}T${selectedHotelCheckOutTimeStr}` : '';
+            
+            let boardingDaysMultiplier = 1;
+            if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
+                boardingDaysMultiplier = calculateBoardingDaysCount(checkInCombinedStr, checkOutCombinedStr);
+            }
+            
+            const container = document.getElementById('dynamicPetContainer');
+            if (container) {
+                for (let i = 0; i < container.children.length; i++) {
+                    const card = container.children[i];
+                    
+                    if (activeServiceType === 'grooming') {
+                        const mainSelect = card.querySelector('.p-main-service');
+                        if (mainSelect && mainSelect.selectedIndex >= 0) {
+                            const opt = mainSelect.options[mainSelect.selectedIndex];
+                            const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
+                            let sName = opt.value || '';
+                            if (sName) {
+                                mainItemNamesArr.push(sName);
+                                if (sName.includes('全身手剪')) requiredCardDeductCount += 3;
+                                else if (sName.includes('大美容')) requiredCardDeductCount += 2;
+                                else requiredCardDeductCount += 1;
+                            }
+                            if (priceRaw.includes('起')) {
+                                mainServiceMin += parseInt(priceRaw.replace('起','')) || 0;
+                            } else if (priceRaw.includes('-')) {
+                                let parts = priceRaw.split('-');
+                                mainServiceMin += parseInt(parts[0]) || 0;
+                                mainServiceMax += parseInt(parts[1]) || 0;
+                            } else {
+                                let p = parseInt(priceRaw) || 0;
+                                mainServiceMin += p; mainServiceMax += p;
+                            }
+                        }
+                    } else {
+                        card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
+                            const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
+                            let cleanVal = cb.value.split('(')[0].trim();
+                            if (cb.value) mainItemNamesArr.push(cleanVal);
+                            
+                            let pMin = 0, pMax = 0;
+                            if (priceRaw.includes('起')) {
+                                pMin = parseInt(priceRaw.replace('起','')) || 0;
+                            } else if (priceRaw.includes('-')) {
+                                let parts = priceRaw.split('-');
+                                pMin = parseInt(parts[0]) || 0;
+                                pMax = parseInt(parts[1]) || 0;
+                            } else {
+                                let p = parseInt(priceRaw) || 0;
+                                pMin = p; pMax = p;
+                            }
+                            
+                            if (cleanVal.includes('住宿') && !cleanVal.includes('洗澡') && !cleanVal.includes('美容') && !cleanVal.includes('手剪')) {
+                                boardingMin += pMin * boardingDaysMultiplier;
+                                boardingMax += (pMax > 0 ? pMax : pMin) * boardingDaysMultiplier;
+                            } else {
+                                mainServiceMin += pMin;
+                                mainServiceMax += (pMax > 0 ? pMax : pMin);
+                                if (cleanVal.includes('全身手剪')) requiredCardDeductCount += 3;
+                                else if (cleanVal.includes('大美容')) requiredCardDeductCount += 2;
+                                else requiredCardDeductCount += 1;
+                            }
+                        });
+                    }
+                    
+                    card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                        let priceRaw = (cb.getAttribute('data-price') || '0').toString();
+                        let pMin = 0, pMax = 0;
+                        if (priceRaw.includes('起')) {
+                            pMin = parseInt(priceRaw.replace('起','')) || 0;
+                        } else if (priceRaw.includes('-')) {
+                            let parts = priceRaw.split('-');
+                            pMin = parseInt(parts[0]) || 0;
+                            pMax = parseInt(parts[1]) || 0;
+                        } else {
+                            let p = parseInt(priceRaw) || 0;
+                            pMin = p; pMax = p;
+                        }
+                        addonMin += pMin; 
+                        addonMax += (pMax > 0 ? pMax : pMin);
+                        addonNamesArr.push(cb.value);
+                    });
+                }
+            }
+            if (activeServiceType === 'boarding') {
+                let bathNeedVal = document.querySelector('input[name="hotelBathNeed"]:checked')?.value || 'NO';
+                if (bathNeedVal === 'YES') {
+                    let bathSelect = document.getElementById('hotelBathMainService');
+                    if (bathSelect && bathSelect.selectedIndex >= 0) {
+                        let opt = bathSelect.options[bathSelect.selectedIndex];
+                        let priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
+                        let bathName = opt.value || '';
+                        if (bathName) {
+                            let p = parseInt(priceRaw) || 0;
+                            hotelBathPriceMin = p; hotelBathPriceMax = p;
+                        }
+                    }
+                }
+            }
+            let mealDetailText = '';
+            if (activeServiceType === 'boarding' && checkInCombinedStr && checkOutCombinedStr) {
+                let mealRadio = document.querySelector('input[name="mealPlanOption"]:checked');
+                let unitMealPrice = mealRadio ? parseInt(mealRadio.getAttribute('data-price') || 0) : 0;
+                let selectedMealType = mealRadio ? mealRadio.value : '';
+                let isOneMeal = selectedMealType.includes('一日一餐');
+                let calculatedMealCount = calculateBoardingMealsCount(checkInCombinedStr, checkOutCombinedStr, isOneMeal);
+                if (unitMealPrice > 0 && calculatedMealCount > 0) {
+                    boardingMealPriceTotal = calculatedMealCount * unitMealPrice;
+                    mealDetailText = `住宿共 ${boardingDaysMultiplier} 晚 + 安排供餐 ${calculatedMealCount} 餐 ($${boardingMealPriceTotal.toLocaleString()})`;
+                } else {
+                    mealDetailText = `住宿共 ${boardingDaysMultiplier} 晚 (自備飼料/不供餐)`;
+                }
+            }
+            
+            let totalMainMin = boardingMin + mainServiceMin + addonMin + boardingMealPriceTotal + hotelBathPriceMin;
+            let totalMainMax = (boardingMax > 0 ? boardingMax : boardingMin) + (mainServiceMax > 0 ? mainServiceMax : mainServiceMin) + (addonMax > 0 ? addonMax : addonMin) + boardingMealPriceTotal + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin);
+            
+            document.getElementById('summaryOriginalRange').innerText = (totalMainMax > totalMainMin) ? `$${totalMainMin.toLocaleString()} ~ $${totalMainMax.toLocaleString()}` : `$${totalMainMin.toLocaleString()}`;
+            
+            const boardingSubRow = document.getElementById('summaryBoardingDetailSubRow');
+            if (activeServiceType === 'boarding' && boardingDaysMultiplier > 0) {
+                boardingSubRow.classList.remove('hidden');
+                document.getElementById('summaryBoardingDetailText').innerText = mealDetailText;
+            } else {
+                boardingSubRow.classList.add('hidden');
+            }
+            
+            const mainItemRow = document.getElementById('summaryMainItemDetailRow');
+            if (mainItemNamesArr.length > 0) {
+                mainItemRow.classList.remove('hidden');
+                document.getElementById('summaryMainItemNameText').innerText = `（主服務項目：${mainItemNamesArr.join(', ')}）`;
+                document.getElementById('summaryMainItemPriceText').innerText = (mainServiceMax > mainServiceMin) ? `$${mainServiceMin.toLocaleString()} ~ $${mainServiceMax.toLocaleString()}` : `$${mainServiceMin.toLocaleString()}`;
+            } else {
+                mainItemRow.classList.add('hidden');
+            }
+            
+            const addonRow = document.getElementById('summaryAddonDetailRow');
+            if (addonNamesArr.length > 0) {
+                addonRow.classList.remove('hidden');
+                document.getElementById('summaryAddonNameText').innerText = `（專屬加購護理：${addonNamesArr.join(', ')}）`;
+                document.getElementById('summaryAddonPriceText').innerText = (addonMax > addonMin) ? `+$${addonMin.toLocaleString()} ~ $${addonMax.toLocaleString()}` : `+$${addonMin.toLocaleString()}`;
+            } else {
+                addonRow.classList.add('hidden');
+            }
+            
+            const bathRow = document.getElementById('summaryHotelBathRow');
+            if (hotelBathPriceMin > 0) {
+                bathRow.classList.remove('hidden');
+                document.getElementById('summaryHotelBathPriceText').innerText = `+$${hotelBathPriceMin.toLocaleString()}`;
+            } else {
+                bathRow.classList.add('hidden');
+            }
+            
+            const pkgSelect = document.getElementById('buyNewPackageSelect');
+            const depSelect = document.getElementById('buyNewDepositSelect');
+            let pkgBuyPrice = pkgSelect ? parseInt(pkgSelect.options[pkgSelect.selectedIndex]?.getAttribute('data-price') || 0) : 0;
+            let depBuyPrice = depSelect ? parseInt(depSelect.options[depSelect.selectedIndex]?.getAttribute('data-price') || 0) : 0;
+            let totalNewBuyPrice = pkgBuyPrice + depBuyPrice;
+            const newBuyRow = document.getElementById('summaryNewBuyRow');
+            if (totalNewBuyPrice > 0) {
+                newBuyRow.classList.remove('hidden');
+                document.getElementById('summaryNewBuyPrice').innerText = `+$${totalNewBuyPrice.toLocaleString()}`;
+            } else {
+                newBuyRow.classList.add('hidden');
+            }
+            
+            let effectiveAvailableCards = userCardRemainCount + (pkgBuyPrice > 0 ? 6 : 0);
+            let cardCb = document.getElementById('useExistingCard');
+            let depCb = document.getElementById('useExistingDeposit');
+            
+            let payableMin = totalMainMin + totalNewBuyPrice;
+            let payableMax = totalMainMax + totalNewBuyPrice;
+            let noticeBox = document.getElementById('cardRemainDeductNotice');
+            
+            let discountDesc = [];
+            if (cardCb?.checked && effectiveAvailableCards > 0) {
+                let actualDeductCount = requiredCardDeductCount > 0 ? requiredCardDeductCount : 1;
+                if (effectiveAvailableCards >= actualDeductCount) {
+                    payableMin = (totalMainMin - mainServiceMin) + totalNewBuyPrice;
+                    payableMax = (totalMainMax - (mainServiceMax > 0 ? mainServiceMax : mainServiceMin)) + totalNewBuyPrice;
+                    discountDesc.push(`套用包卡扣抵 ${actualDeductCount} 次 (主服務折抵 $0)`);
+                    
+                    noticeBox.classList.remove('hidden');
+                    document.getElementById('afterDeductCardCountShow').innerText = (effectiveAvailableCards - actualDeductCount);
+                } else {
+                    cardCb.checked = false;
+                    noticeBox.classList.add('hidden');
+                }
+            } else {
+                noticeBox.classList.add('hidden');
+            }
+            
+            if (depCb?.checked) {
+                discountDesc.push(`套用儲值金扣抵 (結單實收折抵)`);
+            }
+            
+            document.getElementById('summaryDiscountText').innerText = discountDesc.length > 0 ? discountDesc.join(' + ') : "無折抵";
+            document.getElementById('bookingTotalPriceDisplay').innerText = (payableMax > payableMin && payableMax > 0) ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` : `$${payableMin.toLocaleString()}`;
         }
 
         function setupGroomerDropdown(list) {
@@ -568,8 +877,10 @@
         }
 
         function setupPortfolioData(data) {
-            if (data) { 
-                allPhotos = data; let categorySet = new Set(); categorySet.add("全部");
+            if (data && data.length > 0) { 
+                allPhotos = data; 
+                let categorySet = new Set(); 
+                categorySet.add("全部");
                 allPhotos.forEach(item => { if(item.category) categorySet.add(item.category); });
                 const tabContainer = document.getElementById('portfolioTabsContainer');
                 if (tabContainer) {
@@ -582,18 +893,248 @@
             } 
         }
 
+        function toggleAccordionWindow(targetId) {
+            const el = document.getElementById(targetId);
+            if (el) el.classList.toggle('hidden');
+        }
+
         function renderFrontCalendarFast() {
-            const monthTitle = document.getElementById('cal_year_month'); if(!monthTitle) return; monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
-            const grid = document.getElementById('frontCalGrid'); if(!grid) return; grid.innerHTML = '';
-            const firstDay = new Date(calYear, calMonth, 1).getDay(); const numDays = new Date(calYear, calMonth + 1, 0).getDate();
-            let today = new Date(); today.setHours(0,0,0,0); let html = '';
+            const monthTitle = document.getElementById('cal_year_month'); 
+            if(!monthTitle) return; 
+            monthTitle.innerText = `${calYear} 年 ${calMonth + 1} 月`;
+            
+            const grid = document.getElementById('frontCalGrid'); 
+            if(!grid) return; 
+            
+            const firstDay = new Date(calYear, calMonth, 1).getDay(); 
+            const numDays = new Date(calYear, calMonth + 1, 0).getDate();
+            let today = new Date(); today.setHours(0,0,0,0); 
+            let html = '';
+            
             for(let i=0; i<firstDay; i++) html += `<div class="py-2.5"></div>`;
             
+            let groomerSelect = document.getElementById('selectedGroomer');
+            let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+            let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
+            let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
+            
             for(let day=1; day<=numDays; day++) {
+                let cellDate = new Date(calYear, calMonth, day); 
                 let dateString = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
+                const isPast = cellDate < today;
+                let isClosed = currentOffDatesList.includes(dateString);
+                let hasOpenSlot = false;
+                
+                if (!isClosed && !isPast) {
+                    let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
+                    for (let s = 0; s < slots.length; s++) {
+                        let t = slots[s];
+                        if (groomerVal === '不指定' || groomerId === 'ALL') {
+                            for (let gKey in globalFrontShiftsCache) {
+                                if (gKey.includes(`_${dateString}_${t}`) && globalFrontShiftsCache[gKey] === true) {
+                                    hasOpenSlot = true; break;
+                                }
+                            }
+                        } else {
+                            let keyById = `${groomerId}_${dateString}_${t}`;
+                            let keyByName = `${groomerVal}_${dateString}_${t}`;
+                            if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) {
+                                hasOpenSlot = true; break;
+                            }
+                        }
+                        if (hasOpenSlot) break;
+                    }
+                }
+                
+                if (isPast || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : '';
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                } else if (dateString === selectedDateStr) {
+                    html += `<div class="py-2.5 bg-[#CBB39C] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectDate('${dateString}')">${day}</div>`;
+                } else {
+                    html += `<div class="py-2.5 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectDate('${dateString}')">${day}</div>`;
+                }
             }
             grid.innerHTML = html;
+        }
+
+        function renderHotelInCalendarFast() {
+            const monthTitle = document.getElementById('hotel_in_cal_year_month'); 
+            if(!monthTitle) return; 
+            monthTitle.innerText = `${hotelInCalYear} 年 ${hotelInCalMonth + 1} 月`;
+            
+            const grid = document.getElementById('hotelInCalGrid'); 
+            if(!grid) return; 
+            
+            const firstDay = new Date(hotelInCalYear, hotelInCalMonth, 1).getDay(); 
+            const numDays = new Date(hotelInCalYear, hotelInCalMonth + 1, 0).getDate();
+            let today = new Date(); today.setHours(0,0,0,0); 
+            let html = '';
+            
+            for(let i=0; i<firstDay; i++) html += `<div class="py-2"></div>`;
+            
+            for(let day=1; day<=numDays; day++) {
+                let cellDate = new Date(hotelInCalYear, hotelInCalMonth, day); 
+                let dateString = `${hotelInCalYear}-${String(hotelInCalMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const isPast = cellDate < today;
+                let isClosed = currentOffDatesList.includes(dateString);
+                let hasOpenSlot = false;
+                
+                if (!isClosed && !isPast) {
+                    let slots = ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+                    for (let s = 0; s < slots.length; s++) {
+                        let t = slots[s];
+                        if (globalHotelShiftsCache[`HOTEL_${dateString}_${t}`] === true) {
+                            hasOpenSlot = true; break;
+                        }
+                    }
+                }
+                
+                if (isPast || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : '';
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                } else if (dateString === selectedHotelCheckInDateStr) {
+                    html += `<div class="py-2 bg-[#B2977D] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectHotelDate('${dateString}', 'in')">${day}</div>`;
+                } else {
+                    html += `<div class="py-2 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectHotelDate('${dateString}', 'in')">${day}</div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        function renderHotelOutCalendarFast() {
+            const monthTitle = document.getElementById('hotel_out_cal_year_month'); 
+            if(!monthTitle) return; 
+            monthTitle.innerText = `${hotelOutCalYear} 年 ${hotelOutCalMonth + 1} 月`;
+            
+            const grid = document.getElementById('hotelOutCalGrid'); 
+            if(!grid) return; 
+            
+            const firstDay = new Date(hotelOutCalYear, hotelOutCalMonth, 1).getDay(); 
+            const numDays = new Date(hotelOutCalYear, hotelOutCalMonth + 1, 0).getDate();
+            let today = new Date(); today.setHours(0,0,0,0); 
+            let html = '';
+            
+            for(let i=0; i<firstDay; i++) html += `<div class="py-2"></div>`;
+            
+            for(let day=1; day<=numDays; day++) {
+                let cellDate = new Date(hotelOutCalYear, hotelOutCalMonth, day); 
+                let dateString = `${hotelOutCalYear}-${String(hotelOutCalMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                
+                let inDateObj = selectedHotelCheckInDateStr ? new Date(selectedHotelCheckInDateStr) : today;
+                const isBeforeInDate = cellDate < inDateObj;
+                let isClosed = currentOffDatesList.includes(dateString);
+                let hasOpenSlot = false;
+                
+                if (!isClosed && !isBeforeInDate) {
+                    let slots = ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
+                    for (let s = 0; s < slots.length; s++) {
+                        let t = slots[s];
+                        if (globalHotelShiftsCache[`HOTEL_${dateString}_${t}`] === true) {
+                            hasOpenSlot = true; break;
+                        }
+                    }
+                }
+                
+                if (isBeforeInDate || isClosed || !hasOpenSlot) {
+                    let label = isClosed ? '公休' : '';
+                    html += `<div class="py-1 day-dimmed-light-brown flex flex-col items-center select-none"><span>${day}</span>${label ? `<span class="text-[8px] font-bold">${label}</span>` : ''}</div>`;
+                } else if (dateString === selectedHotelCheckOutDateStr) {
+                    html += `<div class="py-2 bg-[#B2977D] text-white font-bold rounded-xl shadow-md cursor-pointer transform scale-105 transition" onclick="selectHotelDate('${dateString}', 'out')">${day}</div>`;
+                } else {
+                    html += `<div class="py-2 cursor-pointer hover:bg-gray-100 rounded-xl transition text-textBrown font-bold" onclick="selectHotelDate('${dateString}', 'out')">${day}</div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        function changeHotelMonth(dir, type) {
+            if (type === 'in') {
+                hotelInCalMonth += dir;
+                if(hotelInCalMonth > 11) { hotelInCalMonth = 0; hotelInCalYear++; }
+                if(hotelInCalMonth < 0) { hotelInCalMonth = 11; hotelInCalYear--; }
+                renderHotelInCalendarFast();
+            } else {
+                hotelOutCalMonth += dir;
+                if(hotelOutCalMonth > 11) { hotelOutCalMonth = 0; hotelOutCalYear++; }
+                if(hotelOutCalMonth < 0) { hotelOutCalMonth = 11; hotelOutCalYear--; }
+                renderHotelOutCalendarFast();
+            }
+        }
+
+        function selectHotelDate(dateStr, type) {
+            if (type === 'in') {
+                selectedHotelCheckInDateStr = dateStr;
+                selectedHotelCheckInTimeStr = '';
+                renderHotelInCalendarFast();
+                renderHotelOutCalendarFast(); 
+                renderHotelTimeSlots(dateStr, 'in');
+            } else {
+                selectedHotelCheckOutDateStr = dateStr;
+                selectedHotelCheckOutTimeStr = '';
+                renderHotelOutCalendarFast();
+                renderHotelTimeSlots(dateStr, 'out');
+            }
+        }
+
+        function renderHotelTimeSlots(dateStr, type) {
+            const container = document.getElementById(type === 'in' ? 'hotelInTimeSlotContainer' : 'hotelOutTimeSlotContainer');
+            if (!container) return;
+            
+            let now = new Date();
+            let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            let availableSlots = [];
+            
+            for (let key in globalHotelShiftsCache) {
+                if (globalHotelShiftsCache[key] === true) {
+                    let parts = key.split('_');
+                    if (parts.length >= 3 && parts[1] === dateStr) {
+                        let tStr = parts[2];
+                        if (!availableSlots.includes(tStr)) availableSlots.push(tStr);
+                    }
+                }
+            }
+            availableSlots.sort();
+            
+            if (availableSlots.length === 0) {
+                container.innerHTML = `<div class="text-center py-3 text-xs font-bold text-gray-400">本日無可預約進出時段 🐾</div>`;
+                return;
+            }
+            
+            let html = '<div class="grid grid-cols-3 gap-2">';
+            availableSlots.forEach(time => {
+                let isPastOrLocked = false;
+                if (dateStr === todayStr) {
+                    let parts = time.split(':');
+                    let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
+                    if (slotTime < now) isPastOrLocked = true;
+                } else if (dateStr < todayStr) {
+                    isPastOrLocked = true;
+                }
+                if (isPastOrLocked) {
+                    html += `<button type="button" disabled class="py-2 border border-gray-200 rounded-xl text-gray-300 font-bold text-xs bg-gray-100 cursor-not-allowed opacity-60">${time}</button>`;
+                } else {
+                    html += `<button type="button" onclick="selectHotelTime('${time}', this, '${type}')" class="hotel-time-btn-${type} py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+                }
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function selectHotelTime(timeStr, btnEl, type) {
+            if (type === 'in') {
+                selectedHotelCheckInTimeStr = timeStr;
+                document.querySelectorAll('.hotel-time-btn-in').forEach(b => b.className = "hotel-time-btn-in py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white");
+                if (btnEl) btnEl.className = "hotel-time-btn-in py-2 border border-[#B2977D] bg-[#FAF7F2] text-[#B2977D] font-black text-xs rounded-xl shadow-xs";
+                document.getElementById('checkInSummaryBadge').innerHTML = `✓ ${selectedHotelCheckInDateStr} ${timeStr}`;
+                document.getElementById('checkOutAccordion').classList.remove('hidden');
+            } else {
+                selectedHotelCheckOutTimeStr = timeStr;
+                document.querySelectorAll('.hotel-time-btn-out').forEach(b => b.className = "hotel-time-btn-out py-2 border border-[#EFE8DE] rounded-xl text-textBrown font-bold text-xs bg-white");
+                if (btnEl) btnEl.className = "hotel-time-btn-out py-2 border border-[#B2977D] bg-[#FAF7F2] text-[#B2977D] font-black text-xs rounded-xl shadow-xs";
+                document.getElementById('checkOutSummaryBadge').innerHTML = `✓ ${selectedHotelCheckOutDateStr} ${timeStr}`;
+            }
+            calculateBookingTotalPriceEngine();
         }
 
         function triggerHistorySearch() {
@@ -601,59 +1142,41 @@
             if(!phone || phone.length < 8) return Swal.fire('提示', '請輸入完整的電話號碼！', 'warning');
             Swal.fire({title: '正在查核專屬會員履歷...', didOpen: () => Swal.showLoading()});
             
-            callGasGet('checkCustomerHistory', { phone: phone }).then(res => {
+            callGasGet('checkCustomerHistory', { phone: phone }, 5000).then(res => {
                 Swal.close();
                 if(res && res.found) {
                     document.getElementById('ownerName').value = res.ownerName || '';
                     document.getElementById('lineName').value = res.lineName || '';
                     if(res.email) document.getElementById('email').value = res.email || '';
                     
-                    userCardRemainCount = parseInt(res.cardRemain) || 0;
-                    userDepositBalance = parseFloat(res.depositBalance) || 0;
-                    
-                    const badgeBlock = document.getElementById('customerBalanceBadgeBlock');
-                    if (badgeBlock) {
-                        document.getElementById('displayCardRemain').innerText = `${userCardRemainCount} 次`;
-                        document.getElementById('displayDepositRemain').innerText = `$${userDepositBalance.toLocaleString()}`;
-                        badgeBlock.classList.remove('hidden');
-                    }
-                    
-                    const cardCb = document.getElementById('useExistingCard');
-                    const depCb = document.getElementById('useExistingDeposit');
-
-                    if (userCardRemainCount > 0) {
-                        cardCb.disabled = false;
-                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (剩餘 ${userCardRemainCount} 次)`;
-                    } else {
-                        cardCb.disabled = true; cardCb.checked = false;
-                        document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (無可用額度)`;
-                    }
-
-                    if (userDepositBalance > 0) {
-                        depCb.disabled = false;
-                        document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (額度 $${userDepositBalance.toLocaleString()})`;
-                    } else {
-                        depCb.disabled = true; depCb.checked = false;
-                        document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (無可用額度)`;
-                    }
-
                     cachedCustomerPetsData = res.petList || [];
+                    
                     const petDropdown = document.getElementById('multiPetDropdown');
                     const petBlock = document.getElementById('multiPetSelectBlock');
                     if (cachedCustomerPetsData.length > 0 && petDropdown && petBlock) {
                         let dropdownHtml = `<option value="" disabled selected>--- 選擇歷史毛孩可秒填 ---</option>`;
                         cachedCustomerPetsData.forEach((pet, index) => {
-                            dropdownHtml += `<option value="${index}">歷史名單：${pet.name} (${pet.breed})</option>`;
+                            dropdownHtml += `<option value="${index}">歷史名單：${pet.name} (${pet.breed}) - 剩包卡 ${pet.cardRemain || 0} 次 / 儲值 $${pet.depositBalance || 0}</option>`;
                         });
                         dropdownHtml += `<option value="_NEW_">＋ 填寫本次施作的新毛孩（清空重填）</option>`;
                         petDropdown.innerHTML = dropdownHtml;
                         petBlock.classList.remove('hidden');
+                        
+                        userCardRemainCount = parseInt(cachedCustomerPetsData[0].cardRemain) || 0;
+                        userDepositBalance = parseFloat(cachedCustomerPetsData[0].depositBalance) || 0;
                         applyPetDataToCard(1, cachedCustomerPetsData[0]);
+                        checkSelectedPetPackageBalance();
+                    } else {
+                        userCardRemainCount = 0;
+                        userDepositBalance = 0;
+                        checkSelectedPetPackageBalance();
                     }
+                    
                     calculateBookingTotalPriceEngine();
-                    Swal.fire('已找到會員檔案！', `已為您自動帶入個人資料與卡金餘額！`, 'success');
+                    Swal.fire('已找到會員檔案！', `已為您自動帶入個人資料與資產額度！`, 'success');
                 } else {
-                    userCardRemainCount = 0; userDepositBalance = 0;
+                    userCardRemainCount = 0; 
+                    userDepositBalance = 0;
                     document.getElementById('useExistingCard').disabled = true;
                     document.getElementById('useExistingCard').checked = false;
                     document.getElementById('useExistingDeposit').disabled = true;
@@ -669,10 +1192,49 @@
             });
         }
 
+        function checkSelectedPetPackageBalance() {
+            let cardCb = document.getElementById('useExistingCard');
+            let depCb = document.getElementById('useExistingDeposit');
+            let badgeBlock = document.getElementById('customerBalanceBadgeBlock');
+            
+            if (badgeBlock) badgeBlock.classList.remove('hidden');
+            document.getElementById('displayCardRemain').innerText = `${userCardRemainCount} 次`;
+            document.getElementById('displayDepositRemain').innerText = `$${userDepositBalance.toLocaleString()}`;
+            
+            if (userCardRemainCount > 0) {
+                cardCb.disabled = false;
+                document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩剩餘 ${userCardRemainCount} 次)`;
+            } else {
+                cardCb.disabled = true; cardCb.checked = false;
+                document.getElementById('useCardLabelText').innerText = `使用已購包卡扣抵 (該毛孩無可用包卡)`;
+            }
+            
+            if (userDepositBalance > 0) {
+                depCb.disabled = false;
+                document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (該毛孩儲值額度 $${userDepositBalance.toLocaleString()})`;
+            } else {
+                depCb.disabled = true; depCb.checked = false;
+                document.getElementById('useDepositLabelText').innerText = `使用已有儲值金扣抵本次消費 (該毛孩無可用儲值金)`;
+            }
+        }
+
         function switchSelectedPetInfo(indexVal) {
-            if (indexVal === "" || indexVal === "_NEW_") { clearPetCardInputs(1); return; }
+            if (indexVal === "" || indexVal === "_NEW_") { 
+                clearPetCardInputs(1);
+                userCardRemainCount = 0;
+                userDepositBalance = 0;
+                checkSelectedPetPackageBalance();
+                calculateBookingTotalPriceEngine();
+                return; 
+            }
             let petSelected = cachedCustomerPetsData[parseInt(indexVal)];
-            if (petSelected) applyPetDataToCard(1, petSelected);
+            if (petSelected) {
+                applyPetDataToCard(1, petSelected);
+                userCardRemainCount = parseInt(petSelected.cardRemain) || 0;
+                userDepositBalance = parseFloat(petSelected.depositBalance) || 0;
+                checkSelectedPetPackageBalance();
+                calculateBookingTotalPriceEngine();
+            }
         }
 
         function applyPetDataToCard(cardId, petData) {
@@ -682,6 +1244,17 @@
             if(cardEl.querySelector('.p-breed')) cardEl.querySelector('.p-breed').value = petData.breed || '';
             if(cardEl.querySelector('.p-size')) cardEl.querySelector('.p-size').value = petData.petSize || '';
             if(cardEl.querySelector('.p-age')) cardEl.querySelector('.p-age').value = petData.age || '';
+            
+            if(cardEl.querySelector('.p-birthday')) {
+                let bDay = petData.birthday || '';
+                if (bDay.includes('GMT') || bDay.includes('00:00:00')) {
+                    let d = new Date(bDay);
+                    if (!isNaN(d.getTime())) {
+                        bDay = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+                    }
+                }
+                cardEl.querySelector('.p-birthday').value = bDay;
+            }
             if(cardEl.querySelector('.p-coat')) cardEl.querySelector('.p-coat').value = petData.coatType || '短毛';
         }
 
@@ -750,259 +1323,6 @@
             renderFrontCalendarFast();
         }
 
-        function calculateBoardingMealsCount(checkInStr, checkOutStr) {
-            if (!checkInStr || !checkOutStr) return 0;
-            let checkIn = new Date(checkInStr);
-            let checkOut = new Date(checkOutStr);
-            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 0;
-
-            let mealCount = 0;
-            let cur = new Date(checkIn);
-            while (cur <= checkOut) {
-                let year = cur.getFullYear(), month = cur.getMonth(), date = cur.getDate();
-                let breakfastTime = new Date(year, month, date, 9, 0, 0);
-                let dinnerTime = new Date(year, month, date, 18, 0, 0);
-
-                if (breakfastTime >= checkIn && breakfastTime <= checkOut) mealCount++;
-                if (dinnerTime >= checkIn && dinnerTime <= checkOut) mealCount++;
-
-                cur.setDate(cur.getDate() + 1);
-            }
-            return mealCount;
-        }
-
-        function calculateBoardingDaysCount(checkInStr, checkOutStr) {
-            if (!checkInStr || !checkOutStr) return 1;
-            let checkIn = new Date(checkInStr);
-            let checkOut = new Date(checkOutStr);
-            if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime()) || checkOut <= checkIn) return 1;
-            
-            let diffMs = checkOut.getTime() - checkIn.getTime();
-            let nights = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-            return Math.max(1, nights);
-        }
-
-        function calculateBookingTotalPriceEngine() {
-            let displayMin = 0, displayMax = 0;
-            let addonMin = 0, addonMax = 0;
-            let hotelBathPriceMin = 0, hotelBathPriceMax = 0;
-            let boardingMealPriceTotal = 0;
-            let newBuyPrice = 0;
-            let mainItemNamesArr = [];
-            let mainItemPriceRangesArr = [];
-            let requiredCardDeductCount = 0;
-
-            document.getElementById('summaryCustomerBalanceShow').innerText = `💳 包卡: ${userCardRemainCount}次 | 💰 儲值: $${userDepositBalance.toLocaleString()}`;
-
-            let boardingDaysMultiplier = 1;
-            if (activeServiceType === 'boarding') {
-                let cIn = document.getElementById('checkInTime')?.value;
-                let cOut = document.getElementById('checkOutTime')?.value;
-                boardingDaysMultiplier = calculateBoardingDaysCount(cIn, cOut);
-            }
-
-            const container = document.getElementById('dynamicPetContainer');
-            if (container) {
-                for (let i = 0; i < container.children.length; i++) {
-                    const card = container.children[i];
-                    
-                    if (activeServiceType === 'grooming') {
-                        const mainSelect = card.querySelector('.p-main-service');
-                        if (mainSelect && mainSelect.selectedIndex >= 0) {
-                            const opt = mainSelect.options[mainSelect.selectedIndex];
-                            const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                            let sName = opt.value || '';
-                            if (sName) {
-                                mainItemNamesArr.push(sName);
-                                mainItemPriceRangesArr.push(`${sName} ($${priceRaw})`);
-                                
-                                if (sName.includes('全身手剪')) {
-                                    requiredCardDeductCount += 3;
-                                } else if (sName.includes('大美容')) {
-                                    requiredCardDeductCount += 2;
-                                } else {
-                                    requiredCardDeductCount += 1;
-                                }
-                            }
-                            
-                            if (priceRaw.includes('起')) {
-                                displayMin += parseInt(priceRaw.replace('起','')) || 0;
-                            } else if (priceRaw.includes('-')) {
-                                let parts = priceRaw.split('-');
-                                displayMin += parseInt(parts[0]) || 0;
-                                displayMax += parseInt(parts[1]) || 0;
-                            } else {
-                                let p = parseInt(priceRaw) || 0;
-                                displayMin += p; displayMax += p;
-                            }
-                        }
-                    } else {
-                        card.querySelectorAll('.p-main-checkbox:checked').forEach(cb => {
-                            const priceRaw = (cb.getAttribute('data-raw-price') || '0').toString();
-                            let cleanVal = cb.value.split('(')[0].trim();
-                            if (cb.value) {
-                                mainItemNamesArr.push(cleanVal);
-                                mainItemPriceRangesArr.push(`${cleanVal} ($${priceRaw} * ${boardingDaysMultiplier}天)`);
-                            }
-                            let itemPriceMin = 0, itemPriceMax = 0;
-                            if (priceRaw.includes('起')) {
-                                itemPriceMin = parseInt(priceRaw.replace('起','')) || 0;
-                            } else if (priceRaw.includes('-')) {
-                                let parts = priceRaw.split('-');
-                                itemPriceMin = parseInt(parts[0]) || 0;
-                                itemPriceMax = parseInt(parts[1]) || 0;
-                            } else {
-                                let p = parseInt(priceRaw) || 0;
-                                itemPriceMin = p; itemPriceMax = p;
-                            }
-                            displayMin += itemPriceMin * boardingDaysMultiplier;
-                            if (itemPriceMax > 0) displayMax += itemPriceMax * boardingDaysMultiplier;
-                        });
-                    }
-                    
-                    card.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
-                        let priceRaw = (cb.getAttribute('data-price') || '0').toString();
-                        if (priceRaw.includes('起')) {
-                            let p = parseInt(priceRaw.replace('起','')) || 0;
-                            addonMin += p;
-                        } else if (priceRaw.includes('-')) {
-                            let parts = priceRaw.split('-');
-                            addonMin += parseInt(parts[0]) || 0;
-                            addonMax += parseInt(parts[1]) || 0;
-                        } else {
-                            let p = parseInt(priceRaw) || 0;
-                            addonMin += p; addonMax += p;
-                        }
-                    });
-                }
-            }
-
-            if (activeServiceType === 'boarding') {
-                let cIn = document.getElementById('checkInTime')?.value;
-                let cOut = document.getElementById('checkOutTime')?.value;
-                let mealRadio = document.querySelector('input[name="mealPlanOption"]:checked');
-                let unitMealPrice = mealRadio ? parseInt(mealRadio.getAttribute('data-price') || 0) : 0;
-                let calculatedMealCount = calculateBoardingMealsCount(cIn, cOut);
-
-                const badgeEl = document.getElementById('mealCalculationBadge');
-                if (unitMealPrice > 0 && calculatedMealCount > 0) {
-                    boardingMealPriceTotal = calculatedMealCount * unitMealPrice;
-                    if (badgeEl) {
-                        badgeEl.classList.remove('hidden');
-                        badgeEl.innerHTML = `🥣 自動核對入住期間共跨越 <strong>${calculatedMealCount} 次</strong> 放飯時段 (早09:00/晚18:00)，餐費合計：$${boardingMealPriceTotal}`;
-                    }
-                } else {
-                    if (badgeEl) badgeEl.classList.add('hidden');
-                }
-            }
-
-            const bathSelect = document.getElementById('hotelBathMainService');
-            const isHotelBathNeed = document.querySelector('input[name="hotelBathNeed"]:checked')?.value === 'YES';
-            if (isHotelBathNeed && bathSelect && bathSelect.selectedIndex >= 0) {
-                const opt = bathSelect.options[bathSelect.selectedIndex];
-                const priceRaw = (opt.getAttribute('data-raw-price') || '0').toString();
-                if (priceRaw.includes('起')) {
-                    hotelBathPriceMin = parseInt(priceRaw.replace('起','')) || 0;
-                } else if (priceRaw.includes('-')) {
-                    let parts = priceRaw.split('-');
-                    hotelBathPriceMin = parseInt(parts[0]) || 0;
-                    hotelBathPriceMax = parseInt(parts[1]) || 0;
-                } else {
-                    let p = parseInt(priceRaw) || 0;
-                    hotelBathPriceMin = p; hotelBathPriceMax = p;
-                }
-            }
-
-            let origRangeStr = (displayMax > displayMin && displayMax > 0) 
-                ? `$${displayMin.toLocaleString()} ~ $${displayMax.toLocaleString()}` 
-                : `$${displayMin.toLocaleString()}`;
-            document.getElementById('summaryOriginalRange').innerText = origRangeStr;
-
-            const mainDetailRow = document.getElementById('summaryMainItemDetailRow');
-            if (mainDetailRow) {
-                if (mainItemPriceRangesArr.length > 0) {
-                    mainDetailRow.classList.remove('hidden');
-                    document.getElementById('summaryMainItemNameText').innerText = `（主服務項目：${mainItemNamesArr.join(' · ')}）`;
-                    document.getElementById('summaryMainItemPriceText').innerText = mainItemPriceRangesArr.map(x => x.split('(')[1].replace(')','')).join(', ');
-                } else {
-                    mainDetailRow.classList.add('hidden');
-                }
-            }
-
-            const addonRow = document.getElementById('summaryAddonDetailRow');
-            if (addonRow) {
-                if (addonMin > 0) {
-                    addonRow.classList.remove('hidden');
-                    let addonShowText = (addonMax > addonMin) ? `+$${addonMin.toLocaleString()} ~ $${addonMax.toLocaleString()}` : `+$${addonMin.toLocaleString()}`;
-                    document.getElementById('summaryAddonPriceText').innerText = addonShowText;
-                } else {
-                    addonRow.classList.add('hidden');
-                }
-            }
-
-            const hotelBathRow = document.getElementById('summaryHotelBathRow');
-            if (hotelBathRow) {
-                if (isHotelBathNeed && hotelBathPriceMin > 0) {
-                    hotelBathRow.classList.remove('hidden');
-                    let showText = (hotelBathPriceMax > hotelBathPriceMin) ? `$${hotelBathPriceMin} ~ $${hotelBathPriceMax}` : `$${hotelBathPriceMin}`;
-                    document.getElementById('summaryHotelBathPriceText').innerText = `+$${showText}`;
-                } else {
-                    hotelBathRow.classList.add('hidden');
-                }
-            }
-
-            const pkgSelect = document.getElementById('buyNewPackageSelect');
-            const pkgOpt = pkgSelect ? pkgSelect.options[pkgSelect.selectedIndex] : null;
-            const pkgPrice = pkgOpt ? parseInt(pkgOpt.getAttribute('data-price') || 0) : 0;
-            const isBuyingNewPkg = pkgOpt && pkgSelect.value !== 'none';
-
-            const newBuyRow = document.getElementById('summaryNewBuyRow');
-            if (newBuyRow) {
-                if (pkgPrice > 0) {
-                    newBuyRow.classList.remove('hidden');
-                    document.getElementById('summaryNewBuyPrice').innerText = `+$${pkgPrice.toLocaleString()}`;
-                } else {
-                    newBuyRow.classList.add('hidden');
-                }
-            }
-
-            let discText = "無折抵";
-            let payableMin = displayMin + addonMin + hotelBathPriceMin + boardingMealPriceTotal;
-            let payableMax = (displayMax > 0 ? displayMax : displayMin) + (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin) + boardingMealPriceTotal;
-
-            let isUsingCard = document.getElementById('useExistingCard')?.checked && userCardRemainCount >= requiredCardDeductCount;
-
-            const remainBadgeEl = document.getElementById('cardRemainDeductNotice');
-            if (isUsingCard || isBuyingNewPkg) {
-                payableMin = addonMin + hotelBathPriceMin + boardingMealPriceTotal;
-                payableMax = (addonMax > 0 ? addonMax : addonMin) + (hotelBathPriceMax > 0 ? hotelBathPriceMax : hotelBathPriceMin) + boardingMealPriceTotal;
-
-                let afterRemain = isUsingCard ? (userCardRemainCount - requiredCardDeductCount) : 6 - requiredCardDeductCount;
-                if (remainBadgeEl) {
-                    remainBadgeEl.classList.remove('hidden');
-                    document.getElementById('afterDeductCardCountShow').innerText = afterRemain;
-                }
-
-                if (isUsingCard) {
-                    discText = `套用包卡扣抵 ${requiredCardDeductCount} 次 (主服務 $0)`;
-                } else {
-                    discText = `新購包卡當場扣抵 ${requiredCardDeductCount} 次 (主服務 $0)`;
-                }
-            } else {
-                if (remainBadgeEl) remainBadgeEl.classList.add('hidden');
-            }
-
-            document.getElementById('summaryDiscountText').innerText = discText;
-
-            let finalShowStr = (payableMax > payableMin && payableMax > 0) ? `$${payableMin.toLocaleString()} ~ $${payableMax.toLocaleString()}` : `$${payableMin.toLocaleString()}`;
-
-            if (pkgPrice > 0) {
-                document.getElementById('bookingTotalPriceDisplay').innerText = `${finalShowStr} (+新購方案 $${pkgPrice.toLocaleString()})`;
-            } else {
-                document.getElementById('bookingTotalPriceDisplay').innerText = finalShowStr;
-            }
-        }
-
         function renderPetFormCards() {
             document.getElementById('dynamicPetContainer').innerHTML = '';
             petCount = 0;
@@ -1026,7 +1346,6 @@
                     if (activeServiceType === 'boarding' && cat.includes('住宿')) categorySet.add(cat);
                 } 
             });
-
             if (activeServiceType === 'grooming') {
                 let serviceOptions = `<option value="" disabled selected>請選擇美容主服務項目</option>`;
                 Array.from(categorySet).forEach(cat => {
@@ -1074,11 +1393,10 @@
                 });
                 mainServiceHTML = `
                 <div class="space-y-3">
-                    <label class="text-[11px] font-bold text-textBrown block">住宿服務 (可複選) *</label>
+                    <label class="text-[11px] font-bold text-textBrown block">住宿房型選擇 (可複選) *</label>
                     <div class="space-y-3">${categoryBlocksHtml}</div>
                 </div>`;
             }
-
             let addonHtml = "";
             let addonItems = allServices.filter(s => {
                 let cat = s.category || '';
@@ -1087,14 +1405,14 @@
             });
             if (addonItems.length > 0) {
                 addonItems.forEach(add => {
+                    let priceRaw = (add.price || '0').toString();
                     addonHtml += `
                     <label class="addon-card disabled flex items-center gap-2.5 cursor-pointer">
-                        <input type="checkbox" disabled class="addon-checkbox" value="${add.service}" data-price="${add.price}" onchange="calculateBookingTotalPriceEngine()">
-                        <span class="text-xs font-bold text-textBrown">${add.service} (+$${add.price})</span>
+                        <input type="checkbox" disabled class="addon-checkbox" value="${add.service}" data-price="${priceRaw}" onchange="calculateBookingTotalPriceEngine()">
+                        <span class="text-xs font-bold text-textBrown">${add.service} (+$${priceRaw})</span>
                     </label>`;
                 });
             }
-            
             let photoUploadBlock = `
                 <div>
                     <label class="text-[11px] font-bold text-gray-400 mb-1 block">上傳毛孩照片 (選填，自動存入雲端庫)</label>
@@ -1105,12 +1423,11 @@
                         <span class="text-[10px] text-emerald-700 font-bold">✓ 照片已就緒</span>
                     </div>
                 </div>`;
-
             let extraFieldsGrooming = `
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
-                    <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">生日 (選填)</label><input type="date" class="text-input p-birthday text-xs font-bold"></div>
-                </div>`;
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛質分類 *</label><input type="text" class="text-input p-coat text-xs font-bold" placeholder="如: 短毛/長毛/捲毛"></div>
+                <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">生日 (選填)</label><input type="text" class="text-input p-birthday text-xs font-bold" placeholder="如: 05/12 或 5月"></div>
+            </div>`;
             let extraFieldsBoarding = `
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[11px] font-bold text-gray-400 mb-1 block">毛孩性別 *</label><select class="text-input p-gender text-xs font-bold"><option value="公">公</option><option value="母">母</option></select></div>
@@ -1199,66 +1516,83 @@
             renderFrontCalendarFast(); 
         }
 
+        // 智慧滿額判斷：點擊日期即時呼叫 getDailySlots 獲取佔用名額
         function selectDate(dateStr) {
-            selectedDateStr = dateStr; selectedTimeStr = ''; 
+            selectedDateStr = dateStr; 
+            selectedTimeStr = ''; 
             renderFrontCalendarFast();
-            const container = document.getElementById('timeSlotContainer'); if(!container) return;
+            
+            const container = document.getElementById('timeSlotContainer'); 
+            if(!container) return;
+            
+            container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-[#B2977D]"><i class="fas fa-spinner fa-spin mr-1"></i> ⏳ 正在即時計算該日預約名額...</div>`;
             
             let groomerSelect = document.getElementById('selectedGroomer');
             let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
             let groomerOpt = groomerSelect ? groomerSelect.options[groomerSelect.selectedIndex] : null;
             let groomerId = groomerOpt ? (groomerOpt.getAttribute('data-id') || 'ALL') : 'ALL';
-            let slots = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00","18:30"];
-            let availableSlots = [];
-            slots.forEach(time => {
-                if (groomerVal === '不指定' || groomerId === 'ALL') {
-                    for (let gKey in globalFrontShiftsCache) {
-                        if (gKey.includes(`_${dateStr}_${time}`) && globalFrontShiftsCache[gKey] === true) {
-                            if (!availableSlots.includes(time)) availableSlots.push(time);
+            
+            callGasGet('getDailySlots', { dateStr: dateStr, groomerId: groomerId }, 8000).then(res => {
+                if (res && !res.isClosed) {
+                    renderTimeSlots(res);
+                } else if (res && res.isClosed) {
+                    container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-rose-500">${res.message || '本日店休不可預約 🐾'}</div>`;
+                } else {
+                    let fallbackAvailable = [];
+                    for (let key in globalFrontShiftsCache) {
+                        if (globalFrontShiftsCache[key] === true && key.includes(`_${dateStr}_`)) {
+                            let parts = key.split('_');
+                            if (parts.length >= 3 && !fallbackAvailable.includes(parts[2])) {
+                                fallbackAvailable.push(parts[2]);
+                            }
                         }
                     }
-                } else {
-                    let keyById = `${groomerId}_${dateStr}_${time}`;
-                    let keyByName = `${groomerVal}_${dateStr}_${time}`;
-                    if (globalFrontShiftsCache[keyById] === true || globalFrontShiftsCache[keyByName] === true) {
-                        availableSlots.push(time);
-                    }
+                    fallbackAvailable.sort();
+                    renderTimeSlots({ availableSlots: fallbackAvailable, fullSlots: [] });
                 }
             });
-            renderTimeSlots({ availableSlots: availableSlots });
         }
 
+        // 智慧渲染時段按鈕（滿 5 人即時灰底禁用 + 標記已滿）
         function renderTimeSlots(res) {
-            const container = document.getElementById('timeSlotContainer'); if(!container) return;
-            if(res && res.isClosed) { container.innerHTML = `<div class="text-red-500 font-bold text-center py-3 text-xs">${res.message}</div>`; return; }
+            const container = document.getElementById('timeSlotContainer'); 
+            if(!container) return;
+            
             let now = new Date();
             let todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
             
-            let baseSlots = (res && res.availableSlots && res.availableSlots.length > 0) ? res.availableSlots : [];
-            if (baseSlots.length === 0) {
-                container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日該美容師未排班或不可預約 🐾</div>`;
+            let baseSlots = (res && res.availableSlots) ? res.availableSlots : [];
+            let fullSlots = (res && res.fullSlots) ? res.fullSlots : [];
+            
+            let allSlots = Array.from(new Set([...baseSlots, ...fullSlots])).sort();
+            
+            if (allSlots.length === 0) {
+                container.innerHTML = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日未開班或已無可預約時段 🐾</div>`;
                 return;
             }
+            
             let html = '<div class="grid grid-cols-3 gap-2.5">';
-            let availableCount = 0;
-            baseSlots.forEach(time => {
+            allSlots.forEach(time => {
+                let isFull = fullSlots.includes(time);
                 let isPastOrLocked = false;
+                
                 if (selectedDateStr === todayStr) {
                     let parts = time.split(':');
                     let slotTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parseInt(parts[0]), parseInt(parts[1]));
                     let bufferTimeThreshold = new Date(now.getTime() + (systemBufferHours * 60 * 60 * 1000));
-                    if (slotTime < bufferTimeThreshold) { isPastOrLocked = true; }
+                    if (slotTime < bufferTimeThreshold) isPastOrLocked = true;
+                } else if (selectedDateStr < todayStr) {
+                    isPastOrLocked = true;
                 }
-                if (!isPastOrLocked) {
-                    availableCount++;
-                    html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition">${time}</button>`;
+                
+                if (isPastOrLocked || isFull) {
+                    let labelText = isFull ? `${time} (已滿)` : time;
+                    html += `<button type="button" disabled class="py-2.5 border border-gray-200 rounded-2xl text-gray-400 font-bold text-xs bg-gray-100/90 cursor-not-allowed opacity-60 flex items-center justify-center select-none" style="pointer-events: none;">${labelText}</button>`;
+                } else {
+                    html += `<button type="button" onclick="selectTime('${time}', this)" class="time-btn py-2.5 border border-[#EFE8DE] rounded-2xl text-textBrown font-bold text-xs shadow-xs bg-white hover:bg-[#FAF7F2] transition flex items-center justify-center">${time}</button>`;
                 }
             });
-            if (availableCount === 0) {
-                html = `<div class="text-center py-5 text-xs font-bold text-gray-400">本日該美容師時段已額滿或已逾禁約時間 🐾</div>`;
-            } else {
-                html += '</div>';
-            }
+            html += '</div>';
             container.innerHTML = html;
         }
 
@@ -1307,23 +1641,22 @@
         }
 
         function buildDynamicSliderModule(photoUrls) {
-            const container = document.getElementById('sliderImagesContainer'); const dotsContainer = document.getElementById('sliderDotsContainer'); if(!container || !dotsContainer) return;
+            const container = document.getElementById('sliderImagesContainer'); 
+            const dotsContainer = document.getElementById('sliderDotsContainer'); 
+            if(!container || !dotsContainer) return;
+            
             container.innerHTML = ''; dotsContainer.innerHTML = ''; totalSliderImagesCount = photoUrls.length;
-            photoUrls.forEach((url, index) => {
-                container.innerHTML += `<div class="w-full h-full flex-shrink-0 bg-contain bg-no-repeat bg-center rounded-xl" style="background-image:url('${url}')"></div>`;
-                dotsContainer.innerHTML += `<div id="sliderDot_${index}" class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${index===0?'!bg-[#CBB39C]':''}"></div>`;
+            
+            requestAnimationFrame(() => {
+                photoUrls.forEach((url, index) => {
+                    let imgDiv = document.createElement('div');
+                    imgDiv.className = "w-full h-full flex-shrink-0 bg-contain bg-no-repeat bg-center rounded-xl";
+                    imgDiv.style.backgroundImage = `url('${url}')`;
+                    container.appendChild(imgDiv);
+                    
+                    dotsContainer.innerHTML += `<div id="sliderDot_${index}" class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${index===0?'!bg-[#CBB39C]':''}"></div>`;
+                });
             });
-
-            let touchStartX = 0, touchEndX = 0;
-            const windowEl = document.getElementById('sliderTrackWindow');
-            if (windowEl) {
-                windowEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
-                windowEl.addEventListener('touchend', e => {
-                    touchEndX = e.changedTouches[0].screenX;
-                    if (touchStartX - touchEndX > 40) moveSliderEngine(1);
-                    if (touchEndX - touchStartX > 40) moveSliderEngine(-1);
-                }, {passive: true});
-            }
         }
 
         function moveSliderEngine(direction) {
@@ -1349,11 +1682,15 @@
                     cardEl.querySelectorAll('.p-main-checkbox:checked').forEach(cb => selectedArr.push(cb.value));
                     selectedServicesStr = selectedArr.length > 0 ? selectedArr.join(', ') : '寵物住宿';
                 }
+                
+                let rawBirthday = cardEl.querySelector('.p-birthday') ? cardEl.querySelector('.p-birthday').value.trim() : '';
+                let cleanBirthday = rawBirthday.includes('T') ? rawBirthday.split('T')[0] : rawBirthday;
                 packedArray.push({
                     name: cardEl.querySelector('.p-name') ? cardEl.querySelector('.p-name').value.trim() : '',
                     breed: cardEl.querySelector('.p-breed') ? cardEl.querySelector('.p-breed').value.trim() : '',
                     petSize: cardEl.querySelector('.p-size') ? cardEl.querySelector('.p-size').value.trim() : '',
                     age: cardEl.querySelector('.p-age') ? cardEl.querySelector('.p-age').value.trim() : '',
+                    birthday: cleanBirthday,
                     coatType: cardEl.querySelector('.p-coat') ? cardEl.querySelector('.p-coat').value : '短毛',
                     petPhotoBase64: cardEl.querySelector('.p-photo-base64') ? cardEl.querySelector('.p-photo-base64').value : '',
                     mainService: selectedServicesStr,
@@ -1369,6 +1706,7 @@
             canvas.width = parent.clientWidth;
             canvas.height = 160;
             ctx.strokeStyle = "#5C5043"; ctx.lineWidth = 3.5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+            
             function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1378,6 +1716,7 @@
             function startDraw(e) { drawingState = true; if(document.getElementById('sigTextPlaceholder')) document.getElementById('sigTextPlaceholder').classList.add('hidden'); const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
             function moveDraw(e) { if(!drawingState) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
             function endDraw() { drawingState = false; }
+            
             canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', moveDraw); window.addEventListener('mouseup', endDraw);
             canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, {passive: false});
             canvas.addEventListener('touchmove', (e) => { moveDraw(e); e.preventDefault(); }, {passive: false});
@@ -1403,55 +1742,107 @@
             let pickupVal = document.getElementById('pickupService').value;
             let pickupAddr = document.getElementById('pickupAddress') ? document.getElementById('pickupAddress').value.trim() : '';
             
-            if (!phone || !ownerName || !email || !lineName) { return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); }
-            if (pickupVal === '需要接送' && !pickupAddr) { return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); }
-            
-            const dtCard = document.getElementById('dateTimeCard');
-            if (dtCard && !dtCard.classList.contains('hidden')) {
-                if (!selectedDateStr || !selectedTimeStr) { return Swal.fire('漏填提醒', '請點選上方日曆選擇預約日期與進場時段！', 'warning'); }
+            if (!phone || !ownerName || !email || !lineName) { 
+                return Swal.fire('漏填提醒', '請完整填寫家長電話、姓名、Email 與 LINE 名稱！', 'warning'); 
             }
-            if (!mainRead || !riskRead || !isCheckedFinal) { return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); }
-            if (!validateCanvasIsSigned()) { return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); }
+            if (pickupVal === '需要接送' && !pickupAddr) { 
+                return Swal.fire('漏填提醒', '選擇需要接送時，請填寫接送地址！', 'warning'); 
+            }
             
+            let finalBookingDate = selectedDateStr;
+            let finalBookingTime = selectedTimeStr;
+            if (activeServiceType === 'boarding') {
+                if (!selectedHotelCheckInDateStr || !selectedHotelCheckInTimeStr || !selectedHotelCheckOutDateStr || !selectedHotelCheckOutTimeStr) {
+                    return Swal.fire('漏填提醒', '請完整選擇住宿入住與退房的日期與時段！', 'warning');
+                }
+                finalBookingDate = `${selectedHotelCheckInDateStr} 至 ${selectedHotelCheckOutDateStr}`;
+                finalBookingTime = `入住:${selectedHotelCheckInTimeStr} / 退房:${selectedHotelCheckOutTimeStr}`;
+            } else {
+                const dtCard = document.getElementById('dateTimeCard');
+                if (dtCard && !dtCard.classList.contains('hidden')) {
+                    if (!selectedDateStr || !selectedTimeStr) { 
+                        return Swal.fire('漏填提醒', '請點選上方日曆選擇美容預約日期與進場時段！', 'warning'); 
+                    }
+                }
+            }
             let petsPayload = packDynamicPetsJsonPayload();
-            if(petsPayload.length === 0) { return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); }
+            if(petsPayload.length === 0) { 
+                return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); 
+            }
+            for (let i = 0; i < petsPayload.length; i++) {
+                if (!petsPayload[i].mainService || petsPayload[i].mainService === "預約項目" || petsPayload[i].mainService.trim() === "") {
+                    return Swal.fire('漏填提醒', `請為【毛孩 NO. ${i + 1}：${petsPayload[i].name || '未命名'}】選取施作的主服務項目！`, 'warning');
+                }
+            }
+            if (!mainRead || !riskRead || !isCheckedFinal) { 
+                return Swal.fire('條款提醒', '請詳閱條款並勾選同意書！', 'warning'); 
+            }
+            if (!validateCanvasIsSigned()) { 
+                return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); 
+            }
+            let multiPhotosMap = {};
+            petsPayload.forEach((pet, index) => {
+                if (pet.petPhotoBase64) multiPhotosMap[index + 1] = pet.petPhotoBase64;
+            });
+            let rawOrigText = document.getElementById('summaryOriginalRange') ? document.getElementById('summaryOriginalRange').innerText : "$0";
+            let rawFinalText = document.getElementById('bookingTotalPriceDisplay') ? document.getElementById('bookingTotalPriceDisplay').innerText : "$0";
             
+            let parsedOrigPrice = parseInt(rawOrigText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
+            let parsedFinalPrice = parseInt(rawFinalText.replace('$', '').replace(/,/g, '').split('~')[0].trim()) || 0;
             let groomerSelect = document.getElementById('selectedGroomer');
             let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
+            
             let payload = {
+                lineUID: clientDetectedLineUID,
                 serviceType: activeServiceType === 'grooming' ? '寵物美容' : '寵物住宿',
                 phone: phone, ownerName: ownerName, email: email, lineName: lineName,
-                date: selectedDateStr, time: selectedTimeStr,
+                date: finalBookingDate, time: finalBookingTime,
                 groomer: groomerVal,
+                originalPrice: parsedOrigPrice,
+                discountPrice: 0,
+                finalPrice: parsedFinalPrice,
+                price: parsedFinalPrice,
+                useCard: document.getElementById('useExistingCard')?.checked || false,
+                useDeposit: document.getElementById('useExistingDeposit')?.checked || false,
+                buyPackage: document.getElementById('buyNewPackageSelect')?.value || 'none',
+                buyDeposit: document.getElementById('buyNewDepositSelect')?.value || 'none',
                 pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
                 referrerOwner: document.getElementById('referrerOwner').value,
                 petsJsonString: JSON.stringify(petsPayload),
+                multiPhotosJson: JSON.stringify(multiPhotosMap),
                 signatureDataBase64: canvas ? canvas.toDataURL('image/png') : ""
             };
+            
             Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             fetch(API_URL, {
-                method: "POST", headers: { "Content-Type": "text/plain" },
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify({ action: "submitBooking", payload: payload })
-            }).then(() => {
+            }).then(res => res.json()).then(resData => {
                 Swal.close();
-                Swal.fire({
-                    title: '🎉 預約成功！',
-                    html: `
-                        <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
-                            <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
-                            <p>系統已同步發送「預約確認信件」至您的 Email 郵箱。</p>
-                            <div class="bg-amber-50 p-3 rounded-lg border border-amber-200/80 text-amber-900 font-bold">
-                                📧 <strong class="text-amber-800">貼心提醒：</strong><br>
-                                若您在收件匣沒有看到確認信，<strong class="text-rose-600">信件可能被誤判並跑去「垃圾信件匣」</strong>，再麻煩幫忙點擊查看並標示為「非垃圾郵件」唷！
+                if (resData.success) {
+                    Swal.fire({
+                        title: '🎉 預約成功！',
+                        html: `
+                            <div class="text-left text-xs text-[#5C5043] space-y-2.5 bg-[#FAF7F2] p-4 rounded-xl border border-[#EFE8DE] leading-relaxed my-2">
+                                <p class="font-black text-sm text-center text-[#5C5043]">預約資料已成功傳送至琢悅寵物SPA會館！</p>
+                                <p>系統已同步發送「預約確認信件與數位合約」至您的 Email：<br><b>${email}</b></p>
                             </div>
-                        </div>
-                    `,
-                    icon: 'success',
-                    confirmButtonColor: '#CBB39C',
-                    confirmButtonText: '點此加 LINE 官方帳號確認'
-                }).then(() => {
-                    window.location.href = "https://lin.ee/q19SMMx5";
-                });
+                        `,
+                        icon: 'success',
+                        confirmButtonColor: '#CBB39C',
+                        confirmButtonText: '點此加 LINE 官方帳號確認'
+                    }).then(() => {
+                        window.location.href = "https://lin.ee/q19SMMx5";
+                    });
+                } else if (resData.isFull) {
+                    Swal.fire('時段已滿', resData.message, 'warning');
+                } else {
+                    Swal.fire('預約失敗', resData.error || '系統寫入異常', 'error');
+                }
+            }).catch(err => {
+                Swal.close();
+                Swal.fire('連線失敗', '網路連線逾時，請再試一次', 'error');
             });
         }
 
