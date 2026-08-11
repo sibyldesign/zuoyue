@@ -473,35 +473,53 @@
         };
 
         // 🟢【LINE LIFF 核心 SDK 段落 2/2】靜默啟動與 UID 鎖定
-        function initPageFast() {
-            renderPetFormCards();
+        // 🟢【修復版】LINE LIFF 核心啟動與 UID 自動帶入邏輯
+async function initPageFast() {
+    renderPetFormCards();
+    
+    // 1. 初始化 LIFF SDK
+    const MY_LIFF_ID = "2010817366-ytcuCFKz";
+    if (typeof liff !== "undefined" && MY_LIFF_ID !== "") {
+        try {
+            await liff.init({ liffId: MY_LIFF_ID });
             
-            const MY_LIFF_ID = "2010817366-ytcuCFKz";
-            if (typeof liff !== "undefined" && MY_LIFF_ID !== "") {
-                liff.init({ liffId: MY_LIFF_ID }).then(() => {
-                    if (liff.isLoggedIn()) {
-                        liff.getProfile().then(profile => {
-                            if (profile && profile.userId) {
-                                clientDetectedLineUID = profile.userId;
-                                const lineNameInput = document.getElementById('lineName');
-                                if (lineNameInput && lineNameInput.value.trim() === "") {
-                                    lineNameInput.value = profile.displayName || "";
-                                }
-                            }
-                        }).catch(err => console.error("Profile 撈取失敗", err));
+            // 判斷是否已登入 LINE
+            if (liff.isLoggedIn()) {
+                const profile = await liff.getProfile();
+                if (profile && profile.userId) {
+                    clientDetectedLineUID = profile.userId;
+                    console.log("✅ LIFF 靜默鎖定 LINE_UID:", clientDetectedLineUID);
+                    
+                    // 自動填入 LINE 暱稱
+                    const lineNameInput = document.getElementById('lineName');
+                    if (lineNameInput && (!lineNameInput.value || lineNameInput.value.trim() === "")) {
+                        lineNameInput.value = profile.displayName || "";
                     }
-                }).catch(err => console.error("LIFF 初始化失敗", err));
-            }
-
-            const cachedBundle = CacheStore.get('initialBundle');
-            if (cachedBundle) applyBundleDataUI(cachedBundle);
-            callGasGet('getFrontInitialBundle', {}, 12000).then(bundle => {
-                if (bundle && !bundle.error) {
-                    CacheStore.set('initialBundle', bundle);
-                    applyBundleDataUI(bundle);
                 }
-            });
+            } else {
+                // 若在 LINE App 內或外部瀏覽器未登入，引導登入授權
+                if (liff.isInClient()) {
+                    liff.login({ redirectUri: window.location.href });
+                }
+            }
+        } catch (err) {
+            console.error("❌ LIFF 初始化或取得 Profile 失敗:", err);
         }
+    } else {
+        console.warn("⚠️ 未偵測到 liff SDK 或 LIFF ID 為空");
+    }
+
+    // 2. 載入雲端初始快取與套件
+    const cachedBundle = CacheStore.get('initialBundle');
+    if (cachedBundle) applyBundleDataUI(cachedBundle);
+    
+    callGasGet('getFrontInitialBundle', {}, 12000).then(bundle => {
+        if (bundle && !bundle.error) {
+            CacheStore.set('initialBundle', bundle);
+            applyBundleDataUI(bundle);
+        }
+    });
+}
 
         function applyBundleDataUI(bundle) {
             if (!bundle) return;
