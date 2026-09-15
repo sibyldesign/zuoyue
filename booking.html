@@ -466,60 +466,34 @@
             set: (key, val) => { try { localStorage.setItem('zy_cache_' + key, JSON.stringify(val)); } catch(e) {} },
             get: (key) => { try { return JSON.parse(localStorage.getItem('zy_cache_' + key)); } catch(e) { return null; } }
         };
-        // 🟢【前台修復】雙通道極速載入，若快取存在直接渲染，若遠端延遲保證安全重試
-function initPageFast() {
-    renderPetFormCards();
-    
-    // 1. 若本地已有快取，先直接渲染畫面，防止白畫面與「載入中」卡死
-    const cachedBundle = CacheStore.get('initialBundle');
-    if (cachedBundle) {
-        try { applyBundleDataUI(cachedBundle); } catch(err) { console.log('快取渲染略過'); }
-    }
-    
-    // 2. 向後端拉取最新資料 (改為 15 秒寬限)
-    callGasGet('getFrontInitialBundle', {}, 15000).then(bundle => {
-        if (bundle && !bundle.error) {
-            CacheStore.set('initialBundle', bundle);
-            applyBundleDataUI(bundle);
-        } else {
-            console.warn("後端初始化資料未就緒，嘗試單獨載入公告與服務...");
-            // 💡 備用降級機制：若打包逾時，逐一單獨拉取確保畫面一定看得到！
-            callGasGet('getAnnouncementData', {}, 5000).then(a => { if(a) document.getElementById('announcement').innerHTML = a; });
-            callGasGet('getServiceSettings', {}, 5000).then(s => { if(s) setupServiceDropdownsAndData(s); });
-            callGasGet('getPortfolioData', {}, 5000).then(p => { if(p) setupPortfolioData(p); });
+        function initPageFast() {
+            renderPetFormCards();
+            const cachedBundle = CacheStore.get('initialBundle');
+            if (cachedBundle) applyBundleDataUI(cachedBundle);
+            callGasGet('getFrontInitialBundle', {}, 12000).then(bundle => {
+                if (bundle && !bundle.error) {
+                    CacheStore.set('initialBundle', bundle);
+                    applyBundleDataUI(bundle);
+                }
+            });
         }
-    }).catch(e => {
-        console.error("初始化連線失敗: ", e);
-    });
-}
-
-function applyBundleDataUI(bundle) {
-    if (!bundle) return;
-    try {
-        if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
-        if (bundle.services) setupServiceDropdownsAndData(bundle.services);
-        if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
-        if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
-        if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
-        if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
-        if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
-        if (bundle.fullHotelShiftsMap) globalHotelShiftsCache = bundle.fullHotelShiftsMap;
-        if (bundle.packageRule) {
-            let el = document.getElementById('packageRuleContentText');
-            if(el) el.innerHTML = bundle.packageRule.replace(/\n/g, '<br>');
+        function applyBundleDataUI(bundle) {
+            if (!bundle) return;
+            if (bundle.announcement) document.getElementById('announcement').innerHTML = bundle.announcement;
+            if (bundle.services) setupServiceDropdownsAndData(bundle.services);
+            if (bundle.groomers) setupGroomerDropdown(bundle.groomers);
+            if (bundle.contracts) setupContractsAndSlider(bundle.contracts);
+            if (bundle.portfolio) setupPortfolioData(bundle.portfolio);
+            if (bundle.offDays) currentOffDatesList = bundle.offDays.offDates || [];
+            if (bundle.fullShiftsMap) globalFrontShiftsCache = bundle.fullShiftsMap;
+            if (bundle.fullHotelShiftsMap) globalHotelShiftsCache = bundle.fullHotelShiftsMap;
+            if (bundle.packageRule) document.getElementById('packageRuleContentText').innerHTML = bundle.packageRule.replace(/\n/g, '<br>');
+            requestAnimationFrame(() => {
+                renderFrontCalendarFast();
+                renderHotelInCalendarFast();
+                renderHotelOutCalendarFast();
+            });
         }
-    } catch(ex) {
-        console.error("UI 元件套用過程警告: ", ex);
-    }
-    
-    // 確保日曆渲染一定在最後執行
-    setTimeout(() => {
-        try { renderFrontCalendarFast(); } catch(e){}
-        try { renderHotelInCalendarFast(); } catch(e){}
-        try { renderHotelOutCalendarFast(); } catch(e){}
-    }, 100);
-}
-        
         function setupServiceDropdownsAndData(data) {
             allServices = Array.isArray(data) ? data : []; 
             const pkgSelect = document.getElementById('buyNewPackageSelect');
@@ -1602,36 +1576,18 @@ function previewPetPhotoUpload(inputEl, id) {
             renderGrid(cat);
         }
         function renderGrid(filterCategory) {
-    const grid = document.getElementById('portfolioGrid'); 
-    if(!grid) return; 
-    grid.innerHTML = '';
-    const filtered = allPhotos.filter(item => filterCategory === '全部' || item.category === filterCategory);
-    if (filtered.length === 0) { 
-        grid.innerHTML = '<div class="col-span-2 text-center text-xs text-gray-400 py-6">此分類尚無照片</div>'; 
-        return; 
-    }
-    filtered.forEach((item, idx) => { 
-        let cardDiv = document.createElement('div'); 
-        cardDiv.className = "portfolio-item-card bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transform transition hover:scale-102 cursor-zoom-in";
-        cardDiv.onclick = () => openImageLightboxModal(item.imgUrl, item.title);
-        // 🎯 使用原生 img 標籤，圖片瞬間渲染不等待
-        cardDiv.innerHTML = `
-            <div class="w-full h-32 bg-gray-100 overflow-hidden">
-                <img src="${item.imgUrl}" alt="${item.title}" class="w-full h-full object-cover" loading="lazy" decoding="async">
-            </div>
-            <div class="p-2 h-12 flex items-center justify-center text-center text-[12px] font-bold text-textBrown bg-white leading-snug">
-                ${item.title}
-            </div>`;
-        if(!isPortfolioExpanded && idx >= 2) cardDiv.style.display = 'none'; 
-        else cardDiv.style.display = 'block';
-        grid.appendChild(cardDiv);
-    });
-    const btn = document.getElementById('togglePortfolioBtn'); 
-    if(btn) { 
-        if(filtered.length <= 2) btn.style.display = 'none'; 
-        else btn.style.display = 'inline-block'; 
-    }
-}
+            const grid = document.getElementById('portfolioGrid'); if(!grid) return; grid.innerHTML = '';
+            const filtered = allPhotos.filter(item => filterCategory === '全部' || item.category === filterCategory);
+            if (filtered.length === 0) { grid.innerHTML = '<div class="col-span-2 text-center text-xs text-gray-400 py-6">此分類尚無照片</div>'; return; }
+            filtered.forEach((item, idx) => { 
+                let cardDiv = document.createElement('div'); cardDiv.className = "portfolio-item-card bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col transform transition hover:scale-102 cursor-zoom-in";
+                cardDiv.onclick = () => openImageLightboxModal(item.imgUrl, item.title);
+                cardDiv.innerHTML = `<div class="w-full h-32 bg-gray-100 bg-cover bg-center" style="background-image: url('${item.imgUrl}')"></div><div class="p-2 h-12 flex items-center justify-center text-center text-[12px] font-bold text-textBrown bg-white leading-snug">${item.title}</div>`;
+                if(!isPortfolioExpanded && idx >= 2) cardDiv.style.display = 'none'; else cardDiv.style.display = 'block';
+                grid.appendChild(cardDiv);
+            });
+            const btn = document.getElementById('togglePortfolioBtn'); if(btn) { if(filtered.length <= 2) btn.style.display = 'none'; else btn.style.display = 'inline-block'; }
+        }
         function openImageLightboxModal(url, title) {
             document.getElementById('lightboxImageEl').src = url;
             document.getElementById('lightboxTitleEl').innerText = title || '';
@@ -1645,67 +1601,63 @@ function previewPetPhotoUpload(inputEl, id) {
             let activeTabName = "全部"; document.querySelectorAll('.portfolio-btn').forEach(b => { if(b.classList.contains('bg-[#5C5043]')) activeTabName = b.innerText; }); renderGrid(activeTabName);
             if(isPortfolioExpanded) btn.innerHTML = `收合作品集 <i class="fas fa-chevron-up ml-1"></i>`; else btn.innerHTML = `查看更多作品集 <i class="fas fa-chevron-down ml-1"></i>`;
         }
-        // ⚡ 原版秒加載輪播圖模組
-function buildDynamicSliderModule(photoUrls) {
-    const container = document.getElementById('sliderImagesContainer'); 
-    const dotsContainer = document.getElementById('sliderDotsContainer'); 
-    if(!container || !dotsContainer) return;
-    
-    container.innerHTML = ''; 
-    dotsContainer.innerHTML = ''; 
-    totalSliderImagesCount = photoUrls.length;
-    
-    photoUrls.forEach((url, index) => {
-        let slide = document.createElement('div');
-        slide.className = "w-full h-full flex-shrink-0 flex items-center justify-center overflow-hidden";
-        // 🎯 改回 img 標籤並加上 loading="eager"，讓瀏覽器第一時間全力並行下載
-        slide.innerHTML = `<img src="${url}" class="w-full h-full object-contain rounded-xl" loading="eager" decoding="async">`;
-        container.appendChild(slide);
-        
-        dotsContainer.innerHTML += `<div id="sliderDot_${index}" class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${index===0?'!bg-[#CBB39C]':''}"></div>`;
-    });
-}
+        function buildDynamicSliderModule(photoUrls) {
+            const container = document.getElementById('sliderImagesContainer'); 
+            const dotsContainer = document.getElementById('sliderDotsContainer'); 
+            if(!container || !dotsContainer) return;
+            
+            container.innerHTML = ''; dotsContainer.innerHTML = ''; totalSliderImagesCount = photoUrls.length;
+            
+            requestAnimationFrame(() => {
+                photoUrls.forEach((url, index) => {
+                    let imgDiv = document.createElement('div');
+                    imgDiv.className = "w-full h-full flex-shrink-0 bg-contain bg-no-repeat bg-center rounded-xl";
+                    imgDiv.style.backgroundImage = `url('${url}')`;
+                    container.appendChild(imgDiv);
+                    
+                    dotsContainer.innerHTML += `<div id="sliderDot_${index}" class="w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${index===0?'!bg-[#CBB39C]':''}"></div>`;
+                });
+            });
+        }
         function moveSliderEngine(direction) {
             currentSliderIndex += direction; if(currentSliderIndex >= totalSliderImagesCount) currentSliderIndex = 0; if(currentSliderIndex < 0) currentSliderIndex = totalSliderImagesCount - 1;
             const container = document.getElementById('sliderImagesContainer'); if(container) container.style.transform = `translateX(-${currentSliderIndex * 100}%)`;
             for(let i=0; i<totalSliderImagesCount; i++) { const dot = document.getElementById(`sliderDot_${i}`); if(dot) dot.className = `w-2.5 h-2.5 rounded-full bg-gray-300 transition-colors duration-300 ${i===currentSliderIndex?'!bg-[#CBB39C]':''}`; }
         }
         function packDynamicPetsJsonPayload() {
-    const container = document.getElementById('dynamicPetContainer');
-    const packedArray = [];
-    if(!container) return packedArray;
-    for(let i=0; i<container.children.length; i++) {
-        const cardEl = container.children[i];
-        let addonsArr = [];
-        cardEl.querySelectorAll('.addon-checkbox:checked').forEach(cb => addonsArr.push(cb.value));
-        
-        let selectedServicesStr = "";
-        if (activeServiceType === 'grooming') {
-            selectedServicesStr = cardEl.querySelector('.p-main-service') ? cardEl.querySelector('.p-main-service').value : '預約項目';
-        } else {
-            let selectedArr = [];
-            cardEl.querySelectorAll('.p-main-checkbox:checked').forEach(cb => selectedArr.push(cb.value));
-            selectedServicesStr = selectedArr.length > 0 ? selectedArr.join(', ') : '寵物住宿';
+            const container = document.getElementById('dynamicPetContainer');
+            const packedArray = [];
+            if(!container) return packedArray;
+            for(let i=0; i<container.children.length; i++) {
+                const cardEl = container.children[i];
+                let addonsArr = [];
+                cardEl.querySelectorAll('.addon-checkbox:checked').forEach(cb => addonsArr.push(cb.value));
+                
+                let selectedServicesStr = "";
+                if (activeServiceType === 'grooming') {
+                    selectedServicesStr = cardEl.querySelector('.p-main-service') ? cardEl.querySelector('.p-main-service').value : '預約項目';
+                } else {
+                    let selectedArr = [];
+                    cardEl.querySelectorAll('.p-main-checkbox:checked').forEach(cb => selectedArr.push(cb.value));
+                    selectedServicesStr = selectedArr.length > 0 ? selectedArr.join(', ') : '寵物住宿';
+                }
+                
+                let rawBirthday = cardEl.querySelector('.p-birthday') ? cardEl.querySelector('.p-birthday').value.trim() : '';
+                let cleanBirthday = rawBirthday.includes('T') ? rawBirthday.split('T')[0] : rawBirthday;
+                packedArray.push({
+                    name: cardEl.querySelector('.p-name') ? cardEl.querySelector('.p-name').value.trim() : '',
+                    breed: cardEl.querySelector('.p-breed') ? cardEl.querySelector('.p-breed').value.trim() : '',
+                    petSize: cardEl.querySelector('.p-size') ? cardEl.querySelector('.p-size').value.trim() : '',
+                    age: cardEl.querySelector('.p-age') ? cardEl.querySelector('.p-age').value.trim() : '',
+                    birthday: cleanBirthday,
+                    coatType: cardEl.querySelector('.p-coat') ? cardEl.querySelector('.p-coat').value : '短毛',
+                    petPhotoBase64: cardEl.querySelector('.p-photo-base64') ? cardEl.querySelector('.p-photo-base64').value : '',
+                    mainService: selectedServicesStr,
+                    addons: addonsArr.length > 0 ? addonsArr.join(', ') : '無'
+                });
+            }
+            return packedArray;
         }
-        
-        let rawBirthday = cardEl.querySelector('.p-birthday') ? cardEl.querySelector('.p-birthday').value.trim() : '';
-        let cleanBirthday = rawBirthday.includes('T') ? rawBirthday.split('T')[0] : rawBirthday;
-        packedArray.push({
-            name: cardEl.querySelector('.p-name') ? cardEl.querySelector('.p-name').value.trim() : '',
-            breed: cardEl.querySelector('.p-breed') ? cardEl.querySelector('.p-breed').value.trim() : '',
-            petSize: cardEl.querySelector('.p-size') ? cardEl.querySelector('.p-size').value.trim() : '',
-            age: cardEl.querySelector('.p-age') ? cardEl.querySelector('.p-age').value.trim() : '',
-            birthday: cleanBirthday,
-            coatType: cardEl.querySelector('.p-coat') ? cardEl.querySelector('.p-coat').value : '短毛',
-            // 🎯 不在此處打包原始 Base64，減輕 JSON 體積 95% 以上，杜絕傳輸卡死
-            petPhotoBase64: '', 
-            mainService: selectedServicesStr,
-            addons: addonsArr.length > 0 ? addonsArr.join(', ') : '無'
-        });
-    }
-    return packedArray;
-}
-        
         function initDigitalSignatureCanvasEngine() {
             if(!canvas) return;
             const parent = canvas.parentNode;
@@ -1737,28 +1689,8 @@ function buildDynamicSliderModule(photoUrls) {
             const blank = document.createElement('canvas'); blank.width = canvas.width; blank.height = canvas.height;
             return canvas.toDataURL() !== blank.toDataURL();
         }
-        // 🟢【前台修復】加入毛孩照片極速壓縮機制，將封包體積大幅壓縮 95% 以上，終結逾時中斷
-async function compressPhotoBase64Engine(base64Str, maxWidth = 800) {
-  if (!base64Str || base64Str.length < 50) return "";
-  return new Promise((resolve) => {
-    let img = new Image();
-    img.onload = () => {
-      let cvs = document.createElement('canvas');
-      let ratio = Math.min(maxWidth / img.width, 1);
-      cvs.width = img.width * ratio;
-      cvs.height = img.height * ratio;
-      let ctx = cvs.getContext('2d');
-      ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
-      resolve(cvs.toDataURL('image/jpeg', 0.65));
-    };
-    img.onerror = () => resolve("");
-    img.src = base64Str;
-  });
-}
-        
         // ⚡ 2 秒極速預約送出（免等待大圖檔上傳與發信）
-// 🟢【安全修正版】加上 async，修復語法崩潰，並極速發送輕量化封包
-async function processBooking() {
+function processBooking() {
     let phone = document.getElementById('phone').value.trim();
     let ownerName = document.getElementById('ownerName').value.trim();
     let email = document.getElementById('email').value.trim();
@@ -1789,7 +1721,6 @@ async function processBooking() {
             }
         }
     }
-
     let petsPayload = packDynamicPetsJsonPayload();
     if(petsPayload.length === 0) { 
         return Swal.fire('漏填提醒', '請至少填寫一隻毛孩的資料！', 'warning'); 
@@ -1805,22 +1736,11 @@ async function processBooking() {
     if (!validateCanvasIsSigned()) { 
         return Swal.fire('簽名提醒', '請在手寫簽名板親筆簽名正本後再點擊送出！', 'warning'); 
     }
-
-    Swal.fire({ title: '預約資料打包中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-    // ⚡ 取得各毛孩卡片中的照片並予以壓縮
+    
     let multiPhotosMap = {};
-    const container = document.getElementById('dynamicPetContainer');
-    if (container) {
-        for (let idx = 0; idx < container.children.length; idx++) {
-            let cardEl = container.children[idx];
-            let rawBase64 = cardEl.querySelector('.p-photo-base64') ? cardEl.querySelector('.p-photo-base64').value : '';
-            if (rawBase64) {
-                multiPhotosMap[idx + 1] = await compressPhotoBase64Engine(rawBase64, 600);
-            }
-        }
-    }
-
+    petsPayload.forEach((pet, index) => {
+        if (pet.petPhotoBase64) multiPhotosMap[index + 1] = pet.petPhotoBase64;
+    });
     let rawOrigText = document.getElementById('summaryOriginalRange') ? document.getElementById('summaryOriginalRange').innerText : "$0";
     let rawFinalText = document.getElementById('bookingTotalPriceDisplay') ? document.getElementById('bookingTotalPriceDisplay').innerText : "$0";
     
@@ -1829,7 +1749,7 @@ async function processBooking() {
     let groomerSelect = document.getElementById('selectedGroomer');
     let groomerVal = groomerSelect ? groomerSelect.value : '不指定';
     
-    // ⚡ 簽名檔極速壓縮
+    // ⚡ 簽名檔 Base64 0.05 秒極速壓縮
     let compressedSignatureBase64 = "";
     if (canvas) {
         let sigCvs = document.createElement('canvas');
@@ -1854,15 +1774,15 @@ async function processBooking() {
         buyPackage: document.getElementById('buyNewPackageSelect')?.value || 'none',
         buyDeposit: document.getElementById('buyNewDepositSelect')?.value || 'none',
         pickup: pickupVal + (pickupVal === '需要接送' ? ` (${pickupAddr})` : ''),
-        referrerOwner: document.getElementById('referrerOwner')?.value || '',
+        referrerOwner: document.getElementById('referrerOwner').value,
         petsJsonString: JSON.stringify(petsPayload),
         multiPhotosJson: JSON.stringify(multiPhotosMap),
         signatureDataBase64: compressedSignatureBase64
     };
     
-    Swal.fire({ title: '預約送出中...', text: '正在寫入系統，請稍候 1~2 秒', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ title: '預約寫入中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     
-    // 發送訂單至 GAS 後端
+    // 1️⃣ 第一階段：2 秒秒寫試算表並拿到結果
     fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
@@ -1870,6 +1790,19 @@ async function processBooking() {
     }).then(res => res.json()).then(resData => {
         Swal.close();
         if (resData.success) {
+            // 2️⃣ 第二階段：前台直接跳出「預約成功」，同時背景發起圖片存檔與寄信請求，客人完全不需等待！
+            payload.row = resData.row;
+            payload.orderId = resData.orderId;
+            payload.primaryPetName = resData.primaryPetName;
+            payload.primaryService = resData.primaryService;
+            payload.endTimeStr = resData.endTimeStr;
+            
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify({ action: "processBackgroundAssets", payload: payload })
+            }).catch(e => console.log('背景任務背景處理'));
+
             Swal.fire({
                 title: '🎉 預約成功！',
                 html: `
@@ -1878,7 +1811,7 @@ async function processBooking() {
                         <p>系統已同步發送「預約確認信件」至您的 Email 郵箱。</p>
                         <div class="bg-amber-50 p-3 rounded-lg border border-amber-200/80 text-amber-900 font-bold">
                             📧 <strong class="text-amber-800">貼心提醒：</strong><br>
-                            若您在收件匣沒有看到確認信，<strong class="text-rose-600">信件可能被誤判並跑去「垃圾信件匣」</strong>，再麻煩幫忙查看並標示為「非垃圾郵件」唷！
+                            若您在收件匣沒有看到確認信，<strong class="text-rose-600">信件可能被誤判並跑去「垃圾信件匣」</strong>，再麻煩幫忙點擊查看並標示為「非垃圾郵件」唷！
                         </div>
                     </div>
                 `,
@@ -1895,7 +1828,7 @@ async function processBooking() {
         }
     }).catch(err => {
         Swal.close();
-        Swal.fire('連線失敗', '網路連線逾時或異常，請再試一次', 'error');
+        Swal.fire('連線失敗', '網路連線逾時，請再試一次', 'error');
     });
 }
         function openTermsModalWindow(type) {
@@ -1921,3 +1854,5 @@ async function processBooking() {
     </script>
 </body>
 </html>
+
+
